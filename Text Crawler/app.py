@@ -11,6 +11,7 @@ class CryptGame:
             ["Wall", "Storage", "Hallway", "Hallway", "Hidden Passage", "Wall"],
             ["Wall", "Wall", "Wall", "Wall", "Wall", "Wall"],
         ]
+
         # Descriptions of each room for the player to read
         self.descriptions = {
             "Entrance": "A heavy stone door behind you is sealed shut. Faint torchlight flickers ahead.",
@@ -24,6 +25,7 @@ class CryptGame:
             "Hidden Passage": "A passage with glowing symbols. Something about it feels unnatural.",
             "Wall": "A cold stone wall blocks your way."
         }
+
         # Movement hints to help the player navigate
         self.movement_hints = {
             "Entrance": "You see the heavy stone door that shut behind you when you started exploring.",
@@ -36,6 +38,7 @@ class CryptGame:
             "Storage": "The smell of damp wood and rot wafts from somewhere close.",
             "Hidden Passage": "Something feels off about the wall ahead, like it’s not entirely solid."
         }
+
         # Initial player position and state variables
         self.player_pos = [0, 2]  # Start at the Entrance
         self.inventory = []  # Empty inventory at the start
@@ -48,7 +51,9 @@ class CryptGame:
     # Describe the player's current location
     def describe_location(self):
         location = self.get_location()
+
         print(f"\n{self.descriptions.get(location, 'Nothing but darkness...')}")
+
         self.show_options()  # Display possible movement options
         self.random_event()  # Trigger a random event
         if location == "Trap":
@@ -57,13 +62,16 @@ class CryptGame:
     # Show available directions based on the player's current position
     def show_options(self):
         row, col = self.player_pos
+
         directions = {
             "north": (row - 1, col),
             "south": (row + 1, col),
             "east": (row, col + 1),
             "west": (row, col - 1),
         }
+
         print("\nPaths available:")
+
         for direction, (r, c) in directions.items():
             if 0 <= r < len(self.grid) and 0 <= c < len(self.grid[0]):
                 room = self.grid[r][c]
@@ -79,39 +87,42 @@ class CryptGame:
             "A distant sound of chains rattling echoes through the crypt...",
             "A strange marking on the wall glows briefly before fading."
         ]
-        if random.random() < 0.3:  # 30% chance to trigger a random event
+
+        if random.random() < 0.3:  # 30% chance to trigger a random event for fun
             print(random.choice(events))
 
     # Move the player in a specific direction
     def move(self, direction):
         row, col = self.player_pos
-        new_pos = list(self.player_pos)  # Make a copy of the current position
+        temp_pos = list(self.player_pos)  # Make a copy of the current position
 
         # Adjust the position based on the direction
         if direction == "north" and row > 0:
-            new_pos[0] -= 1
+            temp_pos[0] -= 1
         elif direction == "south" and row < len(self.grid) - 1:
-            new_pos[0] += 1
+            temp_pos[0] += 1
         elif direction == "east" and col < len(self.grid[0]) - 1:
-            new_pos[1] += 1
+            temp_pos[1] += 1
         elif direction == "west" and col > 0:
-            new_pos[1] -= 1
+            temp_pos[1] -= 1
         else:
             print("You can't go that way.")
             return
 
-        new_location = self.grid[new_pos[0]][new_pos[1]]
-        if new_location == "Wall":
+        desired_location = self.grid[temp_pos[0]][temp_pos[1]]
+
+        if desired_location == "Wall":
             print("You bump into a cold, unforgiving stone wall. No way through here.")
-        elif new_location == "Locked Door" and "Key" not in self.inventory:
+        elif desired_location == "Locked Door" and "Key" not in self.inventory:
             print("The door is locked. A keyhole is carved with an eerie symbol.")
         else:
-            self.player_pos = new_pos  # Update the player's position
+            self.player_pos = temp_pos  # Update the player's position
             self.describe_location()  # Describe the new location
 
     # Inspect the current room for items or important details
     def inspect(self):
         location = self.get_location()
+
         items = {
             "Chamber": "An old torch lies here, flickering faintly. Might be useful.",
             "Altar": "A rusted key sits on the altar, covered in dust.",
@@ -119,11 +130,13 @@ class CryptGame:
             "Trap": "You nearly step on a loose tile. Something is hidden below.",
             "Treasure Room": "The glint of gold fills your eyes, but an unsettling feeling lingers."
         }
+
         print(items.get(location, "Nothing particularly interesting here."))
 
     # Take an item from the current location
     def take(self, item):
         location = self.get_location()
+
         if item == "torch" and location == "Chamber":
             self.inventory.append("Torch")  # Add torch to inventory
             print("You pick up the torch. The crypt feels slightly less terrifying.")
@@ -163,12 +176,13 @@ class CryptGame:
             elif action == "take" and len(parts) > 1:
                 self.take(parts[1])
             elif action == "use" and len(parts) > 1:
-                self.use(parts[1])
+                self.use(parts[1]
+                )
             elif action == "quit":
                 print("You feel an overwhelming dread... You turn back, abandoning your quest.")
                 break
             else:
-                print("A whisper in the dark: 'That is not an option...'")
+                print("A whisper in the dark: 'That is not an option...'") # Invalid action
 
             # Hint the player to pick up the torch if they haven't yet
             if self.get_location() == "Chamber" and "Torch" not in self.inventory:
