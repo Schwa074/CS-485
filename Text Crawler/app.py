@@ -202,19 +202,20 @@ class CryptGame:
             action = parts[0]
 
             # Handle player actions (move, inspect, take, use, quit)
-            if action == "go" and len(parts) > 1:
-                self.move(parts[1])
-            elif action == "inspect":
-                self.inspect()
-            elif action == "take" and len(parts) > 1:
-                self.take(parts[1])
-            elif action == "use" and len(parts) > 1:
-                self.use(parts[1])
-            elif action == "quit":
-                print("You feel an overwhelming dread... You turn back, abandoning your quest.")
-                break
-            else:
-                print("A whisper in the dark: 'That is not an option...'") # Invalid action
+            match action:
+                case "go" if len(parts) > 1:
+                    self.move(parts[1])
+                case "inspect":
+                    self.inspect()
+                case "take" if len(parts) > 1:
+                    self.take(parts[1])
+                case "use" if len(parts) > 1:
+                    self.use(parts[1])
+                case "quit":
+                    print("You feel an overwhelming dread... You turn back, abandoning your quest.")
+                    break
+                case _:
+                    print("A whisper in the dark: 'That is not an option...'")  # Invalid action
 
             # Hint the player to pick up the torch if they haven't yet
             if self.get_location() == "Chamber" and "Torch" not in self.inventory:
