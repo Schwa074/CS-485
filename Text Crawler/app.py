@@ -39,6 +39,14 @@ class CryptGame:
             "Hidden Passage": "Something feels off about the wall ahead, like it’s not entirely solid."
         }
 
+        self.item_descriptions = {
+            "Chamber": "An old torch lies here, flickering faintly. Might be useful.",
+            "Altar": "A rusted key sits on the altar, covered in dust.",
+            "Storage": "You find an old note: 'The door hides more than gold… beware what lurks.'",
+            "Trap": "You nearly step on a loose tile. Something is hidden below.",
+            "Treasure Room": "The glint of gold fills your eyes, but an unsettling feeling lingers."
+        }
+
         # Initial player position and state variables
         self.player_pos = [0, 2]  # Start at the Entrance
         self.inventory = []  # Empty inventory at the start
@@ -127,15 +135,7 @@ class CryptGame:
     def inspect(self):
         location = self.get_location()
 
-        items = {
-            "Chamber": "An old torch lies here, flickering faintly. Might be useful.",
-            "Altar": "A rusted key sits on the altar, covered in dust.",
-            "Storage": "You find an old note: 'The door hides more than gold… beware what lurks.'",
-            "Trap": "You nearly step on a loose tile. Something is hidden below.",
-            "Treasure Room": "The glint of gold fills your eyes, but an unsettling feeling lingers."
-        }
-
-        print(items.get(location, "Nothing particularly interesting here."))
+        print(self.item_descriptions.get(location, "Nothing particularly interesting here."))
 
     # Take an item from the current location
     def take(self, item):
@@ -143,6 +143,10 @@ class CryptGame:
 
         if item == "torch" and location == "Chamber":
             self.inventory.append("Torch")  # Add torch to inventory
+            # Update the Chamber room's description and movement hint
+            self.descriptions["Chamber"] = "An ancient chamber with strange markings on the walls. You noticed the burn marks on the wall from where you grabbed the torch."
+            self.movement_hints["Chamber"] = "You can now see the dark corridor ahead and it seems to lead into a chamber where you grabbed the torch."
+            self.item_descriptions["Chamber"] = "An old torch lied here, You can still spot the burn marks from before you picked it up."
             print("You pick up the torch. The crypt feels slightly less terrifying.")
         elif item == "key" and location == "Altar":
             self.inventory.append("Key")  # Add key to inventory
@@ -180,10 +184,17 @@ class CryptGame:
 
         while not self.game_over:
             if self.turn_count == self.ghost_kill_limit:
-                print("You see a ghastly figure approach you and stand in fear. Before you know it the ghost grabs onto you and you pass out. \n You wake back up at the entrance not reemembering what happened.")
+                print("You see a ghastly figure approach you and stand in fear. Before you know it the ghost grabs onto you and you pass out.")
+                print("You wake back up at the entrance not reemembering what happened.")
+                print("You wake up in a dark crypt. Your goal: escape and uncover the secrets hidden within.")
+                print("Commands: go [north/south/east/west], inspect, take [item], use [item], quit")
                 self.player_pos = [0, 2]  # Teleport user back to start
                 self.inventory = []  # Empty the inventory
                 self.turn_count = 0 # Reset turn count
+                # Reset chamber text to default
+                self.descriptions["Chamber"] = "An ancient chamber with strange markings on the walls. A broken torch lies here."
+                self.movement_hints["Chamber"] = "You see a faint light flickering from ahead, it seems to lead into a chamber."
+                self.item_descriptions["Chamber"] = "An old torch lies here, flickering faintly. Might be useful."
                 continue # Go back to while loop on this limit
 
             command = input("\n> ").strip().lower()
@@ -198,8 +209,7 @@ class CryptGame:
             elif action == "take" and len(parts) > 1:
                 self.take(parts[1])
             elif action == "use" and len(parts) > 1:
-                self.use(parts[1]
-                )
+                self.use(parts[1])
             elif action == "quit":
                 print("You feel an overwhelming dread... You turn back, abandoning your quest.")
                 break
