@@ -52,7 +52,7 @@ class CryptGame:
         self.inventory = []  # Empty inventory at the start
         self.game_over = False  # Game is not over yet
         self.turn_count = 0 # Counter to keep track of moves to initialize ghost
-        self.ghost_kill_limit = 30 # Amount of turns we allow the user to use before we send them back to the entrance. If you change this variable, make sure to change show_ghost_description cases
+        self.ghost_kill_limit = 30 # Amount of turns we allow the user to use before we send them back to the entrance. If you change this variable, make sure to change describe_ghost_description cases
 
 
     # Get the current location of the player based on the grid
@@ -164,7 +164,7 @@ class CryptGame:
         else:
             print("That doesn't seem to work.")
 
-    def show_ghost_description(self, turn):
+    def describe_ghost_description(self, turn):
         if turn == self.ghost_kill_limit - 25:
             print("\nYou hear a strange sound off in the distance but think nothing of it.")
         elif turn == self.ghost_kill_limit - 20:
@@ -225,7 +225,7 @@ class CryptGame:
                 print("You step into the treasure chamber... but something else is here.\nA dark presence looms...")
                 self.game_over = True
 
-            self.show_ghost_description(self.turn_count)
+            self.describe_ghost_description(self.turn_count)
 
         print("Game Over.")
 
