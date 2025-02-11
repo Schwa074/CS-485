@@ -43,6 +43,9 @@ class CryptGame:
         self.player_pos = [0, 2]  # Start at the Entrance
         self.inventory = []  # Empty inventory at the start
         self.game_over = False  # Game is not over yet
+        self.turn_count = 0 # Counter to keep track of moves to initialize ghost
+        self.ghost_kill_limit = 30 # Amount of turns we allow the user to use before we send them back to the entrance. If you change this variable, make sure to change show_ghost_description cases
+
 
     # Get the current location of the player based on the grid
     def get_location(self):
@@ -118,6 +121,7 @@ class CryptGame:
         else:
             self.player_pos = temp_pos  # Update the player's position
             self.describe_location()  # Describe the new location
+            self.turn_count += 1 # Increment number of turns
 
     # Inspect the current room for items or important details
     def inspect(self):
@@ -156,6 +160,17 @@ class CryptGame:
         else:
             print("That doesn't seem to work.")
 
+    def show_ghost_description(self, turn):
+        if turn == self.ghost_kill_limit - 25:
+            print("\nYou hear a strange sound off in the distance but think nothing of it.")
+        elif turn == self.ghost_kill_limit - 20:
+            print("\nThat strange sound you heard earlier sounds like it is getting closer to you, the crypt suddenly gets freezing cold.")
+        elif turn == self.ghost_kill_limit - 10:
+            print("\nYou heard a loud sound behind you. As you turn around, you see a ghostly figure slowly approaching you. You must find a way out fast!")
+        elif turn == self.ghost_kill_limit - 5:
+            print("\nThe ghost is right behind you! YOU NEED TO GET TO THE EXIT NOW!")
+
+
     # Main game loop
     def play(self):
         print("You wake up in a dark crypt. Your goal: escape and uncover the secrets hidden within.")
@@ -164,6 +179,13 @@ class CryptGame:
         self.describe_location()  # Show the initial location description
 
         while not self.game_over:
+            if self.turn_count == self.ghost_kill_limit:
+                print("You see a ghastly figure approach you and stand in fear. Before you know it the ghost grabs onto you and you pass out. \n You wake back up at the entrance not reemembering what happened.")
+                self.player_pos = [0, 2]  # Teleport user back to start
+                self.inventory = []  # Empty the inventory
+                self.turn_count = 0 # Reset turn count
+                continue # Go back to while loop on this limit
+
             command = input("\n> ").strip().lower()
             parts = command.split(" ", 1)
             action = parts[0]
@@ -192,6 +214,8 @@ class CryptGame:
             if self.get_location() == "Treasure Room" and "Key" in self.inventory:
                 print("You step into the treasure chamber... but something else is here.\nA dark presence looms...")
                 self.game_over = True
+
+            self.show_ghost_description(self.turn_count)
 
         print("Game Over.")
 
