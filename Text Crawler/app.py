@@ -215,7 +215,7 @@ class CryptGame:
                     print("You feel an overwhelming dread... You turn back, abandoning your quest.")
                     break
                 case _:
-                    print("A whisper in the dark: 'That is not an option...'")  # Invalid action
+                    print(f"A whisper in the dark: '{action} is not an option...'")  # Invalid action
 
             # Hint the player to pick up the torch if they haven't yet
             if self.get_location() == "Chamber" and "Torch" not in self.inventory:
