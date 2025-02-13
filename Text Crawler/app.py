@@ -174,6 +174,18 @@ class CryptGame:
         elif turn == self.ghost_kill_limit - 5:
             print("\nThe ghost is right behind you! YOU NEED TO GET TO THE EXIT NOW!")
 
+    def reset_player(self):
+        print("You see a ghastly figure approach you and stand in fear. Before you know it the ghost grabs onto you and you pass out.")
+        print("You wake back up at the entrance not reemembering what happened.")
+        print("You wake up in a dark crypt. Your goal: escape and uncover the secrets hidden within.")
+        print("Commands: go [north/south/east/west], inspect, take [item], use [item], quit")
+        self.player_pos = [0, 2]  # Teleport user back to start
+        self.inventory = []  # Empty the inventory
+        self.turn_count = 0 # Reset turn count
+        # Reset chamber text to default
+        self.descriptions["Chamber"] = "An ancient chamber with strange markings on the walls. A broken torch lies here."
+        self.movement_hints["Chamber"] = "You see a faint light flickering from ahead, it seems to lead into a chamber."
+        self.item_descriptions["Chamber"] = "An old torch lies here, flickering faintly. Might be useful."
 
     # Main game loop
     def play(self):
@@ -184,17 +196,7 @@ class CryptGame:
 
         while not self.game_over:
             if self.turn_count == self.ghost_kill_limit:
-                print("You see a ghastly figure approach you and stand in fear. Before you know it the ghost grabs onto you and you pass out.")
-                print("You wake back up at the entrance not reemembering what happened.")
-                print("You wake up in a dark crypt. Your goal: escape and uncover the secrets hidden within.")
-                print("Commands: go [north/south/east/west], inspect, take [item], use [item], quit")
-                self.player_pos = [0, 2]  # Teleport user back to start
-                self.inventory = []  # Empty the inventory
-                self.turn_count = 0 # Reset turn count
-                # Reset chamber text to default
-                self.descriptions["Chamber"] = "An ancient chamber with strange markings on the walls. A broken torch lies here."
-                self.movement_hints["Chamber"] = "You see a faint light flickering from ahead, it seems to lead into a chamber."
-                self.item_descriptions["Chamber"] = "An old torch lies here, flickering faintly. Might be useful."
+                self.reset_player()
                 continue # Go back to while loop on this limit
 
             command = input("\n> ").strip().lower()
