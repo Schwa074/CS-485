@@ -153,9 +153,9 @@ class CryptGame:
         elif item == "key" and location == "Altar":
             self.inventory.append("Key")  # Add key to inventory
             print("You take the rusted key. It hums faintly in your palm.")
-        elif item == "note" and location == "storage":
+        elif item == "note" and location == "Storage":
             self.inventory.append("Note")  # Add key to inventory
-            print("You take the note .")
+            print("You take the damp note.")
         else:
             print("There's nothing like that here.")
 
