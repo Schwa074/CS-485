@@ -89,6 +89,8 @@ class CryptGame:
                 if room != "Wall":  # Only show directions that aren't blocked by walls
                     print(f"  - {direction.title()}: {self.movement_hints[room]}")
 
+        print("\n")
+
     # Random events that may occur during gameplay
     def random_event(self):
         events = [
@@ -175,13 +177,14 @@ class CryptGame:
             print("\nThe ghost is right behind you! YOU NEED TO GET TO THE EXIT NOW!")
 
     def reset_player(self):
-        print("You see a ghastly figure approach you and stand in fear. Before you know it the ghost grabs onto you and you pass out.")
+        print("\nYou see a ghastly figure approach you and stand in fear. Before you know it the ghost grabs onto you and you pass out.")
         print("You wake back up at the entrance not reemembering what happened.")
-        print("You wake up in a dark crypt. Your goal: escape and uncover the secrets hidden within.")
+        print("You wake up in a dark crypt. Your goal: escape and uncover the secrets hidden within.\n")
         print("Commands: go [north/south/east/west], inspect, take [item], use [item], quit")
         self.player_pos = [0, 2]  # Teleport user back to start
         self.inventory = []  # Empty the inventory
         self.turn_count = 0 # Reset turn count
+        self.describe_location()
         # Reset chamber text to default
         self.descriptions["Chamber"] = "An ancient chamber with strange markings on the walls. A broken torch lies here."
         self.movement_hints["Chamber"] = "You see a faint light flickering from ahead, it seems to lead into a chamber."
