@@ -5,9 +5,9 @@ class CryptGame:
         # Initialize the game grid and game state
         self.grid = [
             ["Wall", "Wall", "Entrance", "Wall", "Wall", "Wall"],
-            ["Wall", "Chamber", "Hallway", "Hallway", "Altar", "Wall"],
+            ["Wall", "Chamber", "Hallway", "Altar", "Wall", "Wall"],
             ["Wall", "Hallway", "Hallway", "Locked Door", "Treasure Room", "Wall"],
-            ["Wall", "Hallway", "Trap", "Hallway", "Hallway", "Wall"],
+            ["Wall", "Hallway", "Trap", "Hallway", "Wall", "Wall"],
             ["Wall", "Storage", "Hallway", "Hallway", "Hidden Passage", "Wall"],
             ["Wall", "Wall", "Wall", "Wall", "Wall", "Wall"],
         ]
