@@ -29,9 +29,18 @@ while not window_should_close():
     if is_key_pressed(KEY_L):
         light_enabled = not light_enabled  # Toggle the light effect, TODO Remove this functionality during submission
 
+    previous_x = player.rect.x
+    previous_y = player.rect.y
+
     # Update player movement and camera position
     player.move()
     player.move_rect_by_vel()
+
+    if check_collision_with_walls(player, walls):
+        # If there's a collision, revert to previous position
+        player.rect.x = previous_x
+        player.rect.y = previous_y
+    
     player.animations[player.state.value].update()
     
     # Update camera target position to follow the player

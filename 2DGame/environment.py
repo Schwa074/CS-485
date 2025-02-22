@@ -38,3 +38,9 @@ def distance_to_light(wall, player_pos):
     # Find the shortest distance from any corner to the light using Euclidean Distance
     min_distance = min([((corner_x - player_pos.x) ** 2 + (corner_y - player_pos.y) ** 2) ** 0.5 for corner_x, corner_y in corners])
     return min_distance
+
+def check_collision_with_walls(player, walls):
+        for wall in walls:
+            if check_collision_recs(player.rect, wall):
+                return True
+        return False # Went through all the walls and found no collisions
