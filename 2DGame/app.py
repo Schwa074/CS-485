@@ -2,6 +2,7 @@ from pyray import *
 from enum import Enum
 
 W, H = 1200, 800
+P_WIDTH, P_HEIGHT = 150.0, 20.0
 
 class Direction(Enum):
     LEFT = -1
@@ -50,6 +51,7 @@ class Animation:
 class Player:
     def __init__(self, sprite):
         self.rect = Rectangle(W / 2, H / 2, 64, 64)
+        self.pos = Vector2(0, 0)
         self.vel = Vector2(0, 0)
         self.sprite = sprite
         self.dir = Direction.RIGHT
@@ -104,27 +106,65 @@ class Player:
             self.state = CurrentState.RUNNING_RIGHT
     
     def move_rect_by_vel(self):
-        self.rect.x += self.vel.x * get_frame_time()
-        self.rect.y += self.vel.y * get_frame_time()
+        dt = get_frame_time()
+        self.rect.x += self.vel.x * dt
+        self.rect.y += self.vel.y * dt
 
     def draw(self):
         source = self.animations[self.state.value].frame()
-        # source.width *= self.dir.value
         draw_texture_pro(self.sprite, source, self.rect, Vector2(0, 0), 0, WHITE)
 
-init_window(W, H, "Hero Animation Example")
+def move_camera_smooth_follow(camera, player):
+    min_speed, min_effect_dist, fraction_speed = 30.0, 10.0, 0.8
+    dt = get_frame_time()
+    
+    # Use player.rect.x and player.rect.y for camera target updates
+    diff = Vector2(player.rect.x - camera.target.x, player.rect.y - camera.target.y)
+    length = vector2_length(diff)
+    
+    if length > min_effect_dist:
+        speed = max(min_speed, fraction_speed * length)
+        camera.target.x += diff.x * (speed * dt / length)
+        camera.target.y += diff.y * (speed * dt / length)
+
+walls = [
+    Rectangle(H / 2, 780.0, P_WIDTH, P_HEIGHT),
+    Rectangle(H / 2, 550.0, P_WIDTH, P_HEIGHT),
+    Rectangle(P_WIDTH, 680.0, P_WIDTH, P_HEIGHT)
+]
+
+def draw_walls(walls):
+    for rect in walls:
+        draw_rectangle(int(rect.x), int(rect.y), int(rect.width), int(rect.height), DARKBROWN)
+
+# Initialize window and player
+init_window(W, H, "Crypt Escape")
 hero = load_texture("assets/character-test/charactersheet.png")
 player = Player(hero)
 
+# Camera initialized to follow player
+camera = Camera2D(Vector2(W / 2, H / 2), Vector2(player.rect.x, player.rect.y), 0.0, 1.0)
+
 while not window_should_close():
+    # Update player movement and camera position
     player.move()
     player.move_rect_by_vel()
     player.animations[player.state.value].update()
     
+    # Update camera target position to follow the player
+    camera.target = Vector2(player.rect.x, player.rect.y)
+    
+    # Smoothly move the camera
+    move_camera_smooth_follow(camera, player)
+    
     begin_drawing()
-    clear_background(SKYBLUE)
+    clear_background(DARKGRAY)
+    begin_mode_2d(camera)
     player.draw()
+    draw_walls(walls)
+    end_mode_2d()
     end_drawing()
 
+# Unload resources and close window
 unload_texture(hero)
 close_window()
