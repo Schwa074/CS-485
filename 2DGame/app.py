@@ -12,6 +12,7 @@ class CurrentState(Enum):
     RUNNING_LEFT = 1
     RUNNING_RIGHT = 2
     RUNNING_UP = 3
+    IDLE = 4
 
 class AnimationType(Enum):
     REPEATING = 0
@@ -58,12 +59,13 @@ class Player:
             Animation(0, 2, 1, 0.1, AnimationType.REPEATING), # Walk LEFT
             Animation(0, 2, 2, 0.1, AnimationType.REPEATING), # Walk RIGHT
             Animation(0, 2, 3, 0.1, AnimationType.REPEATING), # Walk UP
+            Animation(1, 1, 0, 0.1, AnimationType.ONESHOT), # IDLE
         ]
 
     def move(self):
         self.vel.x = 0
         self.vel.y = 0
-        self.state = CurrentState.RUNNING_DOWN
+        self.state = CurrentState.IDLE
 
         if is_key_down(KEY_A):
             self.vel.x = -200
