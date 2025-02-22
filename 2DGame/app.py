@@ -78,6 +78,27 @@ class Player:
             self.vel.y = 200
             self.state = CurrentState.RUNNING
         
+        if is_key_down(KEY_A) and is_key_down(KEY_W):
+            self.vel.x = -200
+            self.vel.y = -200
+            self.dir = Direction.LEFT
+            self.state = CurrentState.RUNNING
+        elif is_key_down(KEY_A) and is_key_down(KEY_S):
+            self.vel.x = -200
+            self.vel.y = 200
+            self.dir = Direction.LEFT
+            self.state = CurrentState.RUNNING
+        elif is_key_down(KEY_D) and is_key_down(KEY_W):
+            self.vel.x = 200
+            self.vel.y = -200
+            self.dir = Direction.RIGHT
+            self.state = CurrentState.RUNNING
+        elif is_key_down(KEY_D) and is_key_down(KEY_S):
+            self.vel.x = 200
+            self.vel.y = 200
+            self.dir = Direction.RIGHT
+            self.state = CurrentState.RUNNING
+
         if is_key_down(KEY_SPACE):
             self.vel.x = self.dir.value * 300
             self.state = CurrentState.ROLLING
