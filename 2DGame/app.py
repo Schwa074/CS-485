@@ -53,13 +53,15 @@ while not window_should_close():
     clear_background(BLACK)
     begin_mode_2d(camera)
     
-    if light_enabled:
-        # Draw light circle
-        draw_circle_gradient(int(player.rect.x + player.rect.width / 2), int(player.rect.y + player.rect.height / 2), LIGHT_RADIUS, Color(255, 255, 0, 100), Color(255, 255, 0, 0))
-    
     player.draw()
 
     if light_enabled:
+        # Draw light circle
+        draw_circle_gradient(int(player.rect.x + player.rect.width / 2),
+            int(player.rect.y + player.rect.height / 2),
+            LIGHT_RADIUS, Color(255, 255, 0, 100),
+            Color(255, 255, 0, 0))
+
         draw_walls(walls, Vector2(player.rect.x, player.rect.y))
     else:
         # If light is disabled, draw the walls normally (no fade effect)
