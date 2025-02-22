@@ -4,6 +4,7 @@ from enum import Enum
 W, H = 1200, 800
 P_WIDTH, P_HEIGHT = 150.0, 20.0
 LIGHT_RADIUS = 200  # Example radius for light
+light_enabled = True # Set to True when testing / playing, otherwise False for development
 
 class Direction(Enum):
     LEFT = -1
@@ -144,24 +145,29 @@ def distance_to_light(wall, player_pos):
         (wall.x + wall.width, wall.y + wall.height)  # bottom-right corner
     ]
     
-    # Find the shortest distance from any corner to the light
-    min_distance = min([((cx - player_pos.x) ** 2 + (cy - player_pos.y) ** 2) ** 0.5 for cx, cy in corners])
+    # Find the shortest distance from any corner to the light using Euclidean Distance
+    min_distance = min([((corner_x - player_pos.x) ** 2 + (corner_y - player_pos.y) ** 2) ** 0.5 for corner_x, corner_y in corners])
     return min_distance
 
 # Function to draw walls only if they are within the light range
 def draw_walls(walls, player_pos):
     for rect in walls:
-        dist = distance_to_light(rect, player_pos)
-        
-        if dist <= LIGHT_RADIUS:
-            # Calculate the alpha based on distance (closer = more visible)
-            alpha = int(255 * (1 - (dist / LIGHT_RADIUS)))
-            alpha = max(0, alpha)  # Ensure alpha doesn't go below 0
-            color = Color(139, 69, 19, alpha)  # Dark brown with fading alpha
+        if light_enabled:
+            # Only calculate and draw walls within the light range
+            dist = distance_to_light(rect, player_pos)
+            if dist <= LIGHT_RADIUS:
+                # Calculate the alpha based on distance (closer = more visible)
+                alpha = int(255 * (1 - (dist / LIGHT_RADIUS)))
+                alpha = max(0, alpha)  # Ensure alpha doesn't go below 0
+                color = Color(139, 69, 19, alpha)  # Dark brown with fading alpha
 
-            # Draw the wall with the calculated color (faded effect)
-            draw_rectangle(int(rect.x), int(rect.y), int(rect.width), int(rect.height), color)
-            
+                # Draw the wall with the calculated color (faded effect)
+                draw_rectangle(int(rect.x), int(rect.y), int(rect.width), int(rect.height), color)
+        else:
+            # If light is disabled, just draw the walls normally without the fade effect for development purposes
+            draw_rectangle(int(rect.x), int(rect.y), int(rect.width), int(rect.height), Color(139, 69, 19))
+
+
 # Initialize window and player
 init_window(W, H, "Crypt Escape")
 hero = load_texture("assets/character-test/charactersheet.png")
@@ -171,6 +177,9 @@ player = Player(hero)
 camera = Camera2D(Vector2(W / 2, H / 2), Vector2(player.rect.x, player.rect.y), 0.0, 1.0)
 
 while not window_should_close():
+    if is_key_pressed(KEY_L):
+        light_enabled = not light_enabled  # Toggle the light effect, TODO Remove this functionality during submission
+
     # Update player movement and camera position
     player.move()
     player.move_rect_by_vel()
@@ -186,11 +195,19 @@ while not window_should_close():
     clear_background(BLACK)
     begin_mode_2d(camera)
     
-    # Fix the light center to match the player's position
-    draw_circle_gradient(int(player.rect.x + player.rect.width / 2), int(player.rect.y + player.rect.height / 2), LIGHT_RADIUS, Color(255, 255, 0, 100), Color(255, 255, 0, 0))
+    if light_enabled:
+        # Draw light circle
+        draw_circle_gradient(int(player.rect.x + player.rect.width / 2), int(player.rect.y + player.rect.height / 2), LIGHT_RADIUS, Color(255, 255, 0, 100), Color(255, 255, 0, 0))
     
     player.draw()
-    draw_walls(walls, Vector2(player.rect.x, player.rect.y))
+
+    if light_enabled:
+        draw_walls(walls, Vector2(player.rect.x, player.rect.y))
+    else:
+        # If light is disabled, draw the walls normally (no fade effect)
+        for rect in walls:
+            draw_rectangle(int(rect.x), int(rect.y), int(rect.width), int(rect.height), DARKBROWN)  # Standard wall color
+    
     end_mode_2d()
     end_drawing()
 
