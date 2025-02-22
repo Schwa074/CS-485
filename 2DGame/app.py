@@ -8,10 +8,10 @@ class Direction(Enum):
     RIGHT = 1
 
 class CurrentState(Enum):
-    DEAD = 0
-    RUNNING = 1
-    IDLE = 2
-    ROLLING = 3
+    RUNNING_DOWN = 0
+    RUNNING_LEFT = 1
+    RUNNING_RIGHT = 2
+    RUNNING_UP = 3
 
 class AnimationType(Enum):
     REPEATING = 0
@@ -40,9 +40,11 @@ class Animation:
                     self.cur = self.lst
 
     def frame(self):
-        x = (self.cur % (self.lst + 1)) * 16
-        y = self.offset * 16
-        return Rectangle(x, y, 16, 16)
+        frame_width = 48
+        frame_height = 68
+        x = (self.cur % 3) * frame_width  # 3 frames horizontally
+        y = self.offset * frame_height    # 4 rows vertically (offset is row number)
+        return Rectangle(x, y, frame_width, frame_height)
 
 class Player:
     def __init__(self, sprite):
@@ -50,58 +52,54 @@ class Player:
         self.vel = Vector2(0, 0)
         self.sprite = sprite
         self.dir = Direction.RIGHT
-        self.state = CurrentState.IDLE
+        self.state = CurrentState.RUNNING_DOWN
         self.animations = [
-            Animation(0, 7, 0, 0.1, AnimationType.ONESHOT),
-            Animation(0, 5, 1, 0.1, AnimationType.REPEATING),
-            Animation(0, 3, 5, 0.1, AnimationType.REPEATING),
-            Animation(0, 2, 9, 0.1, AnimationType.REPEATING),
+            Animation(0, 2, 0, 0.1, AnimationType.REPEATING), # Walk DOWN
+            Animation(0, 2, 1, 0.1, AnimationType.REPEATING), # Walk LEFT
+            Animation(0, 2, 2, 0.1, AnimationType.REPEATING), # Walk RIGHT
+            Animation(0, 2, 3, 0.1, AnimationType.REPEATING), # Walk UP
         ]
 
     def move(self):
         self.vel.x = 0
         self.vel.y = 0
-        self.state = CurrentState.IDLE
+        self.state = CurrentState.RUNNING_DOWN
 
         if is_key_down(KEY_A):
             self.vel.x = -200
             self.dir = Direction.LEFT
-            self.state = CurrentState.RUNNING
+            self.state = CurrentState.RUNNING_LEFT
         elif is_key_down(KEY_D):
             self.vel.x = 200
             self.dir = Direction.RIGHT
-            self.state = CurrentState.RUNNING
+            self.state = CurrentState.RUNNING_RIGHT
         elif is_key_down(KEY_W):
             self.vel.y = -200
-            self.state = CurrentState.RUNNING
+            self.state = CurrentState.RUNNING_UP
         elif is_key_down(KEY_S):
             self.vel.y = 200
-            self.state = CurrentState.RUNNING
+            self.state = CurrentState.RUNNING_DOWN
         
         if is_key_down(KEY_A) and is_key_down(KEY_W):
             self.vel.x = -200
             self.vel.y = -200
             self.dir = Direction.LEFT
-            self.state = CurrentState.RUNNING
+            self.state = CurrentState.RUNNING_LEFT
         elif is_key_down(KEY_A) and is_key_down(KEY_S):
             self.vel.x = -200
             self.vel.y = 200
             self.dir = Direction.LEFT
-            self.state = CurrentState.RUNNING
+            self.state = CurrentState.RUNNING_LEFT
         elif is_key_down(KEY_D) and is_key_down(KEY_W):
             self.vel.x = 200
             self.vel.y = -200
             self.dir = Direction.RIGHT
-            self.state = CurrentState.RUNNING
+            self.state = CurrentState.RUNNING_RIGHT
         elif is_key_down(KEY_D) and is_key_down(KEY_S):
             self.vel.x = 200
             self.vel.y = 200
             self.dir = Direction.RIGHT
-            self.state = CurrentState.RUNNING
-
-        if is_key_down(KEY_SPACE):
-            self.vel.x = self.dir.value * 300
-            self.state = CurrentState.ROLLING
+            self.state = CurrentState.RUNNING_RIGHT
     
     def move_rect_by_vel(self):
         self.rect.x += self.vel.x * get_frame_time()
@@ -109,11 +107,11 @@ class Player:
 
     def draw(self):
         source = self.animations[self.state.value].frame()
-        source.width *= self.dir.value
+        # source.width *= self.dir.value
         draw_texture_pro(self.sprite, source, self.rect, Vector2(0, 0), 0, WHITE)
 
 init_window(W, H, "Hero Animation Example")
-hero = load_texture("Examples/assets/herochar-sprites/herochar_spritesheet.png")
+hero = load_texture("2DGame/assets/character-test/charactersheet.png")
 player = Player(hero)
 
 while not window_should_close():
