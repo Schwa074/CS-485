@@ -111,7 +111,7 @@ class Player:
         draw_texture_pro(self.sprite, source, self.rect, Vector2(0, 0), 0, WHITE)
 
 init_window(W, H, "Hero Animation Example")
-hero = load_texture("2DGame/assets/character-test/charactersheet.png")
+hero = load_texture("assets/character-test/charactersheet.png")
 player = Player(hero)
 
 while not window_should_close():
