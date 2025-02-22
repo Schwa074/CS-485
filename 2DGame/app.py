@@ -3,6 +3,7 @@ from enum import Enum
 
 W, H = 1200, 800
 P_WIDTH, P_HEIGHT = 150.0, 20.0
+LIGHT_RADIUS = 200  # Example radius for light
 
 class Direction(Enum):
     LEFT = -1
@@ -133,10 +134,34 @@ walls = [
     Rectangle(P_WIDTH, 680.0, P_WIDTH, P_HEIGHT)
 ]
 
-def draw_walls(walls):
-    for rect in walls:
-        draw_rectangle(int(rect.x), int(rect.y), int(rect.width), int(rect.height), DARKBROWN)
+# Function to check if wall is in the light range
+def distance_to_light(wall, player_pos):
+    # Calculate distance from each corner of the wall to the light source
+    corners = [
+        (wall.x, wall.y),  # top-left corner
+        (wall.x + wall.width, wall.y),  # top-right corner
+        (wall.x, wall.y + wall.height),  # bottom-left corner
+        (wall.x + wall.width, wall.y + wall.height)  # bottom-right corner
+    ]
+    
+    # Find the shortest distance from any corner to the light
+    min_distance = min([((cx - player_pos.x) ** 2 + (cy - player_pos.y) ** 2) ** 0.5 for cx, cy in corners])
+    return min_distance
 
+# Function to draw walls only if they are within the light range
+def draw_walls(walls, player_pos):
+    for rect in walls:
+        dist = distance_to_light(rect, player_pos)
+        
+        if dist <= LIGHT_RADIUS:
+            # Calculate the alpha based on distance (closer = more visible)
+            alpha = int(255 * (1 - (dist / LIGHT_RADIUS)))
+            alpha = max(0, alpha)  # Ensure alpha doesn't go below 0
+            color = Color(139, 69, 19, alpha)  # Dark brown with fading alpha
+
+            # Draw the wall with the calculated color (faded effect)
+            draw_rectangle(int(rect.x), int(rect.y), int(rect.width), int(rect.height), color)
+            
 # Initialize window and player
 init_window(W, H, "Crypt Escape")
 hero = load_texture("assets/character-test/charactersheet.png")
@@ -158,10 +183,14 @@ while not window_should_close():
     move_camera_smooth_follow(camera, player)
     
     begin_drawing()
-    clear_background(DARKGRAY)
+    clear_background(BLACK)
     begin_mode_2d(camera)
+    
+    # Fix the light center to match the player's position
+    draw_circle_gradient(int(player.rect.x + player.rect.width / 2), int(player.rect.y + player.rect.height / 2), LIGHT_RADIUS, Color(255, 255, 0, 100), Color(255, 255, 0, 0))
+    
     player.draw()
-    draw_walls(walls)
+    draw_walls(walls, Vector2(player.rect.x, player.rect.y))
     end_mode_2d()
     end_drawing()
 
