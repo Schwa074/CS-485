@@ -3,6 +3,9 @@ from player import *
 from enum import Enum
 from constants import *
 from environment import *
+import pygame
+from pytmx.util_pygame import load_pygame
+import pytmx
 
 def move_camera_smooth_follow(camera, player):
     min_speed, min_effect_dist, fraction_speed = 30.0, 10.0, 0.8
@@ -24,6 +27,28 @@ player = Player(hero)
 
 # Camera initialized to follow player
 camera = Camera2D(Vector2(W / 2, H / 2), Vector2(player.rect.x, player.rect.y), 0.0, 1.0)
+
+class Tile(pygame.sprite.Sprite):
+    def __init__(self,pos,surf,groups):
+        super().__init__(groups)
+        self.image = surf
+        self.rect = self.image.get_rect(topleft = pos)
+
+pygame.init()
+screen = pygame.display.set_mode((W,H))
+tmx_data = pytmx.util_pygame.load_pygame('Tile_files\\test_map.tmx')
+sprite_group = pygame.sprite.Group()
+
+for layer in tmx_data.visible_layers:
+    if hasattr(layer, 'data'):
+        for x,y,surf in layer.tiles():
+            pos = (x * 16, y * 16)
+            Tile(pos = pos, surf = surf, groups = sprite_group)
+
+for obj in tmx_data.objects:
+    pos = obj.x, obj.y
+    if obj.image:
+        Tile(pos = pos, surf = obj.image, groups = sprite_group)
 
 while not window_should_close():
     if is_key_pressed(KEY_L):
@@ -50,17 +75,17 @@ while not window_should_close():
     move_camera_smooth_follow(camera, player)
     
     begin_drawing()
-    clear_background(BLACK)
+    # clear_background(BLACK)
     begin_mode_2d(camera)
     
     player.draw()
 
     if light_enabled:
         # Draw light circle
-        draw_circle_gradient(int(player.rect.x + player.rect.width / 2),
-            int(player.rect.y + player.rect.height / 2),
-            LIGHT_RADIUS, Color(255, 255, 0, 100),
-            Color(255, 255, 0, 0))
+        # draw_circle_gradient(int(player.rect.x + player.rect.width / 2),
+        #     int(player.rect.y + player.rect.height / 2),
+        #     LIGHT_RADIUS, Color(255, 255, 0, 100),
+        #     Color(255, 255, 0, 0))
 
         draw_walls(walls, Vector2(player.rect.x, player.rect.y))
     else:
@@ -70,6 +95,8 @@ while not window_should_close():
     
     end_mode_2d()
     end_drawing()
+    sprite_group.draw(screen)
+    pygame.display.update()
 
 # Unload resources and close window
 unload_texture(hero)
