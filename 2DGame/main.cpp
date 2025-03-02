@@ -139,16 +139,24 @@ void keepPlayerInScreen(Player *player) {
 }
 
 void checkTileCollisions(TmxMap *map, Player *player) {
+  float prevx = player->rect.x;
+  float prevy = player->rect.y;
+
   for (unsigned int i = 0; i < map->layersLength; i++) {
     TraceLog(LOG_DEBUG, "current layer is %d: %s", i, map->layers[i].name);
     if (strcmp(map->layers[i].name, "collisions") == 0 && map->layers[i].type == LAYER_TYPE_OBJECT_GROUP) {
-      TmxObject* col;
+      TmxObject col;
       if (CheckCollisionTMXObjectGroupRec(map->layers[i].exact.objectGroup,
                                           player->rect,
-                                          col)) {
+                                          &col)) {
         TraceLog(LOG_DEBUG, "We've made contact!");
+        // TODO this isn't working
+        player->vel.x = 0.0f;
         player->vel.y = 0.0f;
-        player->rect.y = (col->aabb.y - player->rect.height);
+        player->rect.x = prevx;
+        player->rect.y = prevy;
+        // player->vel.y = 0.0f;
+        // player->rect.y = (col.aabb.y - player->rect.height);
         // player->rect.y = (H - player->rect.height);
       }
     }
@@ -166,7 +174,7 @@ void cameraFollow(Camera2D *camera, const Player *player) {
 int main() {
   SetTraceLogLevel(LOG_DEBUG);  // Enable debug-level logs
   TraceLog(LOG_DEBUG, "Opening window");
-  InitWindow(W, H, "Hero Animation Example");
+  InitWindow(W, H, "Crypt Escape");
 
   const char* tmx = "resources/map.tmx";
   TmxMap* map = LoadTMX(tmx);
@@ -174,7 +182,7 @@ int main() {
     TraceLog(LOG_ERROR, "couldn't load da map: %s", tmx);
     return EXIT_FAILURE;
   }
-  TraceLog(LOG_DEBUG, "Loading hero");
+
   Texture2D hero = LoadTexture("assets/charactersheet.png");
 
   Player player = Player{.rect = (Rectangle){.x = 16,
@@ -250,7 +258,7 @@ int main() {
     AnimateTMX(map);
     movePlayer(&player);
     moveRectByVel(&(player.rect), &(player.vel));
-    // checkTileCollisions(map, &player);
+    checkTileCollisions(map, &player);
     keepPlayerInScreen(&player);
     update_animation(&(player.animations[player.state]));
     cameraFollow(&camera, &player);
