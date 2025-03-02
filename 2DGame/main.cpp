@@ -138,30 +138,18 @@ void keepPlayerInScreen(Player *player) {
   }
 }
 
-void checkTileCollisions(TmxMap *map, Player *player) {
-  float prevx = player->rect.x;
-  float prevy = player->rect.y;
-
+bool isTileCollisions(TmxMap *map, Player *player) {
   for (unsigned int i = 0; i < map->layersLength; i++) {
-    TraceLog(LOG_DEBUG, "current layer is %d: %s", i, map->layers[i].name);
     if (strcmp(map->layers[i].name, "collisions") == 0 && map->layers[i].type == LAYER_TYPE_OBJECT_GROUP) {
       TmxObject col;
       if (CheckCollisionTMXObjectGroupRec(map->layers[i].exact.objectGroup,
                                           player->rect,
                                           &col)) {
-        TraceLog(LOG_DEBUG, "We've made contact!");
-        // TODO this isn't working
-        player->vel.x = 0.0f;
-        player->vel.y = 0.0f;
-        player->rect.x = prevx;
-        player->rect.y = prevy;
-        // player->vel.y = 0.0f;
-        // player->rect.y = (col.aabb.y - player->rect.height);
-        // player->rect.y = (H - player->rect.height);
+        return true;
       }
     }
   }
-  return;
+  return false;
 }
 
 void cameraFollow(Camera2D *camera, const Player *player) {
@@ -255,10 +243,16 @@ int main() {
 
   while (!WindowShouldClose()) {
     // Update
+    float previous_x = player.rect.x;
+    float previous_y = player.rect.y;
     AnimateTMX(map);
     movePlayer(&player);
     moveRectByVel(&(player.rect), &(player.vel));
-    checkTileCollisions(map, &player);
+    if (isTileCollisions(map, &player)) {
+      player.rect.x = previous_x;
+      player.rect.y = previous_y;
+    }
+
     keepPlayerInScreen(&player);
     update_animation(&(player.animations[player.state]));
     cameraFollow(&camera, &player);
