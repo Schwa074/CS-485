@@ -7,6 +7,8 @@
 const int W = 1200;
 const int H = 800;
 const float MAX_GRAV = 300.0f;
+const float startPosx = 722.56f;
+const float startPosy = 126.01f;
 
 enum Direction {
   LEFT = -1,
@@ -173,8 +175,8 @@ int main() {
 
   Texture2D hero = LoadTexture("assets/charactersheet.png");
 
-  Player player = Player{.rect = (Rectangle){.x = 16,
-                                            .y = 500,
+  Player player = Player{.rect = (Rectangle){.x = startPosx,
+                                            .y = startPosy,
                                             .width = 64.0f,
                                             .height = 64.0f},
                                             .vel = (Vector2){.x = 0.0f, .y = 0.0f},
@@ -245,6 +247,7 @@ int main() {
     // Update
     float previous_x = player.rect.x;
     float previous_y = player.rect.y;
+    
     AnimateTMX(map);
     movePlayer(&player);
     moveRectByVel(&(player.rect), &(player.vel));
