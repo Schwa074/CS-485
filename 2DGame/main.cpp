@@ -256,7 +256,7 @@ int main() {
       player.rect.y = previous_y;
     }
 
-    keepPlayerInScreen(&player);
+    //keepPlayerInScreen(&player);
     update_animation(&(player.animations[player.state]));
     cameraFollow(&camera, &player);
     // Drawing
