@@ -45,6 +45,8 @@ struct Player {
   Direction dir;
   CurrentState state;
   std::vector<Animation> animations;
+  int maxHealth = 6;
+  int currentHealth = 6;
 };
 
 void update_animation(Animation *self) {
@@ -161,6 +163,70 @@ void cameraFollow(Camera2D *camera, const Player *player) {
   };
 }
 
+void drawHearts(Texture2D heartsheet, int currentHealth) {
+  // Draw hit points in top left corner based on health
+  switch (currentHealth)
+  {
+    // Hearts: Full, Full, Full
+    case 6:
+    {
+      DrawTexturePro(heartsheet, {0, 0, 32, 32}, {32, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Leftmost heart
+      DrawTexturePro(heartsheet, {0, 0, 32, 32}, {64, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Middle heart
+      DrawTexturePro(heartsheet, {0, 0, 32, 32}, {96, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Rightmost heart
+      break;
+    }
+    // Hearts: Full, Full, Half
+    case 5:
+    {
+      DrawTexturePro(heartsheet, {0, 0, 32, 32}, {32, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Leftmost heart
+      DrawTexturePro(heartsheet, {0, 0, 32, 32}, {64, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Middle heart
+      DrawTexturePro(heartsheet, {32, 0, 32, 32}, {96, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Rightmost heart
+      break;
+    }
+    // Hearts: Full, Full, Empty
+    case 4:
+    {
+      DrawTexturePro(heartsheet, {0, 0, 32, 32}, {32, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Leftmost heart
+      DrawTexturePro(heartsheet, {0, 0, 32, 32}, {64, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Middle heart
+      DrawTexturePro(heartsheet, {64, 0, 32, 32}, {96, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Rightmost heart
+      break;
+    }
+    // Hearts: Full, Half, Empty
+    case 3:
+    {
+      DrawTexturePro(heartsheet, {0, 0, 32, 32}, {32, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Leftmost heart
+      DrawTexturePro(heartsheet, {32, 0, 32, 32}, {64, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Middle heart
+      DrawTexturePro(heartsheet, {64, 0, 32, 32}, {96, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Rightmost heart
+      break;
+    }
+    // Hearts: Full, Empty, Empty
+    case 2:
+    {
+      DrawTexturePro(heartsheet, {0, 0, 32, 32}, {32, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Leftmost heart
+      DrawTexturePro(heartsheet, {64, 0, 32, 32}, {64, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Middle heart
+      DrawTexturePro(heartsheet, {64, 0, 32, 32}, {96, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Rightmost heart
+      break;
+    }
+    // Hearts: Half, Empty, Empty
+    case 1:
+    {
+      DrawTexturePro(heartsheet, {32, 0, 32, 32}, {32, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Leftmost heart
+      DrawTexturePro(heartsheet, {64, 0, 32, 32}, {64, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Middle heart
+      DrawTexturePro(heartsheet, {64, 0, 32, 32}, {96, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Rightmost heart
+      break;
+    }
+    // Hearts: Empty, Empty, Empty
+    case 0:
+    {
+      DrawTexturePro(heartsheet, {64, 0, 32, 32}, {32, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Leftmost heart
+      DrawTexturePro(heartsheet, {64, 0, 32, 32}, {64, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Middle heart
+      DrawTexturePro(heartsheet, {64, 0, 32, 32}, {96, 32, 32, 32}, {0, 0}, 0.0f, WHITE); // Rightmost heart
+      break;
+    }
+
+  }
+}
+
 int main() {
   SetTraceLogLevel(LOG_DEBUG);  // Enable debug-level logs
   TraceLog(LOG_DEBUG, "Opening window");
@@ -174,6 +240,7 @@ int main() {
   }
 
   Texture2D hero = LoadTexture("assets/charactersheet.png");
+  Texture2D hearts = LoadTexture("assets/heartsheet.png");
 
   Player player = Player{.rect = (Rectangle){.x = startPosx,
                                             .y = startPosy,
@@ -259,6 +326,8 @@ int main() {
     //keepPlayerInScreen(&player);
     update_animation(&(player.animations[player.state]));
     cameraFollow(&camera, &player);
+
+
     // Drawing
     BeginDrawing();
     {
@@ -272,12 +341,16 @@ int main() {
       //                      player.rect.x, player.rect.y)
       //          .c_str(),
       //          5, 550, 32, RED);
+
+      // Draw hit points in top left corner
+      drawHearts(hearts, player.currentHealth);
     }
     EndDrawing();
   }
 
   UnloadTMX(map);
   UnloadTexture(hero);
+  UnloadTexture(hearts);
   CloseWindow();
   return 0;
 }
