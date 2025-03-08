@@ -49,6 +49,52 @@ struct Player {
   int currentHealth = 6;
 };
 
+struct Enemy {
+  Rectangle rect;
+  Texture2D sprite;
+  float speed;
+  bool active;
+};
+
+void spawnGhost(Enemy *ghost, Texture2D ghostSprite, Vector2 spawnPos) {
+  ghost->rect = {spawnPos.x, spawnPos.y, 48, 68};
+  ghost->sprite = ghostSprite;
+  ghost->speed = 5.0f; // We can change this speed as needed
+  ghost->active = true;
+}
+
+void moveGhost(Enemy *ghost, const Player *player) {
+  if (!ghost->active) return;
+
+  Vector2 dir = {player->rect.x - ghost->rect.x, player->rect.y - ghost->rect.y};
+  float length = sqrtf(dir.x * dir.x + dir.y * dir.y);
+
+  if (length > 0) {
+    dir.x /= length;
+    dir.y /= length;
+    ghost->rect.x += dir.x * ghost->speed * GetFrameTime();
+    ghost->rect.y += dir.y * ghost->speed * GetFrameTime();
+  }
+}
+
+void drawGhost(const Enemy *ghost) {
+  if (ghost->active) {
+    DrawTexturePro(ghost->sprite, {0, 0, 48, 68}, ghost->rect, {0, 0}, 0.0f, WHITE);
+  }
+}
+
+void checkGhostCollision(Enemy *ghost, Player *player) {
+  if (ghost->active && CheckCollisionRecs(ghost->rect, player->rect)) {
+    player->currentHealth = 0; // It should insta kill the player
+  }
+}
+
+void handleGhostSpawn(Enemy *ghost, Texture2D ghostSprite) {
+  if (GetTime() > 180.0 && !ghost->active) { // 3 minutes = 180 seconds
+    spawnGhost(ghost, ghostSprite, {600, 400}); // We can change this spawn location as needed
+  }
+}
+
 void update_animation(Animation *self) {
   float dt = GetFrameTime();
   self->rem -= dt;
@@ -240,6 +286,7 @@ int main() {
   }
 
   Texture2D hero = LoadTexture("assets/charactersheet.png");
+  Texture2D ghost = LoadTexture("assets/ghostsheet.png");
   Texture2D hearts = LoadTexture("assets/heartsheet.png");
 
   Player player = Player{.rect = (Rectangle){.x = startPosx,
