@@ -286,7 +286,9 @@ int main() {
   }
 
   Texture2D hero = LoadTexture("assets/charactersheet.png");
-  Texture2D ghost = LoadTexture("assets/ghostsheet.png");
+  Texture2D ghostSprite = LoadTexture("assets/ghostsheet.png");
+  Enemy ghost;
+  spawnGhost(&ghost, ghostSprite, {600, 400});
   Texture2D hearts = LoadTexture("assets/heartsheet.png");
 
   Player player = Player{.rect = (Rectangle){.x = startPosx,
@@ -380,7 +382,9 @@ int main() {
     {
       ClearBackground(BLACK);
       BeginMode2D(camera);
-      DrawTMX(map, &camera, 0, 0, WHITE);
+      drawGhost(&ghost);
+      moveGhost(&ghost, &player);
+      checkGhostCollision(&ghost, &player);
       drawPlayer(&player);
       EndMode2D();
       DrawFPS(5, 5);
