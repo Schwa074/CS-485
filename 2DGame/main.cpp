@@ -54,13 +54,19 @@ struct Enemy {
   Texture2D sprite;
   float speed;
   bool active;
+  int currentFrame;
+  float frameTime;
+  float frameCounter;
 };
 
 void spawnGhost(Enemy *ghost, Texture2D ghostSprite, Vector2 spawnPos) {
-  ghost->rect = {spawnPos.x, spawnPos.y, 48, 68};
+  ghost->rect = {spawnPos.x, spawnPos.y, 64, 64};
   ghost->sprite = ghostSprite;
-  ghost->speed = 5.0f; // We can change this speed as needed
+  ghost->speed = 15.0f; // We can change this speed as needed
   ghost->active = true;
+  ghost->currentFrame = 0;
+  ghost->frameTime = 0.1f; // Time per frame in seconds
+  ghost->frameCounter = 0.0f;
 }
 
 void moveGhost(Enemy *ghost, const Player *player) {
@@ -75,17 +81,35 @@ void moveGhost(Enemy *ghost, const Player *player) {
     ghost->rect.x += dir.x * ghost->speed * GetFrameTime();
     ghost->rect.y += dir.y * ghost->speed * GetFrameTime();
   }
+
+  // Update animation frame
+  ghost->frameCounter += GetFrameTime();
+  if (ghost->frameCounter >= ghost->frameTime) {
+    ghost->frameCounter = 0.0f;
+    ghost->currentFrame++;
+    if (ghost->currentFrame > 3) { // Assuming 4 frames (0, 1, 2, 3)
+      ghost->currentFrame = 0;
+    }
+  }
 }
 
 void drawGhost(const Enemy *ghost) {
   if (ghost->active) {
-    DrawTexturePro(ghost->sprite, {0, 0, 48, 68}, ghost->rect, {0, 0}, 0.0f, WHITE);
+    Rectangle source = {(float)(ghost->currentFrame * 32), 0.0f, 32.0f, 32.0f}; // Each frame is 32x32 pixels
+    Rectangle dest = ghost->rect;
+    Vector2 origin = {0, 0};
+    float rotation = 0.0f;
+    Color tint = WHITE;
+    DrawTexturePro(ghost->sprite, source, dest, origin, rotation, tint);
   }
 }
 
 void checkGhostCollision(Enemy *ghost, Player *player) {
-  if (ghost->active && CheckCollisionRecs(ghost->rect, player->rect)) {
-    player->currentHealth = 0; // It should insta kill the player
+  if (ghost->active) {
+    Rectangle ghostHitbox = {ghost->rect.x + 8, ghost->rect.y + 8, 32, 32}; // Adjust the offset and size as needed
+    if (CheckCollisionRecs(ghostHitbox, player->rect)) {
+      player->currentHealth = 0; // It should insta kill the player
+    }
   }
 }
 
