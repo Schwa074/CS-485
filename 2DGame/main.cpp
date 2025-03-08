@@ -382,6 +382,7 @@ int main() {
     {
       ClearBackground(BLACK);
       BeginMode2D(camera);
+      DrawTMX(map, &camera, 0, 0, WHITE);
       drawGhost(&ghost);
       moveGhost(&ghost, &player);
       checkGhostCollision(&ghost, &player);
