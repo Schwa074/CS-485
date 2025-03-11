@@ -413,12 +413,12 @@ int main() {
       drawPlayer(&player);
       EndMode2D();
       DrawFPS(5, 5);
-      // DrawText(std::format("(x: {:0.0f}, y: {:0.0f})",
-      //                      player.rect.x, player.rect.y)
-      //          .c_str(),
-      //          5, 550, 32, RED);
+      // TODO (Remove) Show player pos for debugging - whatever reason, std:: methods were not working for me
+      char positionText[50]; 
+      sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
 
-      // Draw hit points in top left corner
+      DrawText(positionText, 900, 10, 32, YELLOW);
+
       drawHearts(hearts, player.currentHealth);
     }
     EndDrawing();
