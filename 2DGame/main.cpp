@@ -7,10 +7,10 @@
 const int W = 1200;
 const int H = 720;
 const float MAX_GRAV = 300.0f;
-// const float startPosx = 722.56f;
-// const float startPosy = 126.01f;
-const float startPosx = 1722.56f;
-const float startPosy = 1985.01f;
+const float startPosx = 722.56f;
+const float startPosy = 126.01f;
+//const float startPosx = 1722.56f;
+//const float startPosy = 1985.01f;
 
 enum Direction {
   LEFT = -1,
@@ -62,6 +62,14 @@ struct Enemy {
   float frameCounter;
   float deactivationTime;
   float resetTime;
+};
+
+struct Item {
+  Rectangle rect;
+  Texture2D sprite;
+  int currentFrame;
+  float frameTime;
+  float frameCounter;
 };
 
 void spawnGhost(Enemy *ghost, Texture2D ghostSprite, Vector2 spawnPos) {
@@ -142,6 +150,17 @@ Vector2 trapPositions[] = {
   {2016, 2012}, // Top Entrance
 
 };
+
+Vector2 torchPosition = {1500, 600};
+
+void createTorch(Item *torch, Texture2D trapSprite, Vector2 spawnPos)
+{
+  torch->rect = {spawnPos.x, spawnPos.y, 32, 32};
+  torch->sprite = trapSprite;
+  torch->currentFrame = 0;
+  torch->frameTime = 0.1f; // Time per frame in seconds
+  torch->frameCounter = 0.0f;
+}
 
 int numTraps = sizeof(trapPositions) / sizeof(trapPositions[0]);
 
@@ -394,6 +413,7 @@ int main() {
   Texture2D trapSprite = LoadTexture("assets/trapsheet.png");
   Texture2D lowLight = LoadTexture("assets/lowLight.png");
   Texture2D highLight = LoadTexture("assets/highLight.png");
+  Texture2D torch = LoadTexture("assets/Torch.png");
   Enemy ghost;
   spawnGhost(&ghost, ghostSprite, {600, 400});
 
@@ -460,6 +480,7 @@ int main() {
                                                   .type = ONESHOT,
                                               }}};
 
+                                            
   Camera2D camera = (Camera2D){
     .offset = (Vector2){
       .x = W / 2.0f,
@@ -507,6 +528,7 @@ int main() {
       ClearBackground(BLACK);
       BeginMode2D(camera);
       DrawTMX(map, &camera, 0, 0, WHITE);
+      DrawTexture(torch, 1500, 600, WHITE);
       drawGhost(&ghost);
       for (int i = 0; i < numTraps; i++) {
         drawTrap(&traps[i]);
@@ -519,10 +541,9 @@ int main() {
       // TODO (Remove) Show player pos for debugging - whatever reason, std:: methods were not working for me
       char positionText[50]; 
       sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
-
-      DrawText(positionText, 900, 10, 32, YELLOW);
       drawLight(lowLight);
       drawHearts(hearts, player.currentHealth);
+      DrawText(positionText, 900, 10, 32, YELLOW);
     }
     EndDrawing();
   }
