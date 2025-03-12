@@ -7,8 +7,10 @@
 const int W = 1200;
 const int H = 800;
 const float MAX_GRAV = 300.0f;
-const float startPosx = 722.56f;
-const float startPosy = 126.01f;
+// const float startPosx = 722.56f;
+// const float startPosy = 126.01f;
+const float startPosx = 1722.56f;
+const float startPosy = 1985.01f;
 
 enum Direction {
   LEFT = -1,
@@ -57,6 +59,8 @@ struct Enemy {
   int currentFrame;
   float frameTime;
   float frameCounter;
+  float deactivationTime;
+  float resetTime;
 };
 
 void spawnGhost(Enemy *ghost, Texture2D ghostSprite, Vector2 spawnPos) {
@@ -117,6 +121,76 @@ void handleGhostSpawn(Enemy *ghost, Texture2D ghostSprite) {
   if (GetTime() > 180.0 && !ghost->active) { // 3 minutes = 180 seconds
     spawnGhost(ghost, ghostSprite, {600, 400}); // We can change this spawn location as needed
   }
+}
+
+std::vector<Enemy> traps;
+
+Vector2 trapPositions[] = {
+  {1984, 1884}, // Top Wall
+  {1952, 1884}, // Top Wall
+  {1920, 1884}, // Top Wall
+  {1888, 1884}, // Top Wall
+  {1856, 1884}, // Top Wall
+  {1824, 1884}, // Top Wall
+  {2144, 1884}, // Top Entrance
+  {2112, 1916}, // Top Entrance
+  {2144, 1948}, // Top Entrance
+  {1984, 1916}, // Top Entrance
+  {1984, 1948}, // Top Entrance
+  {1984, 1980}, // Top Entrance
+  {2016, 2012}, // Top Entrance
+
+};
+
+int numTraps = sizeof(trapPositions) / sizeof(trapPositions[0]);
+
+void createTrap(Enemy *trap, Texture2D trapSprite, Vector2 spawnPos) {
+  trap->rect = {spawnPos.x, spawnPos.y, 32, 32};
+  trap->sprite = trapSprite;
+  trap->speed = 0.0f; // We can change this speed as needed
+  trap->active = true;
+  trap->currentFrame = 0;
+  trap->frameTime = 0.1f; // Time per frame in seconds
+  trap->frameCounter = 0.0f;
+  trap->resetTime = 3.0f;
+  trap->deactivationTime = 0.0f;
+}
+
+
+void drawTrap(Enemy *trap) {
+  if(trap->active) {
+    trap->frameCounter += GetFrameTime();
+    if (trap->frameCounter >= trap->frameTime) {
+      trap->frameCounter = 0.0f;
+      trap->currentFrame++;
+      if (trap->currentFrame > 3) { // Assuming 4 frames (0, 1, 2, 3)
+        trap->currentFrame = 0;
+      }
+    }
+  }
+  else {
+    trap->currentFrame = 3;
+  }
+
+  Rectangle source = {(float)(trap->currentFrame * 32), 0.0f, 32.0f, 32.0f}; // Each frame is 32x32 pixels
+  Rectangle dest = trap->rect;
+  Vector2 origin = {0, 0};
+  float rotation = 0.0f;
+  Color tint = WHITE;
+  DrawTexturePro(trap->sprite, source, dest, origin, rotation, tint);
+}
+
+void updateTrapState(Enemy* trap) {
+  if (!trap->active && GetTime() - trap->deactivationTime > trap->resetTime) {
+      trap->active = true;  // Reactivate trap after reset time
+  }
+}
+
+bool checkTrapCollision(Player* player, Enemy* trap) {
+  if(trap->active) {
+    return CheckCollisionRecs(player->rect, trap->rect);
+  }
+  return false;
 }
 
 void update_animation(Animation *self) {
@@ -311,8 +385,16 @@ int main() {
 
   Texture2D hero = LoadTexture("assets/charactersheet.png");
   Texture2D ghostSprite = LoadTexture("assets/ghostsheet.png");
+  Texture2D trapSprite = LoadTexture("assets/trapsheet.png");
   Enemy ghost;
   spawnGhost(&ghost, ghostSprite, {600, 400});
+
+
+  Enemy traps[numTraps];
+  for (int i = 0; i < numTraps; i++) {
+      createTrap(&traps[i], trapSprite, trapPositions[i]);
+  }
+
   Texture2D hearts = LoadTexture("assets/heartsheet.png");
 
   Player player = Player{.rect = (Rectangle){.x = startPosx,
@@ -396,6 +478,16 @@ int main() {
       player.rect.y = previous_y;
     }
 
+    for (int i = 0; i < numTraps; i++) {
+      if (checkTrapCollision(&player, &traps[i]) && traps[i].active) {
+          player.currentHealth -= 1;
+          traps[i].active = false;
+          traps[i].deactivationTime = GetTime();
+          // Maybe play a sound or trigger a visual effect here
+      }
+      updateTrapState(&traps[i]);  // Ensure trap is reactivated after reset time
+  }
+
     //keepPlayerInScreen(&player);
     update_animation(&(player.animations[player.state]));
     cameraFollow(&camera, &player);
@@ -408,6 +500,9 @@ int main() {
       BeginMode2D(camera);
       DrawTMX(map, &camera, 0, 0, WHITE);
       drawGhost(&ghost);
+      for (int i = 0; i < numTraps; i++) {
+        drawTrap(&traps[i]);
+      }
       moveGhost(&ghost, &player);
       checkGhostCollision(&ghost, &player);
       drawPlayer(&player);
