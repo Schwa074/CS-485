@@ -5,7 +5,7 @@
 #include "raytmx.h"
 
 const int W = 1200;
-const int H = 800;
+const int H = 720;
 const float MAX_GRAV = 300.0f;
 // const float startPosx = 722.56f;
 // const float startPosy = 126.01f;
@@ -49,6 +49,7 @@ struct Player {
   std::vector<Animation> animations;
   int maxHealth = 6;
   int currentHealth = 6;
+  std::string inventory[2];
 };
 
 struct Enemy {
@@ -231,6 +232,11 @@ void drawPlayer(const Player *player) {
                  WHITE);
 }
 
+void drawLight(Texture2D light)
+{
+  DrawTexture(light, 0, 0, WHITE);
+}
+
 void movePlayer(Player *player) {
   player->vel.x = 0.0f;
   player->vel.y = 0.0f;
@@ -386,6 +392,8 @@ int main() {
   Texture2D hero = LoadTexture("assets/charactersheet.png");
   Texture2D ghostSprite = LoadTexture("assets/ghostsheet.png");
   Texture2D trapSprite = LoadTexture("assets/trapsheet.png");
+  Texture2D lowLight = LoadTexture("assets/lowLight.png");
+  Texture2D highLight = LoadTexture("assets/highLight.png");
   Enemy ghost;
   spawnGhost(&ghost, ghostSprite, {600, 400});
 
@@ -513,7 +521,7 @@ int main() {
       sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
 
       DrawText(positionText, 900, 10, 32, YELLOW);
-
+      drawLight(lowLight);
       drawHearts(hearts, player.currentHealth);
     }
     EndDrawing();
@@ -522,6 +530,9 @@ int main() {
   UnloadTMX(map);
   UnloadTexture(hero);
   UnloadTexture(hearts);
+  UnloadTexture(lowLight);
+  UnloadTexture(highLight);
+  UnloadTexture(ghostSprite);
   CloseWindow();
   return 0;
 }
