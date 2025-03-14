@@ -70,6 +70,7 @@ struct Item {
   int currentFrame;
   float frameTime;
   float frameCounter;
+  bool pickedUp = false;
 };
 
 void spawnGhost(Enemy *ghost, Texture2D ghostSprite, Vector2 spawnPos) {
@@ -153,13 +154,49 @@ Vector2 trapPositions[] = {
 
 Vector2 torchPosition = {1500, 600};
 
-void createTorch(Item *torch, Texture2D trapSprite, Vector2 spawnPos)
+void createTorch(Item *torch, Texture2D torchSprite, Vector2 spawnPos)
 {
   torch->rect = {spawnPos.x, spawnPos.y, 32, 32};
-  torch->sprite = trapSprite;
+  torch->sprite = torchSprite;
   torch->currentFrame = 0;
   torch->frameTime = 0.1f; // Time per frame in seconds
   torch->frameCounter = 0.0f;
+}
+
+void drawTorch(Item* torch)
+{
+  torch->frameCounter += GetFrameTime();
+    if (torch->frameCounter >= torch->frameTime) {
+      torch->frameCounter = 0.0f;
+      torch->currentFrame++;
+      if (torch->currentFrame > 7) { // Assuming 8 frames (0, 1, 2, 3, 4, 5, 6, 7)
+        torch->currentFrame = 0;
+      }
+    }
+
+  Rectangle source;
+  // First 4 sprites on top half of sheet
+  if (torch->currentFrame > 3)
+  {
+    source = {(float)(torch->currentFrame * 64), 0.0f, 64.0f, 64.0f}; // Each frame is 32x32 pixels
+  }
+  // Next 4 sprites on bottom half of sheet
+  else
+  {
+    source = {(float)(torch->currentFrame * 64), 64.0f, 64.0f, 64.0f}; // Each frame is 32x32 pixels
+  }
+  
+  Rectangle dest = torch->rect;
+  Vector2 origin = {0, 0};
+  float rotation = 0.0f;
+  Color tint = WHITE;
+  DrawTexturePro(torch->sprite, source, dest, origin, rotation, tint);
+
+}
+
+bool checkTorchCollision(Item* torch, Player* player)
+{
+  return CheckCollisionRecs(torch->rect, player->rect);
 }
 
 int numTraps = sizeof(trapPositions) / sizeof(trapPositions[0]);
@@ -413,7 +450,8 @@ int main() {
   Texture2D trapSprite = LoadTexture("assets/trapsheet.png");
   Texture2D lowLight = LoadTexture("assets/lowLight.png");
   Texture2D highLight = LoadTexture("assets/highLight.png");
-  Texture2D torch = LoadTexture("assets/Torch.png");
+  Texture2D torchSprite = LoadTexture("assets/Torch Animated.png");
+  Texture2D hearts = LoadTexture("assets/heartsheet.png");
   Enemy ghost;
   spawnGhost(&ghost, ghostSprite, {600, 400});
 
@@ -422,8 +460,10 @@ int main() {
   for (int i = 0; i < numTraps; i++) {
       createTrap(&traps[i], trapSprite, trapPositions[i]);
   }
-
-  Texture2D hearts = LoadTexture("assets/heartsheet.png");
+  
+  Item torch;
+  createTorch(&torch, torchSprite, torchPosition);
+  
 
   Player player = Player{.rect = (Rectangle){.x = startPosx,
                                             .y = startPosy,
@@ -528,7 +568,7 @@ int main() {
       ClearBackground(BLACK);
       BeginMode2D(camera);
       DrawTMX(map, &camera, 0, 0, WHITE);
-      DrawTexture(torch, 1500, 600, WHITE);
+      
       drawGhost(&ghost);
       for (int i = 0; i < numTraps; i++) {
         drawTrap(&traps[i]);
@@ -536,12 +576,28 @@ int main() {
       moveGhost(&ghost, &player);
       checkGhostCollision(&ghost, &player);
       drawPlayer(&player);
+      if (!torch.pickedUp)
+      {
+        drawTorch(&torch);
+      }
+      if (checkTorchCollision(&torch, &player) && torch.pickedUp == false)
+      {
+        player.inventory[0] = "Torch";
+        torch.pickedUp = true;
+      }
       EndMode2D();
       DrawFPS(5, 5);
       // TODO (Remove) Show player pos for debugging - whatever reason, std:: methods were not working for me
       char positionText[50]; 
       sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
-      drawLight(lowLight);
+      if (torch.pickedUp)
+      {
+        drawLight(highLight);
+      }
+      else if (!torch.pickedUp)
+      {
+        drawLight(lowLight);
+      }
       drawHearts(hearts, player.currentHealth);
       DrawText(positionText, 900, 10, 32, YELLOW);
     }
@@ -554,6 +610,7 @@ int main() {
   UnloadTexture(lowLight);
   UnloadTexture(highLight);
   UnloadTexture(ghostSprite);
+  UnloadTexture(torchSprite);
   CloseWindow();
   return 0;
 }
