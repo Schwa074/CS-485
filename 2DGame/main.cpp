@@ -289,6 +289,24 @@ bool checkTrapCollision(Player* player, Enemy* trap) {
   return false;
 }
 
+void createNote(Item *note, Texture2D noteSprite)
+{
+  note->rect = {2976, 2720, 32, 32};
+  note->sprite = noteSprite;
+  note->currentFrame = 0;
+  note->frameTime = 0.0f;
+  note->frameCounter = 0.0f;
+}
+
+void drawNote(Item* note) {
+  Rectangle dest = note->rect;
+  Rectangle source = {0.0f, 0.0f, 32.0f, 32.0f};
+  Vector2 origin = {0, 0};
+  float rotation = 0.0f;
+  Color tint = WHITE;
+  DrawTexturePro(note->sprite, source, dest, origin, rotation, tint);
+}
+
 void update_animation(Animation *self) {
   float dt = GetFrameTime();
   self->rem -= dt;
@@ -491,6 +509,7 @@ int main() {
   Texture2D highLight = LoadTexture("assets/highLight.png");
   Texture2D torchSprite = LoadTexture("assets/Torch Animated.png");
   Texture2D hearts = LoadTexture("assets/heartsheet.png");
+  Texture2D noteSprite = LoadTexture("assets/noteTiny.png");
   Enemy ghost;
   spawnGhost(&ghost, ghostSprite, {600, 400});
 
@@ -502,6 +521,9 @@ int main() {
   
   Item torch;
   createTorch(&torch, torchSprite, torchPosition);
+
+  Item note;
+  createNote(&note, noteSprite);
   
 
   Player player = Player{.rect = (Rectangle){.x = startPosx,
@@ -627,6 +649,8 @@ int main() {
         player.inventory[0] = "Torch";
         torch.pickedUp = true;
       }
+
+      drawNote(&note);
 
       EndMode2D();
 
