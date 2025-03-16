@@ -6,11 +6,10 @@
 
 const int W = 1200;
 const int H = 720;
-const float MAX_GRAV = 300.0f;
 const float startPosx = 722.56f;
 const float startPosy = 126.01f;
-//const float startPosx = 1722.56f;
-//const float startPosy = 1985.01f;
+// const float startPosx = 1722.56f;
+// const float startPosy = 1985.01f;
 
 enum Direction {
   LEFT = -1,
@@ -142,14 +141,54 @@ Vector2 trapPositions[] = {
   {1888, 1884}, // Top Wall
   {1856, 1884}, // Top Wall
   {1824, 1884}, // Top Wall
-  {2144, 1884}, // Top Entrance
-  {2112, 1916}, // Top Entrance
-  {2144, 1948}, // Top Entrance
+
+  {2144, 1884}, // Top Entrance Squiggle
+  {2112, 1916}, // Top Entrance Squiggle
+  {2144, 1948}, // Top Entrance Squiggle
+  {2176, 1980}, // Top Entrance Squiggle
+  {2144, 2012}, // Top Entrance Squiggle
+  
+  {2176, 2044}, // Top Entrance Squiggle Corner
+  {2144, 2076}, // Top Entrance Squiggle Corner
+  {2112, 2108}, // Top Entrance Squiggle Corner
+
   {1984, 1916}, // Top Entrance
   {1984, 1948}, // Top Entrance
   {1984, 1980}, // Top Entrance
-  {2016, 2012}, // Top Entrance
 
+  {1440, 2108}, // Bottom Wall
+  {1472, 2108}, // Bottom Wall
+  {1504, 2108}, // Bottom Wall
+  {1536, 2108}, // Bottom Wall
+
+  {1728, 2108}, // Bottom Wall
+  {1760, 2108}, // Bottom Wall
+  {1792, 2108}, // Bottom Wall
+  {1824, 2108}, // Bottom Wall
+  {1856, 2108}, // Bottom Wall
+  {1888, 2108}, // Bottom Wall
+  {1920, 2108}, // Bottom Wall
+
+  {1728, 2076}, // Bottom Wall Second Row
+  {1760, 2076}, // Bottom Wall Second Row
+  {1792, 2076}, // Bottom Wall Second Row
+  {1824, 2044}, // Bottom Wall Second Row
+
+  {1504, 1884}, // Around the key
+  {1472, 1916}, // Around the key
+  {1440, 1884}, // Around the key
+
+  {1536, 1916}, // Around the key
+  {1536, 1948}, // Around the key
+  {1536, 1980}, // Around the key
+
+  {1568, 1948}, // Middle Squiggle
+  {1600, 1916}, // Middle Squiggle
+  {1632, 1948}, // Middle Squiggle
+  {1664, 1916}, // Middle Squiggle
+  {1696, 1948}, // Middle Squiggle
+  {1728, 1916}, // Middle Squiggle
+  {1760, 1884}, // Middle Squiggle
 };
 
 Vector2 torchPosition = {1500, 600};
@@ -570,12 +609,15 @@ int main() {
       DrawTMX(map, &camera, 0, 0, WHITE);
       
       drawGhost(&ghost);
+
       for (int i = 0; i < numTraps; i++) {
         drawTrap(&traps[i]);
       }
+
       moveGhost(&ghost, &player);
       checkGhostCollision(&ghost, &player);
       drawPlayer(&player);
+
       if (!torch.pickedUp)
       {
         drawTorch(&torch);
@@ -585,19 +627,23 @@ int main() {
         player.inventory[0] = "Torch";
         torch.pickedUp = true;
       }
+
       EndMode2D();
-      DrawFPS(5, 5);
+
       // TODO (Remove) Show player pos for debugging - whatever reason, std:: methods were not working for me
       char positionText[50]; 
       sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
+
       if (torch.pickedUp)
       {
         drawLight(highLight);
       }
-      else if (!torch.pickedUp)
+      else
       {
         drawLight(lowLight);
       }
+
+      DrawFPS(5, 5);
       drawHearts(hearts, player.currentHealth);
       DrawText(positionText, 900, 10, 32, YELLOW);
     }
