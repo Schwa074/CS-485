@@ -3,6 +3,7 @@
 #include <format>
 #define RAYTMX_IMPLEMENTATION
 #include "raytmx.h"
+// #include <iostream>
 
 const int W = 1200;
 const int H = 720;
@@ -48,7 +49,7 @@ struct Player {
   std::vector<Animation> animations;
   int maxHealth = 6;
   int currentHealth = 6;
-  std::string inventory[2];
+  std::vector<std::string> inventory;
 };
 
 struct Enemy {
@@ -579,7 +580,10 @@ int main() {
                                                   .spd = 0.1f,
                                                   .rem = 0.1f,
                                                   .type = ONESHOT,
-                                              }}};
+                                              }},
+                                              .maxHealth = 6,
+                                              .currentHealth = 6,
+                                              .inventory = std::vector<std::string>()};
 
                                             
   Camera2D camera = (Camera2D){
@@ -646,8 +650,11 @@ int main() {
       }
       if (checkItemCollision(&torch, &player) && torch.pickedUp == false)
       {
-        player.inventory[0] = "Torch";
+        player.inventory.push_back("Torch");
         torch.pickedUp = true;
+        // for (const std::string& str : player.inventory) {
+        //   TraceLog(LOG_DEBUG, str.c_str());
+        // }
       }
 
       if (!note.pickedUp)
@@ -656,8 +663,11 @@ int main() {
       }
       if (checkItemCollision(&note, &player) && note.pickedUp == false)
       {
-        player.inventory[1] = "Note";
+        player.inventory.push_back("Note");
         note.pickedUp = true;
+        // for (const std::string& str : player.inventory) {
+        //   TraceLog(LOG_DEBUG, str.c_str());
+        // }
       }
 
       EndMode2D();
