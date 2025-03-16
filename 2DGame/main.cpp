@@ -233,9 +233,9 @@ void drawTorch(Item* torch)
 
 }
 
-bool checkTorchCollision(Item* torch, Player* player)
+bool checkItemCollision(Item* item, Player* player)
 {
-  return CheckCollisionRecs(torch->rect, player->rect);
+  return CheckCollisionRecs(item->rect, player->rect);
 }
 
 int numTraps = sizeof(trapPositions) / sizeof(trapPositions[0]);
@@ -644,13 +644,21 @@ int main() {
       {
         drawTorch(&torch);
       }
-      if (checkTorchCollision(&torch, &player) && torch.pickedUp == false)
+      if (checkItemCollision(&torch, &player) && torch.pickedUp == false)
       {
         player.inventory[0] = "Torch";
         torch.pickedUp = true;
       }
 
-      drawNote(&note);
+      if (!note.pickedUp)
+      {
+        drawNote(&note);
+      }
+      if (checkItemCollision(&note, &player) && note.pickedUp == false)
+      {
+        player.inventory[1] = "Note";
+        note.pickedUp = true;
+      }
 
       EndMode2D();
 
