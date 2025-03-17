@@ -7,10 +7,10 @@
 
 const int W = 1200;
 const int H = 720;
-const float startPosx = 722.56f;
-const float startPosy = 126.01f;
-// const float startPosx = 1722.56f;
-// const float startPosy = 1985.01f;
+//const float startPosx = 722.56f;
+//const float startPosy = 126.01f;
+const float startPosx = 1722.56f;
+const float startPosy = 1985.01f;
 
 enum Direction {
   LEFT = -1,
@@ -65,12 +65,30 @@ struct Enemy {
 };
 
 struct Item {
+  std::string itemName;
   Rectangle rect;
   Texture2D sprite;
   int currentFrame;
   float frameTime;
   float frameCounter;
   bool pickedUp = false;
+
+  void useItem()
+  {
+    TraceLog(LOG_DEBUG, itemName.c_str());
+    if (itemName == "Torch")
+    {
+
+    }
+    else if (itemName == "Key")
+    {
+
+    }
+    else if (itemName == "Note")
+    {
+      
+    }
+  }
 };
 
 void spawnGhost(Enemy *ghost, Texture2D ghostSprite, Vector2 spawnPos) {
@@ -290,22 +308,23 @@ bool checkTrapCollision(Player* player, Enemy* trap) {
   return false;
 }
 
-void createNote(Item *note, Texture2D noteSprite)
+void createItem(Item *item, Texture2D itemSprite, Rectangle pos, std::string itemName)
 {
-  note->rect = {2976, 2720, 32, 32};
-  note->sprite = noteSprite;
-  note->currentFrame = 0;
-  note->frameTime = 0.0f;
-  note->frameCounter = 0.0f;
+  item->itemName = itemName;
+  item->rect = pos;
+  item->sprite = itemSprite;
+  item->currentFrame = 0;
+  item->frameTime = 0.0f;
+  item->frameCounter = 0.0f;
 }
 
-void drawNote(Item* note) {
-  Rectangle dest = note->rect;
+void drawItem(Item* item) {
+  Rectangle dest = item->rect;
   Rectangle source = {0.0f, 0.0f, 32.0f, 32.0f};
   Vector2 origin = {0, 0};
   float rotation = 0.0f;
   Color tint = WHITE;
-  DrawTexturePro(note->sprite, source, dest, origin, rotation, tint);
+  DrawTexturePro(item->sprite, source, dest, origin, rotation, tint);
 }
 
 void update_animation(Animation *self) {
@@ -511,6 +530,7 @@ int main() {
   Texture2D torchSprite = LoadTexture("assets/Torch Animated.png");
   Texture2D hearts = LoadTexture("assets/heartsheet.png");
   Texture2D noteSprite = LoadTexture("assets/noteTiny.png");
+  Texture2D keySprite = LoadTexture("assets/key.png");
   Enemy ghost;
   spawnGhost(&ghost, ghostSprite, {600, 400});
 
@@ -524,7 +544,11 @@ int main() {
   createTorch(&torch, torchSprite, torchPosition);
 
   Item note;
-  createNote(&note, noteSprite);
+  Rectangle notePos = {2976, 2720, 32, 32};
+  createItem(&note, noteSprite, notePos, "Note");
+  Item key;
+  Rectangle keyPos = {1440, 1980, 32, 32};
+  createItem(&key, keySprite, keyPos, "Key");
   
 
   Player player = Player{.rect = (Rectangle){.x = startPosx,
@@ -659,12 +683,26 @@ int main() {
 
       if (!note.pickedUp)
       {
-        drawNote(&note);
+        drawItem(&note);
       }
       if (checkItemCollision(&note, &player) && note.pickedUp == false)
       {
         player.inventory.push_back("Note");
         note.pickedUp = true;
+        // for (const std::string& str : player.inventory) {
+        //   TraceLog(LOG_DEBUG, str.c_str());
+        // }
+      }
+
+      if (!key.pickedUp)
+      {
+        drawItem(&key);
+      }
+      if (checkItemCollision(&key, &player) && key.pickedUp == false)
+      {
+        player.inventory.push_back("Key");
+        key.pickedUp = true;
+        key.useItem();
         // for (const std::string& str : player.inventory) {
         //   TraceLog(LOG_DEBUG, str.c_str());
         // }
@@ -699,6 +737,8 @@ int main() {
   UnloadTexture(highLight);
   UnloadTexture(ghostSprite);
   UnloadTexture(torchSprite);
+  UnloadTexture(keySprite);
+  UnloadTexture(noteSprite);
   CloseWindow();
   return 0;
 }
