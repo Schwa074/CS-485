@@ -12,6 +12,7 @@ const int H = 720;
 const float startPosx = 1722.56f;
 const float startPosy = 1985.01f;
 
+
 enum Direction {
   LEFT = -1,
   RIGHT = 1,
