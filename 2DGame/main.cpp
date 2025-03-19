@@ -142,6 +142,9 @@ void checkGhostCollision(Enemy *ghost, Player *player) {
     Rectangle ghostHitbox = {ghost->rect.x + 8, ghost->rect.y + 8, 32, 32}; // Adjust the offset and size as needed
     if (CheckCollisionRecs(ghostHitbox, player->rect)) {
       player->currentHealth = 0; // It should insta kill the player
+      //add sound of player dying here
+      Sound playerGroanSound = LoadSound("assets/Player_Groan.mp3");
+      PlaySound(playerGroanSound);
     }
   }
 }
@@ -210,6 +213,33 @@ Vector2 trapPositions[] = {
   {1728, 1916}, // Middle Squiggle
   {1760, 1884}, // Middle Squiggle
 };
+
+// Draw Inventory HUD
+void DrawInventoryHUD(const Player *player) {
+  DrawText("Inventory:", 10, 60, 20, WHITE);
+  
+  bool hasTorch = false;
+  bool hasNote = false;
+  for (size_t i = 0; i < player->inventory.size(); i++) {
+      DrawText(player->inventory[i].c_str(), 10, 90 + (int)i * 20, 18, YELLOW);
+      if(player->inventory[i] == "Torch"){
+        hasTorch = true;
+      }
+      if(player->inventory[i] == "Note"){
+        hasNote = true;
+      }
+  }
+
+  if(hasTorch){
+    Texture2D torchIcon = LoadTexture("assets/torch_icon.png");
+    DrawTexture(torchIcon, 200, 60, WHITE);
+  }
+
+  if(hasNote){
+    Texture2D noteIcon = LoadTexture("assets/noteTiny.png");
+    DrawTexture(noteIcon, 200, 60, WHITE);
+  }
+}
 
 Vector2 torchPosition = {1500, 600};
 
@@ -515,6 +545,7 @@ int main() {
   SetTraceLogLevel(LOG_DEBUG);  // Enable debug-level logs
   TraceLog(LOG_DEBUG, "Opening window");
   InitWindow(W, H, "Crypt Escape");
+  InitAudioDevice();
 
   const char* tmx = "resources/map.tmx";
   TmxMap* map = LoadTMX(tmx);
@@ -522,6 +553,9 @@ int main() {
     TraceLog(LOG_ERROR, "couldn't load da map: %s", tmx);
     return EXIT_FAILURE;
   }
+
+  Sound playerGruntSound = LoadSound("assets/Player_Grunt.mp3");
+  Sound playerGroanSound = LoadSound("assets/Player_Groan.mp3");
 
   Texture2D hero = LoadTexture("assets/charactersheet.png");
   Texture2D ghostSprite = LoadTexture("assets/ghostsheet.png");
@@ -532,6 +566,7 @@ int main() {
   Texture2D hearts = LoadTexture("assets/heartsheet.png");
   Texture2D noteSprite = LoadTexture("assets/noteTiny.png");
   Texture2D keySprite = LoadTexture("assets/key.png");
+
   Enemy ghost;
   spawnGhost(&ghost, ghostSprite, {600, 400});
 
@@ -642,7 +677,10 @@ int main() {
           player.currentHealth -= 1;
           traps[i].active = false;
           traps[i].deactivationTime = GetTime();
-          // Maybe play a sound or trigger a visual effect here
+          // Maybe play a sound or trigger a visual effect here of player touching trap
+          PlaySound(playerGruntSound);
+
+
       }
       updateTrapState(&traps[i]);  // Ensure trap is reactivated after reset time
   }
@@ -718,6 +756,8 @@ int main() {
       if (torch.pickedUp)
       {
         drawLight(highLight);
+        //adding torch to HUD inventory
+        player.inventory.push_back("Torch");
       }
       else
       {
@@ -726,11 +766,14 @@ int main() {
 
       DrawFPS(5, 5);
       drawHearts(hearts, player.currentHealth);
+      DrawInventoryHUD(&player);
       DrawText(positionText, 900, 10, 32, YELLOW);
     }
     EndDrawing();
   }
 
+  UnloadSound(playerGruntSound);
+  UnloadSound(playerGroanSound);
   UnloadTMX(map);
   UnloadTexture(hero);
   UnloadTexture(hearts);
@@ -740,6 +783,7 @@ int main() {
   UnloadTexture(torchSprite);
   UnloadTexture(keySprite);
   UnloadTexture(noteSprite);
+  CloseAudioDevice();
   CloseWindow();
   return 0;
 }
