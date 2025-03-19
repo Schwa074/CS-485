@@ -7,10 +7,10 @@
 
 const int W = 1200;
 const int H = 720;
-//const float startPosx = 722.56f;
-//const float startPosy = 126.01f;
-const float startPosx = 1722.56f;
-const float startPosy = 1985.01f;
+const float startPosx = 722.56f;
+const float startPosy = 126.01f;
+// const float startPosx = 1722.56f;
+// const float startPosy = 1985.01f;
 
 
 enum Direction {
@@ -73,23 +73,7 @@ struct Item {
   float frameTime;
   float frameCounter;
   bool pickedUp = false;
-
-  void useItem()
-  {
-    TraceLog(LOG_DEBUG, itemName.c_str());
-    if (itemName == "Torch")
-    {
-
-    }
-    else if (itemName == "Key")
-    {
-
-    }
-    else if (itemName == "Note")
-    {
-      
-    }
-  }
+  bool isUsing = false;
 };
 
 void spawnGhost(Enemy *ghost, Texture2D ghostSprite, Vector2 spawnPos) {
@@ -230,15 +214,16 @@ void DrawInventoryHUD(const Player *player) {
       }
   }
 
-  if(hasTorch){
-    Texture2D torchIcon = LoadTexture("assets/torch_icon.png");
-    DrawTexture(torchIcon, 200, 60, WHITE);
-  }
+  // Can't be loading a texture every frame
+  // if(hasTorch){
+  //   Texture2D torchIcon = LoadTexture("assets/torch_icon.png");
+  //   DrawTexture(torchIcon, 200, 60, WHITE);
+  // }
 
-  if(hasNote){
-    Texture2D noteIcon = LoadTexture("assets/noteTiny.png");
-    DrawTexture(noteIcon, 200, 60, WHITE);
-  }
+  // if(hasNote){
+  //   Texture2D noteIcon = LoadTexture("assets/noteTiny.png");
+  //   DrawTexture(noteIcon, 200, 60, WHITE);
+  // }
 }
 
 Vector2 torchPosition = {1500, 600};
@@ -719,6 +704,7 @@ int main() {
       {
         player.inventory.push_back("Torch");
         torch.pickedUp = true;
+        torch.isUsing = true;
         // for (const std::string& str : player.inventory) {
         //   TraceLog(LOG_DEBUG, str.c_str());
         // }
@@ -732,6 +718,7 @@ int main() {
       {
         player.inventory.push_back("Note");
         note.pickedUp = true;
+        note.isUsing = true;
         // for (const std::string& str : player.inventory) {
         //   TraceLog(LOG_DEBUG, str.c_str());
         // }
@@ -745,7 +732,6 @@ int main() {
       {
         player.inventory.push_back("Key");
         key.pickedUp = true;
-        key.useItem();
         // for (const std::string& str : player.inventory) {
         //   TraceLog(LOG_DEBUG, str.c_str());
         // }
@@ -757,16 +743,34 @@ int main() {
       char positionText[50]; 
       sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
 
-      if (torch.pickedUp)
+      if (torch.pickedUp && torch.isUsing)
       {
         drawLight(highLight);
-        //adding torch to HUD inventory
-        player.inventory.push_back("Torch");
       }
       else
       {
         drawLight(lowLight);
       }
+
+      if (IsKeyPressed(KEY_ONE) && player.inventory.size() > 0) {
+        if (player.inventory[0] == "Note") note.isUsing = !note.isUsing;
+        if (player.inventory[0] == "Torch") torch.isUsing = !torch.isUsing;
+      }
+      if (IsKeyPressed(KEY_TWO) && player.inventory.size() > 1) {
+          if (player.inventory[1] == "Note") note.isUsing = !note.isUsing;
+          if (player.inventory[1] == "Torch") torch.isUsing = !torch.isUsing;
+      }
+      if (IsKeyPressed(KEY_THREE) && player.inventory.size() > 2) {
+          if (player.inventory[2] == "Note") note.isUsing = !note.isUsing;
+          if (player.inventory[2] == "Torch") torch.isUsing = !torch.isUsing;
+      }
+
+      // Display the big note if it's being used
+      if (note.isUsing) {
+        DrawTexture(noteItemSprite, W/2 - 160, H/2 - 234, WHITE);
+        DrawTextEx(noteFont, noteMsg, {W/2 - 100, H/2 - 165}, 16.0f, 8, BLACK);
+        if(IsKeyPressed(KEY_ESCAPE)) note.isUsing = false;
+    }
 
       DrawFPS(5, 5);
       drawHearts(hearts, player.currentHealth);
