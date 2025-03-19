@@ -3,7 +3,7 @@
 #include <format>
 #define RAYTMX_IMPLEMENTATION
 #include "raytmx.h"
-// #include <iostream>
+#include <iostream>
 
 const int W = 1200;
 const int H = 720;
@@ -220,24 +220,34 @@ void DrawInventoryHUD(const Player *player) {
   
   bool hasTorch = false;
   bool hasNote = false;
+  bool hasKey = false;
   for (size_t i = 0; i < player->inventory.size(); i++) {
       DrawText(player->inventory[i].c_str(), 10, 90 + (int)i * 20, 18, YELLOW);
+      //std::cout << "index = " << i << std::endl;
       if(player->inventory[i] == "Torch"){
         hasTorch = true;
       }
       if(player->inventory[i] == "Note"){
         hasNote = true;
       }
+      if(player->inventory[i] == "Key"){
+        hasKey = true;
+      }
   }
 
   if(hasTorch){
-    Texture2D torchIcon = LoadTexture("assets/torch_icon.png");
+    Texture2D torchIcon = LoadTexture("assets/torch.png");
     DrawTexture(torchIcon, 200, 60, WHITE);
   }
 
   if(hasNote){
     Texture2D noteIcon = LoadTexture("assets/noteTiny.png");
-    DrawTexture(noteIcon, 200, 60, WHITE);
+    DrawTexture(noteIcon, 232, 60, WHITE);
+  }
+
+  if(hasKey){
+    Texture2D keyIcon = LoadTexture("assets/key.png");
+    DrawTexture(keyIcon, 264, 60, WHITE);
   }
 }
 
@@ -245,11 +255,13 @@ Vector2 torchPosition = {1500, 600};
 
 void createTorch(Item *torch, Texture2D torchSprite, Vector2 spawnPos)
 {
+  std::cout << "createTorch function" << std::endl;
   torch->rect = {spawnPos.x, spawnPos.y, 32, 32};
   torch->sprite = torchSprite;
   torch->currentFrame = 0;
   torch->frameTime = 0.1f; // Time per frame in seconds
   torch->frameCounter = 0.0f;
+  torch->pickedUp = false;
 }
 
 void drawTorch(Item* torch)
@@ -347,6 +359,7 @@ void createItem(Item *item, Texture2D itemSprite, Rectangle pos, std::string ite
   item->currentFrame = 0;
   item->frameTime = 0.0f;
   item->frameCounter = 0.0f;
+  item->pickedUp = false;
 }
 
 void drawItem(Item* item) {
@@ -547,9 +560,6 @@ int main() {
   InitWindow(W, H, "Crypt Escape");
   InitAudioDevice();
 
-  Font noteFont = LoadFont("resources/alagard.png");
-  const char* noteMsg = "I'm lost in this\ncrypt, passing by a\nlocked door\nrepeatedly.I found\na booby-trapped\nkey but got\ninjured.\n\nI managed to lift\nthe curse but\nghostly noises are\nmaking me\nparanoid.\n\nGet the key\nand GET OUT\nIMMEDIATELY!\n\n-Howard Carter";
-
   const char* tmx = "resources/map.tmx";
   TmxMap* map = LoadTMX(tmx);
   if (map == nullptr) {
@@ -568,7 +578,6 @@ int main() {
   Texture2D torchSprite = LoadTexture("assets/Torch Animated.png");
   Texture2D hearts = LoadTexture("assets/heartsheet.png");
   Texture2D noteSprite = LoadTexture("assets/noteTiny.png");
-  Texture2D noteItemSprite = LoadTexture("assets/noteBig.png");
   Texture2D keySprite = LoadTexture("assets/key.png");
 
   Enemy ghost;
@@ -581,7 +590,8 @@ int main() {
   }
   
   Item torch;
-  createTorch(&torch, torchSprite, torchPosition);
+  Rectangle torchPos = {1500, 1600, 32, 32};
+  createTorch(&torch,torchSprite, torchPosition);
 
   Item note;
   Rectangle notePos = {2976, 2720, 32, 32};
@@ -717,6 +727,7 @@ int main() {
       }
       if (checkItemCollision(&torch, &player) && torch.pickedUp == false)
       {
+        std::cout << "CheckItemCollision in BeginDrawing" << std::endl;
         player.inventory.push_back("Torch");
         torch.pickedUp = true;
         // for (const std::string& str : player.inventory) {
@@ -761,7 +772,9 @@ int main() {
       {
         drawLight(highLight);
         //adding torch to HUD inventory
-        player.inventory.push_back("Torch");
+        if(std::find(player.inventory.begin(), player.inventory.end(), "Torch") == player.inventory.end()){
+          player.inventory.push_back("Torch");
+        }      
       }
       else
       {
@@ -771,8 +784,6 @@ int main() {
       DrawFPS(5, 5);
       drawHearts(hearts, player.currentHealth);
       DrawInventoryHUD(&player);
-      // DrawTexture(noteItemSprite, W/2 - 160, H/2 - 234, WHITE);
-      // DrawTextEx(noteFont, noteMsg, {W/2 - 100, H/2 - 165}, 16.0f, 8, BLACK);
       DrawText(positionText, 900, 10, 32, YELLOW);
     }
     EndDrawing();
@@ -787,7 +798,6 @@ int main() {
   UnloadTexture(highLight);
   UnloadTexture(ghostSprite);
   UnloadTexture(torchSprite);
-  UnloadTexture(noteItemSprite);
   UnloadTexture(keySprite);
   UnloadTexture(noteSprite);
   CloseAudioDevice();
