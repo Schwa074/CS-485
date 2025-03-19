@@ -547,6 +547,9 @@ int main() {
   InitWindow(W, H, "Crypt Escape");
   InitAudioDevice();
 
+  Font noteFont = LoadFont("resources/alagard.png");
+  const char* noteMsg = "I'm lost in this\ncrypt, passing by a\nlocked door\nrepeatedly.I found\na booby-trapped\nkey but got\ninjured.\n\nI managed to lift\nthe curse but\nghostly noises are\nmaking me\nparanoid.\n\nGet the key\nand GET OUT\nIMMEDIATELY!\n\n-Howard Carter";
+
   const char* tmx = "resources/map.tmx";
   TmxMap* map = LoadTMX(tmx);
   if (map == nullptr) {
@@ -565,6 +568,7 @@ int main() {
   Texture2D torchSprite = LoadTexture("assets/Torch Animated.png");
   Texture2D hearts = LoadTexture("assets/heartsheet.png");
   Texture2D noteSprite = LoadTexture("assets/noteTiny.png");
+  Texture2D noteItemSprite = LoadTexture("assets/noteBig.png");
   Texture2D keySprite = LoadTexture("assets/key.png");
 
   Enemy ghost;
@@ -767,6 +771,8 @@ int main() {
       DrawFPS(5, 5);
       drawHearts(hearts, player.currentHealth);
       DrawInventoryHUD(&player);
+      // DrawTexture(noteItemSprite, W/2 - 160, H/2 - 234, WHITE);
+      // DrawTextEx(noteFont, noteMsg, {W/2 - 100, H/2 - 165}, 16.0f, 8, BLACK);
       DrawText(positionText, 900, 10, 32, YELLOW);
     }
     EndDrawing();
@@ -781,6 +787,7 @@ int main() {
   UnloadTexture(highLight);
   UnloadTexture(ghostSprite);
   UnloadTexture(torchSprite);
+  UnloadTexture(noteItemSprite);
   UnloadTexture(keySprite);
   UnloadTexture(noteSprite);
   CloseAudioDevice();
