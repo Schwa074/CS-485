@@ -77,6 +77,42 @@ struct Item {
   bool isUsing = false;
 };
 
+struct Door {
+  Rectangle rect;
+  Texture2D sprite;
+  bool isOpen;
+};
+
+void createDoor(Door *door, Texture2D doorSprite, Vector2 spawnPos) {
+  door->rect = {spawnPos.x, spawnPos.y, 196, 32}; // Adjust the size as needed
+  door->sprite = doorSprite;
+  door->isOpen = false;
+}
+
+void drawDoor(const Door *door) {
+  if (!door->isOpen) {
+    Rectangle source = {0.0f, 0.0f, 196.0f, 32.0f}; // Adjust the size as needed
+    Rectangle dest = door->rect;
+    Vector2 origin = {0, 0};
+    float rotation = 0.0f;
+    Color tint = WHITE;
+    DrawTexturePro(door->sprite, source, dest, origin, rotation, tint);
+  }
+}
+
+void checkDoorCollision(Door *door, Player *player) {
+  if (!door->isOpen && CheckCollisionRecs(door->rect, player->rect)) {
+    auto it = std::find(player->inventory.begin(), player->inventory.end(), "Key");
+    if (it != player->inventory.end()) {
+      door->isOpen = true;
+    } else {
+      // Prevent the player from moving through the door
+      player->rect.x -= player->vel.x * GetFrameTime();
+      player->rect.y -= player->vel.y * GetFrameTime();
+    }
+  }
+}
+
 void spawnGhost(Enemy *ghost, Texture2D ghostSprite, Vector2 spawnPos) {
   ghost->rect = {spawnPos.x, spawnPos.y, 64, 64};
   ghost->sprite = ghostSprite;
@@ -560,10 +596,13 @@ int main() {
   Texture2D noteSprite = LoadTexture("assets/noteTiny.png");
   Texture2D noteItemSprite = LoadTexture("assets/noteBig.png");
   Texture2D keySprite = LoadTexture("assets/key.png");
+  Texture2D doorSprite = LoadTexture("assets/DungeonDoor.png");
 
   Enemy ghost;
   spawnGhost(&ghost, ghostSprite, {600, 400});
 
+  Door door;
+  createDoor(&door, doorSprite, {2751, 710});
 
   Enemy traps[numTraps];
   for (int i = 0; i < numTraps; i++) {
@@ -668,6 +707,8 @@ int main() {
       player.rect.y = previous_y;
     }
 
+    checkDoorCollision(&door, &player);
+
     for (int i = 0; i < numTraps; i++) {
       if (checkTrapCollision(&player, &traps[i]) && traps[i].active) {
           player.currentHealth -= 1;
@@ -680,7 +721,6 @@ int main() {
 
     update_animation(&(player.animations[player.state]));
     cameraFollow(&camera, &player);
-
 
     // Drawing
     BeginDrawing();
@@ -698,6 +738,8 @@ int main() {
       moveGhost(&ghost, &player);
       checkGhostCollision(&ghost, &player);
       drawPlayer(&player);
+
+      drawDoor(&door);
 
       if (!torch.pickedUp)
       {
@@ -804,6 +846,7 @@ int main() {
   UnloadTexture(keySprite);
   UnloadTexture(noteSprite);
   UnloadTexture(noteItemSprite);
+  UnloadTexture(doorSprite);
   CloseAudioDevice();
   CloseWindow();
   return 0;
