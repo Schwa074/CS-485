@@ -7,11 +7,12 @@
 
 const int W = 1200;
 const int H = 720;
-const float startPosx = 722.56f;
-const float startPosy = 126.01f;
-// const float startPosx = 1722.56f;
-// const float startPosy = 1985.01f;
-
+const float startPosx = 722.56f; // Start point
+const float startPosy = 126.01f; // Start point
+// const float startPosx = 1722.56f; // Trap room
+// const float startPosy = 1985.01f; // Trap room
+// const float startPosx = 2800.56f; // Storage room
+// const float startPosy = 2541.01f; // Storage room
 
 enum Direction {
   LEFT = -1,
@@ -201,12 +202,14 @@ Vector2 trapPositions[] = {
 // Draw Inventory HUD
 void DrawInventoryHUD(const Player *player) {
   DrawText("Inventory:", 10, 60, 20, WHITE);
+  DrawText("Press the number to use the item", 10, 80, 20, WHITE);
   
   bool hasTorch = false;
   bool hasNote = false;
   bool hasKey = false;
   for (size_t i = 0; i < player->inventory.size(); i++) {
-      DrawText(player->inventory[i].c_str(), 10, 90 + (int)i * 20, 18, YELLOW);
+      std::string itemText = std::to_string(i + 1) + " - " + player->inventory[i];
+      DrawText(itemText.c_str(), 10, 110 + (int)i * 20, 18, YELLOW);
       if(player->inventory[i] == "Torch"){
         hasTorch = true;
       }
@@ -538,6 +541,7 @@ int main() {
 
   Font noteFont = LoadFont("resources/alagard.png");
   const char* noteMsg = "I'm lost in this\ncrypt, passing by a\nlocked door\nrepeatedly.I found\na booby-trapped\nkey but got\ninjured.\n\nI managed to lift\nthe curse but\nghostly noises are\nmaking me\nparanoid.\n\nGet the key\nand GET OUT\nIMMEDIATELY!\n\n-Howard Carter";
+  const char* noteGibberishMsg = "いろはにほへと ちりぬるを\nわかよたれそ つねならむ\nうゐのおくやま けふこえて\nあさきゆめみし ゑひもせす";
 
   const char* tmx = "resources/map.tmx";
   TmxMap* map = LoadTMX(tmx);
@@ -679,7 +683,6 @@ int main() {
       updateTrapState(&traps[i]);  // Ensure trap is reactivated after reset time
   }
 
-    //keepPlayerInScreen(&player);
     update_animation(&(player.animations[player.state]));
     cameraFollow(&camera, &player);
 
@@ -710,9 +713,6 @@ int main() {
         player.inventory.push_back("Torch");
         torch.pickedUp = true;
         torch.isUsing = true;
-        // for (const std::string& str : player.inventory) {
-        //   TraceLog(LOG_DEBUG, str.c_str());
-        // }
       }
 
       if (!note.pickedUp)
@@ -724,9 +724,6 @@ int main() {
         player.inventory.push_back("Note");
         note.pickedUp = true;
         note.isUsing = true;
-        // for (const std::string& str : player.inventory) {
-        //   TraceLog(LOG_DEBUG, str.c_str());
-        // }
       }
 
       if (!key.pickedUp)
@@ -737,9 +734,6 @@ int main() {
       {
         player.inventory.push_back("Key");
         key.pickedUp = true;
-        // for (const std::string& str : player.inventory) {
-        //   TraceLog(LOG_DEBUG, str.c_str());
-        // }
       }
 
       EndMode2D();
@@ -772,8 +766,14 @@ int main() {
 
       // Display the big note if it's being used
       if (note.isUsing) {
+        const char* msg;
+        if (std::find(player.inventory.begin(), player.inventory.end(), "Torch") != player.inventory.end() && torch.isUsing) {
+          msg = noteMsg;
+        } else {
+          msg = noteGibberishMsg;
+        }
         DrawTexture(noteItemSprite, W/2 - 160, H/2 - 234, WHITE);
-        DrawTextEx(noteFont, noteMsg, {W/2 - 100, H/2 - 165}, 16.0f, 8, BLACK);
+        DrawTextEx(noteFont, msg, {W/2 - 100, H/2 - 165}, 16.0f, 8, BLACK);
     }
 
       DrawFPS(5, 5);
