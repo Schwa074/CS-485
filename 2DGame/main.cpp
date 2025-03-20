@@ -7,12 +7,12 @@
 
 const int W = 1200;
 const int H = 720;
-// const float startPosx = 722.56f; // Start point
-// const float startPosy = 126.01f; // Start point
+const float startPosx = 722.56f; // Start point
+const float startPosy = 126.01f; // Start point
 // const float startPosx = 1722.56f; // Trap room
 // const float startPosy = 1985.01f; // Trap room
-const float startPosx = 2800.56f; // Storage room
-const float startPosy = 2541.01f; // Storage room
+// const float startPosx = 2800.56f; // Storage room
+// const float startPosy = 2541.01f; // Storage room
 
 enum Direction {
   LEFT = -1,
@@ -769,23 +769,27 @@ int main() {
         }
         DrawTexture(noteItemSprite, W/2 - 160, H/2 - 234, WHITE);
         DrawTextEx(noteFont, msg, {W/2 - 100, H/2 - 165}, 16.0f, 8, BLACK);
-    }
+      }
 
       DrawFPS(5, 5);
       drawHearts(hearts, player.currentHealth);
       DrawInventoryHUD(&player);
       DrawText(positionText, 900, 10, 32, YELLOW);
+      
+      int finalHealth = player.currentHealth;
+      // if Player just died, play groan and offer to reset
+      if(prev_health != 0 && finalHealth == 0) {
+        Sound playerGroanSound = LoadSound("assets/Player_Groan.mp3");
+        PlaySound(playerGroanSound);
+      }
+
+      if(finalHealth == 0) {
+        // TODO: Open up "You died try again" restart menu
+        Rectangle deathWindow = {W/4, H/4, W/2, H/2};
+        DrawRectangleRec(deathWindow, DARKBLUE);
+      }
     }
     EndDrawing();
-
-    int finalHealth = player.currentHealth;
-    // if Player just died, play groan and offer to reset
-    if(prev_health != 0 && finalHealth == 0) {
-      Sound playerGroanSound = LoadSound("assets/Player_Groan.mp3");
-      PlaySound(playerGroanSound);
-
-      // TODO: Open up "You died try again" restart menu
-    }
   }
 
   UnloadSound(playerGruntSound);
