@@ -7,12 +7,12 @@
 
 const int W = 1200;
 const int H = 720;
-const float startPosx = 722.56f; // Start point
-const float startPosy = 126.01f; // Start point
+// const float startPosx = 722.56f; // Start point
+// const float startPosy = 126.01f; // Start point
 // const float startPosx = 1722.56f; // Trap room
 // const float startPosy = 1985.01f; // Trap room
-// const float startPosx = 2800.56f; // Storage room
-// const float startPosy = 2541.01f; // Storage room
+const float startPosx = 2800.56f; // Storage room
+const float startPosy = 2541.01f; // Storage room
 
 enum Direction {
   LEFT = -1,
@@ -538,7 +538,7 @@ int main() {
 
   Font noteFont = LoadFont("resources/alagard.png");
   const char* noteMsg = "I'm lost in this\ncrypt, passing by a\nlocked door\nrepeatedly.I found\na booby-trapped\nkey but got\ninjured.\n\nI managed to lift\nthe curse but\nghostly noises are\nmaking me\nparanoid.\n\nGet the key\nand GET OUT\nIMMEDIATELY!\n\n-Howard Carter";
-  const char* noteGibberishMsg = "いろはにほへと ちりぬるを\nわかよたれそ つねならむ\nうゐのおくやま けふこえて\nあさきゆめみし ゑひもせす";
+  const char* noteGibberishMsg = "Lorem ipsum dolor\nsit amet consectet\nadipiscing elit\ndo eiusmod tempor\nincididunt ut labore\net dolore magna\n aliqua.\n\nUt enim ad minim\nveniam qui\nnostrud ullamco\nlaboris ni\naliquip\n\nAt vero eos\net IUSTO ODIO\nDIGNISSIMOS\n\n-Howard Carter";
 
   const char* tmx = "resources/map.tmx";
   TmxMap* map = LoadTMX(tmx);
@@ -783,6 +783,8 @@ int main() {
     if(prev_health != 0 && finalHealth == 0) {
       Sound playerGroanSound = LoadSound("assets/Player_Groan.mp3");
       PlaySound(playerGroanSound);
+
+      // TODO: Open up "You died try again" restart menu
     }
   }
 
