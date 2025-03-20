@@ -127,9 +127,6 @@ void checkGhostCollision(Enemy *ghost, Player *player) {
     Rectangle ghostHitbox = {ghost->rect.x + 8, ghost->rect.y + 8, 32, 32}; // Adjust the offset and size as needed
     if (CheckCollisionRecs(ghostHitbox, player->rect)) {
       player->currentHealth = 0; // It should insta kill the player
-      //add sound of player dying here
-      Sound playerGroanSound = LoadSound("assets/Player_Groan.mp3");
-      PlaySound(playerGroanSound);
     }
   }
 }
@@ -661,6 +658,7 @@ int main() {
     // Update
     float previous_x = player.rect.x;
     float previous_y = player.rect.y;
+    int prev_health = player.currentHealth;
     
     AnimateTMX(map);
     movePlayer(&player);
@@ -675,10 +673,7 @@ int main() {
           player.currentHealth -= 1;
           traps[i].active = false;
           traps[i].deactivationTime = GetTime();
-          // Maybe play a sound or trigger a visual effect here of player touching trap
           PlaySound(playerGruntSound);
-
-
       }
       updateTrapState(&traps[i]);  // Ensure trap is reactivated after reset time
   }
@@ -782,6 +777,13 @@ int main() {
       DrawText(positionText, 900, 10, 32, YELLOW);
     }
     EndDrawing();
+
+    int finalHealth = player.currentHealth;
+    // if Player just died, play groan and offer to reset
+    if(prev_health != 0 && finalHealth == 0) {
+      Sound playerGroanSound = LoadSound("assets/Player_Groan.mp3");
+      PlaySound(playerGroanSound);
+    }
   }
 
   UnloadSound(playerGruntSound);
