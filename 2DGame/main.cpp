@@ -3,7 +3,7 @@
 #include <format>
 #define RAYTMX_IMPLEMENTATION
 #include "raytmx.h"
-// #include <iostream>
+#include <iostream>
 
 const int W = 1200;
 const int H = 720;
@@ -204,6 +204,7 @@ void DrawInventoryHUD(const Player *player) {
   
   bool hasTorch = false;
   bool hasNote = false;
+  bool hasKey = false;
   for (size_t i = 0; i < player->inventory.size(); i++) {
       DrawText(player->inventory[i].c_str(), 10, 90 + (int)i * 20, 18, YELLOW);
       if(player->inventory[i] == "Torch"){
@@ -211,6 +212,9 @@ void DrawInventoryHUD(const Player *player) {
       }
       if(player->inventory[i] == "Note"){
         hasNote = true;
+      }
+      if(player->inventory[i] == "Key"){
+        hasKey = true;
       }
   }
 
@@ -566,7 +570,8 @@ int main() {
   }
   
   Item torch;
-  createTorch(&torch, torchSprite, torchPosition);
+  Rectangle torchPos = {1500, 1600, 32, 32};
+  createTorch(&torch,torchSprite, torchPosition);
 
   Item note;
   Rectangle notePos = {2976, 2720, 32, 32};
@@ -769,14 +774,11 @@ int main() {
       if (note.isUsing) {
         DrawTexture(noteItemSprite, W/2 - 160, H/2 - 234, WHITE);
         DrawTextEx(noteFont, noteMsg, {W/2 - 100, H/2 - 165}, 16.0f, 8, BLACK);
-        if(IsKeyPressed(KEY_ESCAPE)) note.isUsing = false;
     }
 
       DrawFPS(5, 5);
       drawHearts(hearts, player.currentHealth);
       DrawInventoryHUD(&player);
-      // DrawTexture(noteItemSprite, W/2 - 160, H/2 - 234, WHITE);
-      // DrawTextEx(noteFont, noteMsg, {W/2 - 100, H/2 - 165}, 16.0f, 8, BLACK);
       DrawText(positionText, 900, 10, 32, YELLOW);
     }
     EndDrawing();
@@ -791,9 +793,9 @@ int main() {
   UnloadTexture(highLight);
   UnloadTexture(ghostSprite);
   UnloadTexture(torchSprite);
-  UnloadTexture(noteItemSprite);
   UnloadTexture(keySprite);
   UnloadTexture(noteSprite);
+  UnloadTexture(noteItemSprite);
   CloseAudioDevice();
   CloseWindow();
   return 0;
