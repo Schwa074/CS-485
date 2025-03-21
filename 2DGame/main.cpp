@@ -838,6 +838,33 @@ int main() {
         DrawRectangleRounded(respawnBtn, 1.0f, 1, (Color){70, 70, 80, 255});
         // Draw text for button
         DrawTextEx(deathFont, "Respawn", (Vector2){W/2 - 40, H/2 + 75}, 36.0f, 2, WHITE);
+
+        // Reset some of player properties
+        // Reset inventory
+        player.inventory.clear();
+        // Reset all items
+        torch.pickedUp = false;
+        torch.isUsing = false;
+        note.pickedUp = false;
+        note.isUsing = false;
+        key.pickedUp = false;
+        key.isUsing = false;
+
+        // Handle if user clicks respawn
+        Vector2 mousePos = GetMousePosition();
+        // Check if mouse is over the button
+        bool isMouseOver = CheckCollisionPointRec(mousePos, respawnBtn);
+
+        // Check if the button is clicked
+        if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+          // Reset player health
+          player.currentHealth = 6;
+          // Reset player to start
+          player.rect.x = startPosx;
+          player.rect.y = startPosy;
+          
+          // TODO reset ghost
+        }
       }
     }
     EndDrawing();
