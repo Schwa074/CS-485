@@ -116,7 +116,7 @@ void checkDoorCollision(Door *door, Player *player) {
 void spawnGhost(Enemy *ghost, Texture2D ghostSprite, Vector2 spawnPos) {
   ghost->rect = {spawnPos.x, spawnPos.y, 64, 64};
   ghost->sprite = ghostSprite;
-  ghost->speed = 15.0f; // We can change this speed as needed
+  ghost->speed = 30.0f; // We can change this speed as needed
   ghost->active = true;
   ghost->currentFrame = 0;
   ghost->frameTime = 0.1f; // Time per frame in seconds
