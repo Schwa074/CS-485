@@ -167,8 +167,13 @@ void checkGhostCollision(Enemy *ghost, Player *player) {
   }
 }
 
+void deactivateGhost(Enemy *ghost) {
+  ghost->active = false;
+}
+
 void handleGhostSpawn(Enemy *ghost, Texture2D ghostSprite) {
-  if (GetTime() > 180.0 && !ghost->active) { // 3 minutes = 180 seconds
+  double currentTime = GetTime();
+  if (currentTime > 10 && !ghost->active) { // 1 minute = 60 seconds, 10 seconds for testing
     spawnGhost(ghost, ghostSprite, {600, 400}); // We can change this spawn location as needed
   }
 }
@@ -602,7 +607,9 @@ int main() {
   Texture2D doorSprite = LoadTexture("assets/DungeonDoor.png");
 
   Enemy ghost;
-  spawnGhost(&ghost, ghostSprite, {600, 400});
+  // The direct call for spawning the ghost for testing
+  // spawnGhost(&ghost, ghostSprite, {600, 400});
+  deactivateGhost(&ghost); // Ensure the ghost is deactivated at the start
 
   Door door;
   createDoor(&door, doorSprite, {2751, 710});
@@ -724,6 +731,9 @@ int main() {
 
     update_animation(&(player.animations[player.state]));
     cameraFollow(&camera, &player);
+
+    // Handle ghost spawn
+    handleGhostSpawn(&ghost, ghostSprite);
 
     // Drawing
     BeginDrawing();
@@ -863,7 +873,8 @@ int main() {
           player.rect.x = startPosx;
           player.rect.y = startPosy;
           
-          // TODO reset ghost
+          // If ghost isn't alive, spawn it. If the ghost is stil alive resets the location
+          spawnGhost(&ghost, ghostSprite, {600, 400});
         }
       }
     }
