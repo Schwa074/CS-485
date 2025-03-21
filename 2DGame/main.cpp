@@ -576,6 +576,9 @@ int main() {
   const char* noteMsg = "I'm lost in this\ncrypt, passing by a\nlocked door\nrepeatedly.I found\na booby-trapped\nkey but got\ninjured.\n\nI managed to lift\nthe curse but\nghostly noises are\nmaking me\nparanoid.\n\nGet the key\nand GET OUT\nIMMEDIATELY!\n\n-Howard Carter";
   const char* noteGibberishMsg = "Lorem ipsum dolor\nsit amet consectet\nadipiscing elit\ndo eiusmod tempor\nincididunt ut labore\net dolore magna\n aliqua.\n\nUt enim ad minim\nveniam qui\nnostrud ullamco\nlaboris ni\naliquip\n\nAt vero eos\net IUSTO ODIO\nDIGNISSIMOS\n\n-Howard Carter";
 
+  Font deathFont = LoadFontEx("resources/KAISG.ttf", 64, 0, 0);
+  const char* deathMessage = "You have died!\n\n  Try again?";
+
   const char* tmx = "resources/map.tmx";
   TmxMap* map = LoadTMX(tmx);
   if (map == nullptr) {
@@ -826,9 +829,15 @@ int main() {
       }
 
       if(finalHealth == 0) {
-        // TODO: Open up "You died try again" restart menu
-        Rectangle deathWindow = {W/4, H/4, W/2, H/2};
-        DrawRectangleRec(deathWindow, DARKBLUE);
+        // Draw main window
+        DrawRectangleGradientV(W/6, H/6, W/1.5, H/1.5, (Color){120, 6, 6, 255}, BLACK);
+        // Draw Text
+        DrawTextEx(deathFont, deathMessage, {W/2 - 125, H/2 - 165}, 32.0f, 8, BLACK);
+        // Draw button
+        Rectangle respawnBtn = {W/2 - 125, H/2 + 50, W/4, H/8};
+        DrawRectangleRounded(respawnBtn, 1.0f, 1, (Color){70, 70, 80, 255});
+        // Draw text for button
+        DrawTextEx(deathFont, "Respawn", (Vector2){W/2 - 40, H/2 + 75}, 36.0f, 2, WHITE);
       }
     }
     EndDrawing();
@@ -848,6 +857,8 @@ int main() {
   UnloadTexture(noteItemSprite);
   UnloadTexture(doorSprite);
   CloseAudioDevice();
+  UnloadFont(noteFont);
+  UnloadFont(deathFont);
   CloseWindow();
   return 0;
 }
