@@ -85,6 +85,7 @@ struct Door {
   bool isOpen;
 };
 
+// Door logic
 void createDoor(Door *door, Texture2D doorSprite, Vector2 spawnPos) {
   door->rect = {spawnPos.x, spawnPos.y, 196, 32}; // Adjust the size as needed
   door->sprite = doorSprite;
@@ -115,6 +116,7 @@ void checkDoorCollision(Door *door, Player *player) {
   }
 }
 
+// Ghost logic
 void spawnGhost(Enemy *ghost, Texture2D ghostSprite, Vector2 spawnPos) {
   ghost->rect = {spawnPos.x, spawnPos.y, 64, 64};
   ghost->sprite = ghostSprite;
@@ -180,8 +182,94 @@ void handleGhostSpawn(Enemy *ghost, Texture2D ghostSprite) {
   }
 }
 
+// Draw Inventory HUD
+void DrawInventoryHUD(const Player *player) {
+  DrawText("Inventory:", 10, 60, 20, WHITE);
+  DrawText("Press the number to use the item", 10, 80, 20, WHITE);
+  
+  bool hasTorch = false;
+  bool hasNote = false;
+  bool hasKey = false;
+  for (size_t i = 0; i < player->inventory.size(); i++) {
+      std::string itemText = std::to_string(i + 1) + " - " + player->inventory[i];
+      DrawText(itemText.c_str(), 10, 110 + (int)i * 20, 18, YELLOW);
+      if(player->inventory[i] == "Torch"){
+        hasTorch = true;
+      }
+      if(player->inventory[i] == "Note"){
+        hasNote = true;
+      }
+      if(player->inventory[i] == "Key"){
+        hasKey = true;
+      }
+  }
+
+  // Can't be loading a texture every frame
+  // if(hasTorch){
+  //   Texture2D torchIcon = LoadTexture("assets/torch_icon.png");
+  //   DrawTexture(torchIcon, 200, 60, WHITE);
+  // }
+
+  // if(hasNote){
+  //   Texture2D noteIcon = LoadTexture("assets/noteTiny.png");
+  //   DrawTexture(noteIcon, 200, 60, WHITE);
+  // }
+}
+
+// Torch logic
+Vector2 torchPosition = {1500, 600};
+
+void createTorch(Item *torch, Texture2D torchSprite, Vector2 spawnPos)
+{
+  torch->rect = {spawnPos.x, spawnPos.y, 32, 32};
+  torch->sprite = torchSprite;
+  torch->currentFrame = 0;
+  torch->frameTime = 0.1f; // Time per frame in seconds
+  torch->frameCounter = 0.0f;
+}
+
+void drawTorch(Item* torch)
+{
+  torch->frameCounter += GetFrameTime();
+    if (torch->frameCounter >= torch->frameTime) {
+      torch->frameCounter = 0.0f;
+      torch->currentFrame++;
+      if (torch->currentFrame > 7) { // Assuming 8 frames (0, 1, 2, 3, 4, 5, 6, 7)
+        torch->currentFrame = 0;
+      }
+    }
+
+  Rectangle source;
+  // First 4 sprites on top half of sheet
+  if (torch->currentFrame > 3)
+  {
+    source = {(float)(torch->currentFrame * 64), 0.0f, 64.0f, 64.0f}; // Each frame is 32x32 pixels
+  }
+  // Next 4 sprites on bottom half of sheet
+  else
+  {
+    source = {(float)(torch->currentFrame * 64), 64.0f, 64.0f, 64.0f}; // Each frame is 32x32 pixels
+  }
+  
+  Rectangle dest = torch->rect;
+  Vector2 origin = {0, 0};
+  float rotation = 0.0f;
+  Color tint = WHITE;
+  DrawTexturePro(torch->sprite, source, dest, origin, rotation, tint);
+
+}
+
+bool checkItemCollision(Item* item, Player* player)
+{
+  return CheckCollisionRecs(item->rect, player->rect);
+}
+
+// Trap logic
+
+// Traps vector
 std::vector<Enemy> traps;
 
+// Trap locations
 Vector2 trapPositions[] = {
   {1984, 1884}, // Top Wall
   {1952, 1884}, // Top Wall
@@ -239,87 +327,6 @@ Vector2 trapPositions[] = {
   {1760, 1884}, // Middle Squiggle
 };
 
-// Draw Inventory HUD
-void DrawInventoryHUD(const Player *player) {
-  DrawText("Inventory:", 10, 60, 20, WHITE);
-  DrawText("Press the number to use the item", 10, 80, 20, WHITE);
-  
-  bool hasTorch = false;
-  bool hasNote = false;
-  bool hasKey = false;
-  for (size_t i = 0; i < player->inventory.size(); i++) {
-      std::string itemText = std::to_string(i + 1) + " - " + player->inventory[i];
-      DrawText(itemText.c_str(), 10, 110 + (int)i * 20, 18, YELLOW);
-      if(player->inventory[i] == "Torch"){
-        hasTorch = true;
-      }
-      if(player->inventory[i] == "Note"){
-        hasNote = true;
-      }
-      if(player->inventory[i] == "Key"){
-        hasKey = true;
-      }
-  }
-
-  // Can't be loading a texture every frame
-  // if(hasTorch){
-  //   Texture2D torchIcon = LoadTexture("assets/torch_icon.png");
-  //   DrawTexture(torchIcon, 200, 60, WHITE);
-  // }
-
-  // if(hasNote){
-  //   Texture2D noteIcon = LoadTexture("assets/noteTiny.png");
-  //   DrawTexture(noteIcon, 200, 60, WHITE);
-  // }
-}
-
-Vector2 torchPosition = {1500, 600};
-
-void createTorch(Item *torch, Texture2D torchSprite, Vector2 spawnPos)
-{
-  torch->rect = {spawnPos.x, spawnPos.y, 32, 32};
-  torch->sprite = torchSprite;
-  torch->currentFrame = 0;
-  torch->frameTime = 0.1f; // Time per frame in seconds
-  torch->frameCounter = 0.0f;
-}
-
-void drawTorch(Item* torch)
-{
-  torch->frameCounter += GetFrameTime();
-    if (torch->frameCounter >= torch->frameTime) {
-      torch->frameCounter = 0.0f;
-      torch->currentFrame++;
-      if (torch->currentFrame > 7) { // Assuming 8 frames (0, 1, 2, 3, 4, 5, 6, 7)
-        torch->currentFrame = 0;
-      }
-    }
-
-  Rectangle source;
-  // First 4 sprites on top half of sheet
-  if (torch->currentFrame > 3)
-  {
-    source = {(float)(torch->currentFrame * 64), 0.0f, 64.0f, 64.0f}; // Each frame is 32x32 pixels
-  }
-  // Next 4 sprites on bottom half of sheet
-  else
-  {
-    source = {(float)(torch->currentFrame * 64), 64.0f, 64.0f, 64.0f}; // Each frame is 32x32 pixels
-  }
-  
-  Rectangle dest = torch->rect;
-  Vector2 origin = {0, 0};
-  float rotation = 0.0f;
-  Color tint = WHITE;
-  DrawTexturePro(torch->sprite, source, dest, origin, rotation, tint);
-
-}
-
-bool checkItemCollision(Item* item, Player* player)
-{
-  return CheckCollisionRecs(item->rect, player->rect);
-}
-
 int numTraps = sizeof(trapPositions) / sizeof(trapPositions[0]);
 
 void createTrap(Enemy *trap, Texture2D trapSprite, Vector2 spawnPos) {
@@ -371,6 +378,7 @@ bool checkTrapCollision(Player* player, Enemy* trap) {
   return false;
 }
 
+// Item logic
 void createItem(Item *item, Texture2D itemSprite, Rectangle pos, std::string itemName)
 {
   item->itemName = itemName;
