@@ -13,6 +13,8 @@ const float startPosy = 126.01f; // Start point
 // const float startPosy = 1985.01f; // Trap room
 // const float startPosx = 2800.56f; // Storage room
 // const float startPosy = 2541.01f; // Storage room
+// const float startPosx = 2810.56f; // Below door
+// const float startPosy = 900.01f; // Below door
 
 enum Direction {
   LEFT = -1,
@@ -173,8 +175,8 @@ void deactivateGhost(Enemy *ghost) {
 
 void handleGhostSpawn(Enemy *ghost, Texture2D ghostSprite) {
   double currentTime = GetTime();
-  if (currentTime > 10 && !ghost->active) { // 1 minute = 60 seconds, 10 seconds for testing
-    spawnGhost(ghost, ghostSprite, {600, 400}); // We can change this spawn location as needed
+  if (currentTime > 15 && !ghost->active) { // 1 minute = 60 seconds, 10 seconds for testing
+    spawnGhost(ghost, ghostSprite, {2650, 500}); // We can change this spawn location as needed
   }
 }
 
@@ -742,6 +744,8 @@ int main() {
       BeginMode2D(camera);
       DrawTMX(map, &camera, 0, 0, WHITE);
       
+      drawDoor(&door);
+ 
       drawGhost(&ghost);
 
       for (int i = 0; i < numTraps; i++) {
@@ -751,8 +755,6 @@ int main() {
       moveGhost(&ghost, &player);
       checkGhostCollision(&ghost, &player);
       drawPlayer(&player);
-
-      drawDoor(&door);
 
       if (!torch.pickedUp)
       {
@@ -874,7 +876,7 @@ int main() {
           player.rect.y = startPosy;
           
           // If ghost isn't alive, spawn it. If the ghost is stil alive resets the location
-          spawnGhost(&ghost, ghostSprite, {600, 400});
+          spawnGhost(&ghost, ghostSprite, {2650, 500});
         }
       }
     }
