@@ -2,8 +2,8 @@
 #define GAME_H
 
 #include <raylib.h>
-#define RAYTMX_IMPLEMENTATION
-#include "raytmx.h"
+// #define RAYTMX_IMPLEMENTATION
+// #include "raytmx.h"
 #include <vector>
 #include <format>
 #include <iostream>

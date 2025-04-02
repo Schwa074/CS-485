@@ -1,5 +1,5 @@
 #include "game.h"
-#include <raylib.h>
+#include "raytmx.h"
 
 void moveRectByVel(Rectangle *rect, const Vector2 *vel)
 {

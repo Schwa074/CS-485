@@ -1,4 +1,5 @@
 #include "game.h"
+#include <math.h>
 
 void spawnGhost(Enemy *ghost, Texture2D ghostSprite, Vector2 spawnPos) {
     ghost->rect = {spawnPos.x, spawnPos.y, 64, 64};

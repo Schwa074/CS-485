@@ -2,6 +2,7 @@
 #define GAMEUTILS_H
 
 #include "game.h"
+#include "raytmx.h"
 
 void moveRectByVel(Rectangle *rect, const Vector2 *vel);
 bool isTileCollisions(TmxMap *map, Player *player);
