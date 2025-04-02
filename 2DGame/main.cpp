@@ -65,7 +65,7 @@ int main() {
     }
 
     Item torch;
-    Rectangle torchPos = {1500, 1600, 32, 32};
+    Rectangle torchPos = {1476, 635, 32, 32};
     createItem(&torch, torchSprite, torchPos, "Torch");
 
     Item note;
@@ -76,7 +76,63 @@ int main() {
     Rectangle keyPos = {1440, 1980, 32, 32};
     createItem(&key, keySprite, keyPos, "Key");
 
-    Player player = Player{.rect = (Rectangle){.x = startPosx, .y = startPosy, .width = 64.0f, .height = 64.0f}, .vel = (Vector2){.x = 0.0f, .y = 0.0f}, .sprite = hero, .dir = RIGHT, .state = IDLE, .animations = {(Animation){.fst = 0, .lst = 2, .cur = 0, .offset = 0, .spd = 0.1f, .rem = 0.1f, .type = REPEATING}, (Animation){.fst = 0, .lst = 2, .cur = 0, .offset = 1, .spd = 0.1f, .rem = 0.1f, .type = REPEATING}, (Animation){.fst = 0, .lst = 2, .cur = 0, .offset = 2, .spd = 0.1f, .rem = 0.1f, .type = REPEATING}, (Animation){.fst = 0, .lst = 2, .cur = 0, .offset = 3, .spd = 0.1f, .rem = 0.1f, .type = REPEATING}, (Animation){.fst = 1, .lst = 1, .cur = 1, .offset = 0, .spd = 0.1f, .rem = 0.1f, .type = ONESHOT}}, .maxHealth = 6, .currentHealth = 6, .inventory = std::vector<std::string>()};
+    Player player = Player{.rect = (Rectangle){.x = startPosx,
+                                                .y = startPosy,
+                                                .width = 64.0f,
+                                                .height = 64.0f},
+                                                .vel = (Vector2){.x = 0.0f, .y = 0.0f},
+                                                .sprite = hero,
+                                                .dir = RIGHT,
+                                                .state = IDLE,
+                                                .animations = {
+                                                (Animation){
+                                                .fst = 0,
+                                                .lst = 2,
+                                                .cur = 0,
+                                                .offset = 0,
+                                                .spd = 0.1f,
+                                                .rem = 0.1f,
+                                                .type = REPEATING,
+                                                },
+                                                (Animation){
+                                                    .fst = 0,
+                                                    .lst = 2,
+                                                    .cur = 0,
+                                                    .offset = 1,
+                                                    .spd = 0.1f,
+                                                    .rem = 0.1f,
+                                                    .type = REPEATING,
+                                                },
+                                                (Animation){
+                                                    .fst = 0,
+                                                    .lst = 2,
+                                                    .cur = 0,
+                                                    .offset = 2,
+                                                    .spd = 0.1f,
+                                                    .rem = 0.1f,
+                                                    .type = REPEATING,
+                                                },
+                                                (Animation){
+                                                    .fst = 0,
+                                                    .lst = 2,
+                                                    .cur = 0,
+                                                    .offset = 3,
+                                                    .spd = 0.1f,
+                                                    .rem = 0.1f,
+                                                    .type = REPEATING,
+                                                },
+                                                (Animation){
+                                                    .fst = 1,
+                                                    .lst = 1,
+                                                    .cur = 1,
+                                                    .offset = 0,
+                                                    .spd = 0.1f,
+                                                    .rem = 0.1f,
+                                                    .type = ONESHOT,
+                                                }},
+                                                .maxHealth = 6,
+                                                .currentHealth = 6,
+                                                .inventory = std::vector<std::string>()};
 
     Camera2D camera = (Camera2D){.offset = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .target = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .rotation = 0.0f, .zoom = 1.0f};
 
@@ -131,7 +187,7 @@ int main() {
             drawPlayer(&player);
 
             if (!torch.pickedUp) {
-                drawItem(&torch);
+                drawTorch(&torch);
             }
             if (checkItemCollision(&torch, &player) && torch.pickedUp == false) {
                 player.inventory.push_back("Torch");
@@ -157,6 +213,10 @@ int main() {
             }
 
             EndMode2D();
+
+            // TODO (Remove) Show player pos for debugging - whatever reason, std:: methods were not working for me
+            char positionText[50]; 
+            sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
 
             if (torch.pickedUp && torch.isUsing) {
                 drawLight(highLight);
@@ -191,6 +251,7 @@ int main() {
             DrawFPS(5, 5);
             drawHearts(hearts, player.currentHealth);
             DrawInventoryHUD(&player);
+            DrawText(positionText, 900, 10, 32, YELLOW);
 
             int finalHealth = player.currentHealth;
             if (prev_health != 0 && finalHealth == 0) {
@@ -241,6 +302,6 @@ int main() {
     UnloadFont(noteFont);
     UnloadFont(deathFont);
     CloseWindow();
-    
+
     return 0;
 }

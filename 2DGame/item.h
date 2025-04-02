@@ -16,6 +16,7 @@ struct Item {
 
 void createItem(Item *item, Texture2D itemSprite, Rectangle pos, std::string itemName);
 void drawItem(Item* item);
+void drawTorch(Item* torch);
 bool checkItemCollision(Item* item, Player* player);
 
 #endif // ITEM_H
