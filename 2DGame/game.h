@@ -13,5 +13,6 @@
 #include "door.h"
 #include "gameutils.h"
 #include "constants.h"
+#include "traps.h"
 
 #endif // GAME_H
