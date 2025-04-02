@@ -3,9 +3,6 @@
 #include "raytmx.h"
 #include "game.h"
 
-const float startPosx = 722.56f;
-const float startPosy = 126.01f;
-
 Vector2 torchPosition = {1500, 600};
 std::vector<Enemy> traps;
 Vector2 trapPositions[] = {
