@@ -1,7 +1,7 @@
 RAYLIB_DIR?=external/raylib/src
 RAYLIB_LIB?=$(RAYLIB_DIR)/libraylib.a
 
-SOURCES=main.cpp player.cpp enemy.cpp item.cpp door.cpp gameutils.cpp
+SOURCES=main.cpp player.cpp enemy.cpp item.cpp door.cpp gameutils.cpp leveldoor.cpp traps.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 
 .PHONY: all clean
