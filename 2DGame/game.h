@@ -14,5 +14,6 @@
 #include "gameutils.h"
 #include "constants.h"
 #include "traps.h"
+#include "leveldoor.h"
 
 #endif // GAME_H

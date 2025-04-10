@@ -57,6 +57,11 @@ int main() {
     Rectangle keyPos = {1440, 1980, 32, 32};
     createItem(&key, keySprite, keyPos, "Key");
 
+    LevelDoor level1_exit;
+    level1_exit.toLevel = 2;
+    Rectangle level1_exitPos = {2656, 352, 64, 32};
+    createLevelDoor(&level1_exit, level1_exitPos);
+
     Player player = Player{.rect = (Rectangle){.x = startPosx,
                                                 .y = startPosy,
                                                 .width = 64.0f,
@@ -191,6 +196,10 @@ int main() {
             if (checkItemCollision(&key, &player) && key.pickedUp == false) {
                 player.inventory.push_back("Key");
                 key.pickedUp = true;
+            }
+
+            if (checkLevelDoorCollision(&level1_exit, &player)) {
+                TraceLog(LOG_DEBUG, "HITTING THE DOOR");
             }
 
             EndMode2D();
