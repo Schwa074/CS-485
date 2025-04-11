@@ -14,7 +14,7 @@ int main() {
     Font deathFont = LoadFontEx("resources/KAISG.ttf", 64, 0, 0);
     const char* deathMessage = "You have died!\n\n Try again?";
 
-    const char* tmx = "resources/map.tmx";
+    const char* tmx = "resources/level1.tmx";
     TmxMap* map = LoadTMX(tmx);
     if (map == nullptr) {
         TraceLog(LOG_ERROR, "couldn't load da map: %s", tmx);
@@ -59,8 +59,13 @@ int main() {
 
     LevelDoor level1_exit;
     level1_exit.toLevel = 2;
-    Rectangle level1_exitPos = {2656, 352, 64, 32};
+    Rectangle level1_exitPos = {2656, 320, 64, 32};
     createLevelDoor(&level1_exit, level1_exitPos);
+
+    LevelDoor level2_entrance;
+    level2_entrance.toLevel = 2;
+    Rectangle level2_entrancePos = {224, 1408, 64, 32};
+    createLevelDoor(&level2_entrance, level2_entrancePos);
 
     Player player = Player{.rect = (Rectangle){.x = startPosx,
                                                 .y = startPosy,
@@ -118,7 +123,9 @@ int main() {
                                                 }},
                                                 .maxHealth = 6,
                                                 .currentHealth = 6,
-                                                .inventory = std::vector<std::string>()};
+                                                .inventory = std::vector<std::string>(),
+                                                .currentLevel = 1
+                                                };
 
     Camera2D camera = (Camera2D){.offset = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .target = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .rotation = 0.0f, .zoom = 1.0f};
 
@@ -152,13 +159,12 @@ int main() {
 
         cameraFollow(&camera, &player);
 
-        handleGhostSpawn(&ghost, ghostSprite);
+        // handleGhostSpawn(&ghost, ghostSprite);
 
         BeginDrawing();
         {
             ClearBackground(BLACK);
             BeginMode2D(camera);
-
             DrawTMX(map, &camera, 0, 0, WHITE);
             drawDoor(&door);
             drawGhost(&ghost);
@@ -167,7 +173,7 @@ int main() {
                 drawTrap(&traps[i]);
             }
 
-            moveGhost(&ghost, &player);
+            // moveGhost(&ghost, &player);
             checkGhostCollision(&ghost, &player);
 
             drawPlayer(&player);
@@ -198,8 +204,44 @@ int main() {
                 key.pickedUp = true;
             }
 
-            if (checkLevelDoorCollision(&level1_exit, &player)) {
-                TraceLog(LOG_DEBUG, "HITTING THE DOOR");
+            // Player going from level 1 -> level 2
+            if (player.currentLevel == 1 && checkLevelDoorCollision(&level1_exit, &player)) {
+                // Handle map
+                UnloadTMX(map);
+                player.currentLevel = 2;
+                const char* tmx = mapName[player.currentLevel - 1];
+                map = LoadTMX(tmx);
+                if (map == nullptr) {
+                    TraceLog(LOG_ERROR, "couldn't load da map after hitting door: %s", tmx);
+                    return EXIT_FAILURE;
+                }
+
+                // Handle Player Position
+                Vector2 newPos = playerTeleportPosition[player.currentLevel - 1];
+                TraceLog(LOG_DEBUG, "Player x: %f", newPos.x);
+                TraceLog(LOG_DEBUG, "Player y: %f", newPos.y);
+                player.rect.x = newPos.x;
+                player.rect.y = newPos.y;
+            }
+
+            // Player going from level 2 -> level 1
+            if(player.currentLevel == 2 & checkLevelDoorCollision(&level2_entrance, &player)) {
+                // Handle map
+                UnloadTMX(map);
+                player.currentLevel = 1;
+                const char* tmx = mapName[player.currentLevel - 1];
+                map = LoadTMX(tmx);
+                if (map == nullptr) {
+                    TraceLog(LOG_ERROR, "couldn't load da map after hitting door: %s", tmx);
+                    return EXIT_FAILURE;
+                }
+
+                // Handle Player Position
+                Vector2 newPos = playerTeleportPosition[player.currentLevel - 1];
+                TraceLog(LOG_DEBUG, "Player x: %f", newPos.x);
+                TraceLog(LOG_DEBUG, "Player y: %f", newPos.y);
+                player.rect.x = newPos.x;
+                player.rect.y = newPos.y;
             }
 
             EndMode2D();
@@ -275,9 +317,9 @@ int main() {
         EndDrawing();
     }
 
+    UnloadTMX(map);
     UnloadSound(playerGruntSound);
     UnloadSound(playerGroanSound);
-    UnloadTMX(map);
     UnloadTexture(hero);
     UnloadTexture(hearts);
     UnloadTexture(lowLight);
