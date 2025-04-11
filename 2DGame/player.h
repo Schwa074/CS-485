@@ -41,6 +41,7 @@ struct Player {
     int maxHealth;
     int currentHealth;
     std::vector<std::string> inventory;
+    int currentLevel;
 };
 
 void movePlayer(Player *player);
@@ -48,5 +49,7 @@ void drawPlayer(const Player *player);
 void update_animation(Animation *self);
 Rectangle animation_frame(const Animation *self);
 void keepPlayerInScreen(Player *player);
+void updatePlayerCurrentLevel(Player *player);
+
 
 #endif // PLAYER_H

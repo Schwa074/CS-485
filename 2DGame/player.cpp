@@ -80,3 +80,7 @@ void keepPlayerInScreen(Player *player) {
         player->rect.y = (H - player->rect.height);
     }
 }
+
+void updatePlayerCurrentLevel(Player *player, int level) {
+    player->currentLevel = level;
+}
