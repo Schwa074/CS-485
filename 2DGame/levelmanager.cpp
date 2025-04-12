@@ -31,8 +31,6 @@ LevelTransition levelTransitions[] = {
 
     // Level 2 -> Level 3 (3 unique exits)
     {2, 3, "resources/level3.tmx", {290.0f, 240.0f}},   // level2_1_exit
-    {2, 3, "resources/level3.tmx", {290.0f, 240.0f}},   // level2_2_exit
-    {2, 3, "resources/level3.tmx", {290.0f, 240.0f}},   // level2_3_exit
 
     // Level 2 -> Level 1
     {2, 1, "resources/level1.tmx", {2658.0f, 400.0f}},
@@ -43,24 +41,22 @@ bool HandleLevelTransition(int fromLevel, int toLevel, int transitionIndex, TmxM
     int currentMatch = 0;
     for (int i = 0; i < count; i++) {
         if (levelTransitions[i].fromLevel == fromLevel && levelTransitions[i].toLevel == toLevel) {
-            if (currentMatch == transitionIndex) {
-                UnloadTMX(map);
-                map = LoadTMX(levelTransitions[i].mapPath);
-                if (!map) {
-                    TraceLog(LOG_ERROR, "Failed to load map: %s", levelTransitions[i].mapPath);
-                    return false;
-                }
-                player.currentLevel = toLevel;
-                player.rect.x = levelTransitions[i].spawnPosition.x;
-                player.rect.y = levelTransitions[i].spawnPosition.y;
 
-                if (fromLevel == 2 && toLevel == 3) {
-                    lastLevel2ExitUsed = transitionIndex;  // Save which exit was used
-                }
-
-                return true;
+            UnloadTMX(map);
+            map = LoadTMX(levelTransitions[i].mapPath);
+            if (!map) {
+                TraceLog(LOG_ERROR, "Failed to load map: %s", levelTransitions[i].mapPath);
+                return false;
             }
-            currentMatch++;
+            player.currentLevel = toLevel;
+            player.rect.x = levelTransitions[i].spawnPosition.x;
+            player.rect.y = levelTransitions[i].spawnPosition.y;
+
+            if (fromLevel == 2 && toLevel == 3) {
+                lastLevel2ExitUsed = transitionIndex;  // Save which exit was used
+            }
+
+            return true;
         }
     }
     TraceLog(LOG_ERROR, "No matching transition found");

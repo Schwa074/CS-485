@@ -159,7 +159,11 @@ int main() {
 
         AnimateTMX(map);
         movePlayer(&player);
-        moveRectByVel(&(player.rect), &(player.vel));
+
+        // Replace with pause screen 
+        if(player.currentHealth != 0) {
+            moveRectByVel(&(player.rect), &(player.vel));
+        }
 
         if (isTileCollisions(map, &player)) {
             player.rect.x = previous_x;
@@ -168,7 +172,8 @@ int main() {
 
         checkDoorCollision(&door, &player);
 
-        if(player.currentLevel == 1) {
+        // player.currentHealth != 0) prevents bug when player is hurt while dead
+        if(player.currentLevel == 1 && player.currentHealth != 0) {
             for (int i = 0; i < numTraps; i++) {
                 if (checkTrapCollision(&player, &traps[i]) && traps[i].active) {
                     player.currentHealth -= 1;
@@ -184,28 +189,28 @@ int main() {
 
         cameraFollow(&camera, &player);
 
-        // handleGhostSpawn(&ghost, ghostSprite);
+        handleGhostSpawn(&ghost, ghostSprite);
 
         BeginDrawing();
         {
             ClearBackground(BLACK);
             BeginMode2D(camera);
             DrawTMX(map, &camera, 0, 0, WHITE);
-            drawDoor(&door);
-            drawGhost(&ghost);
-            
-            if(player.currentLevel == 1) {
-                for (int i = 0; i < numTraps; i++) {
-                    drawTrap(&traps[i]);
-                }
-            }
 
-            // moveGhost(&ghost, &player);
-            checkGhostCollision(&ghost, &player);
 
             drawPlayer(&player);
 
             if(player.currentLevel == 1) {
+                drawDoor(&door);
+                drawGhost(&ghost);
+    
+                moveGhost(&ghost, &player);
+                checkGhostCollision(&ghost, &player);
+
+                for (int i = 0; i < numTraps; i++) {
+                    drawTrap(&traps[i]);
+                }
+
                 if (!torch.pickedUp) {
                     drawTorch(&torch);
                 }
@@ -232,6 +237,8 @@ int main() {
                     key.pickedUp = true;
                 }
             }
+
+// --- Level Transitions ---
 
             // Level 1 → Level 2
             if (player.currentLevel == 1 && checkLevelDoorCollision(&level1_exit, &player)) {
@@ -272,11 +279,11 @@ int main() {
                 player.rect.y = returnPos.y;
             }
 
+// --- End Level Transitions ---
+
             EndMode2D();
 
-            // TODO (Remove) Show player pos for debugging - whatever reason, std:: methods were not working for me
-            char positionText[50]; 
-            sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
+// --- Inventory Management ---
 
             if (torch.pickedUp && torch.isUsing) {
                 drawLight(highLight);
@@ -308,16 +315,28 @@ int main() {
                 DrawTextEx(noteFont, msg, {W / 2 - 100, H / 2 - 165}, 16.0f, 8, BLACK);
             }
 
+// --- End Inventory Management ---
+
+// --- Misc HUD ---
+
+            // TODO (Remove) Show player pos for debugging - whatever reason, std:: methods were not working for me
+            char positionText[50]; 
+            sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
+
             DrawFPS(5, 5);
             drawHearts(hearts, player.currentHealth);
             DrawInventoryHUD(&player);
             DrawText(positionText, 900, 10, 32, YELLOW);
+            
+// --- End Misc HUD ---
+
+/// --- Respawn Screen ---
 
             int finalHealth = player.currentHealth;
             if (prev_health != 0 && finalHealth == 0) {
                 PlaySound(playerGroanSound);
             }
-
+            
             if (finalHealth == 0) {
                 DrawRectangleGradientV(W / 6, H / 6, W / 1.5, H / 1.5, (Color){120, 6, 6, 255}, BLACK);
                 DrawTextEx(deathFont, deathMessage, {W / 2 - 125, H / 2 - 165}, 32.0f, 8, BLACK);
@@ -341,9 +360,13 @@ int main() {
                 }
             }
 
+/// --- End Respawn Screen ---
+
         }
         EndDrawing();
     }
+
+// --- Unload Assets ---
 
     UnloadTMX(map);
     UnloadSound(playerGruntSound);
@@ -362,6 +385,8 @@ int main() {
     UnloadFont(noteFont);
     UnloadFont(deathFont);
     CloseWindow();
+
+// --- End Unload Assets ---
 
     return 0;
 }
