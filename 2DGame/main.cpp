@@ -67,6 +67,29 @@ int main() {
     Rectangle level2_entrancePos = {224, 1408, 64, 32};
     createLevelDoor(&level2_entrance, level2_entrancePos);
 
+    // Level 2 have 3 exits, only one valid - TOP EXIT
+    LevelDoor level2_1_exit;
+    level2_1_exit.toLevel = 3;
+    Rectangle level2_1_exitPos = {3776, 224, 64, 32};
+    createLevelDoor(&level2_1_exit, level2_1_exitPos);
+
+    // Level 2 have 3 exits, only one valid - MIDDLE EXIT
+    LevelDoor level2_2_exit;
+    level2_2_exit.toLevel = 3;
+    Rectangle level2_2_exitPos = {3712, 1408, 64, 32};
+    createLevelDoor(&level2_2_exit, level2_2_exitPos);
+
+    // Level 2 have 3 exits, only one valid - BOTTOM EXIT
+    LevelDoor level2_3_exit;
+    level2_3_exit.toLevel = 3;
+    Rectangle level2_3_exitPos = {3648, 2464, 64, 32};
+    createLevelDoor(&level2_3_exit, level2_3_exitPos);
+
+    LevelDoor level3_entrance;
+    level3_entrance.toLevel = 2;
+    Rectangle level3_entrancePos = {288, 160, 64, 32};
+    createLevelDoor(&level3_entrance, level3_entrancePos);
+
     Player player = Player{.rect = (Rectangle){.x = startPosx,
                                                 .y = startPosy,
                                                 .width = 64.0f,
@@ -145,14 +168,16 @@ int main() {
 
         checkDoorCollision(&door, &player);
 
-        for (int i = 0; i < numTraps; i++) {
-            if (checkTrapCollision(&player, &traps[i]) && traps[i].active) {
-                player.currentHealth -= 1;
-                traps[i].active = false;
-                traps[i].deactivationTime = GetTime();
-                PlaySound(playerGruntSound);
+        if(player.currentLevel == 1) {
+            for (int i = 0; i < numTraps; i++) {
+                if (checkTrapCollision(&player, &traps[i]) && traps[i].active) {
+                    player.currentHealth -= 1;
+                    traps[i].active = false;
+                    traps[i].deactivationTime = GetTime();
+                    PlaySound(playerGruntSound);
+                }
+                updateTrapState(&traps[i]);
             }
-            updateTrapState(&traps[i]);
         }
 
         update_animation(&(player.animations[player.state]));
@@ -168,9 +193,11 @@ int main() {
             DrawTMX(map, &camera, 0, 0, WHITE);
             drawDoor(&door);
             drawGhost(&ghost);
-
-            for (int i = 0; i < numTraps; i++) {
-                drawTrap(&traps[i]);
+            
+            if(player.currentLevel == 1) {
+                for (int i = 0; i < numTraps; i++) {
+                    drawTrap(&traps[i]);
+                }
             }
 
             // moveGhost(&ghost, &player);
@@ -178,70 +205,71 @@ int main() {
 
             drawPlayer(&player);
 
-            if (!torch.pickedUp) {
-                drawTorch(&torch);
-            }
-            if (checkItemCollision(&torch, &player) && torch.pickedUp == false) {
-                player.inventory.push_back("Torch");
-                torch.pickedUp = true;
-                torch.isUsing = true;
+            if(player.currentLevel == 1) {
+                if (!torch.pickedUp) {
+                    drawTorch(&torch);
+                }
+                if (checkItemCollision(&torch, &player) && torch.pickedUp == false) {
+                    player.inventory.push_back("Torch");
+                    torch.pickedUp = true;
+                    torch.isUsing = true;
+                }
+    
+                if (!note.pickedUp) {
+                    drawItem(&note);
+                }
+                if (checkItemCollision(&note, &player) && note.pickedUp == false) {
+                    player.inventory.push_back("Note");
+                    note.pickedUp = true;
+                    note.isUsing = true;
+                }
+    
+                if (!key.pickedUp) {
+                    drawItem(&key);
+                }
+                if (checkItemCollision(&key, &player) && key.pickedUp == false) {
+                    player.inventory.push_back("Key");
+                    key.pickedUp = true;
+                }
             }
 
-            if (!note.pickedUp) {
-                drawItem(&note);
-            }
-            if (checkItemCollision(&note, &player) && note.pickedUp == false) {
-                player.inventory.push_back("Note");
-                note.pickedUp = true;
-                note.isUsing = true;
-            }
-
-            if (!key.pickedUp) {
-                drawItem(&key);
-            }
-            if (checkItemCollision(&key, &player) && key.pickedUp == false) {
-                player.inventory.push_back("Key");
-                key.pickedUp = true;
-            }
-
-            // Player going from level 1 -> level 2
+            // Level 1 → Level 2
             if (player.currentLevel == 1 && checkLevelDoorCollision(&level1_exit, &player)) {
-                // Handle map
+                HandleLevelTransition(1, 2, 0, map, player); // Only one path from 1 → 2
+            }
+
+            // Level 2 → Level 1
+            if (player.currentLevel == 2 && checkLevelDoorCollision(&level2_entrance, &player)) {
+                HandleLevelTransition(2, 1, 0, map, player); // Only one path from 2 → 1
+            }
+
+            // Level 2 → Level 3 (multiple exits)
+            if (player.currentLevel == 2) {
+                if (checkLevelDoorCollision(&level2_1_exit, &player)) {
+                    HandleLevelTransition(2, 3, 0, map, player); // First way into level 3
+                } else if (checkLevelDoorCollision(&level2_2_exit, &player)) {
+                    HandleLevelTransition(2, 3, 1, map, player);
+                } else if (checkLevelDoorCollision(&level2_3_exit, &player)) {
+                    HandleLevelTransition(2, 3, 2, map, player);
+                }
+            }
+
+            // Level 3 -> CORRECT level 2 door
+            if (player.currentLevel == 3 && checkLevelDoorCollision(&level3_entrance, &player)) {
                 UnloadTMX(map);
                 player.currentLevel = 2;
                 const char* tmx = mapName[player.currentLevel - 1];
                 map = LoadTMX(tmx);
+            
                 if (map == nullptr) {
-                    TraceLog(LOG_ERROR, "couldn't load da map after hitting door: %s", tmx);
+                    TraceLog(LOG_ERROR, "Failed to load map on return from Level 3");
                     return EXIT_FAILURE;
                 }
-
-                // Handle Player Position
-                Vector2 newPos = playerTeleportPosition[player.currentLevel - 1];
-                TraceLog(LOG_DEBUG, "Player x: %f", newPos.x);
-                TraceLog(LOG_DEBUG, "Player y: %f", newPos.y);
-                player.rect.x = newPos.x;
-                player.rect.y = newPos.y;
-            }
-
-            // Player going from level 2 -> level 1
-            if(player.currentLevel == 2 & checkLevelDoorCollision(&level2_entrance, &player)) {
-                // Handle map
-                UnloadTMX(map);
-                player.currentLevel = 1;
-                const char* tmx = mapName[player.currentLevel - 1];
-                map = LoadTMX(tmx);
-                if (map == nullptr) {
-                    TraceLog(LOG_ERROR, "couldn't load da map after hitting door: %s", tmx);
-                    return EXIT_FAILURE;
-                }
-
-                // Handle Player Position
-                Vector2 newPos = playerTeleportPosition[player.currentLevel - 1];
-                TraceLog(LOG_DEBUG, "Player x: %f", newPos.x);
-                TraceLog(LOG_DEBUG, "Player y: %f", newPos.y);
-                player.rect.x = newPos.x;
-                player.rect.y = newPos.y;
+            
+                // Send player back to the correct return spot based on the last exit used
+                Vector2 returnPos = returnToLevel2From3[lastLevel2ExitUsed];
+                player.rect.x = returnPos.x;
+                player.rect.y = returnPos.y;
             }
 
             EndMode2D();
