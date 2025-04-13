@@ -2,6 +2,12 @@
 #include "raytmx.h"
 #include "game.h"
 
+// --- Global Sprites Variables ---
+Texture2D torchStillSprite;
+Texture2D noteSprite;
+Texture2D keySprite;
+// --- End Global Sprites Variables ---
+
 int main() {
     SetTraceLogLevel(LOG_DEBUG);
     TraceLog(LOG_DEBUG, "Opening window");
@@ -30,9 +36,10 @@ int main() {
     Texture2D highLight = LoadTexture("assets/highLight.png");
     Texture2D torchSprite = LoadTexture("assets/Torch Animated.png");
     Texture2D hearts = LoadTexture("assets/heartsheet.png");
-    Texture2D noteSprite = LoadTexture("assets/noteTiny.png");
+    torchStillSprite = LoadTexture("assets/Torch.png");
+    noteSprite = LoadTexture("assets/noteTiny.png");
+    keySprite = LoadTexture("assets/key.png");
     Texture2D noteItemSprite = LoadTexture("assets/noteBig.png");
-    Texture2D keySprite = LoadTexture("assets/key.png");
     Texture2D doorSprite = LoadTexture("assets/DungeonDoor.png");
     Enemy ghost;
 
@@ -284,6 +291,7 @@ int main() {
             EndMode2D();
 
 // --- Inventory Management ---
+            int slotNum = 0;
 
             if (torch.pickedUp && torch.isUsing) {
                 drawLight(highLight);
@@ -292,14 +300,17 @@ int main() {
             }
 
             if (IsKeyPressed(KEY_ONE) && player.inventory.size() > 0) {
+                slotNum = 0;
                 if (player.inventory[0] == "Note") note.isUsing = !note.isUsing;
                 if (player.inventory[0] == "Torch") torch.isUsing = !torch.isUsing;
             }
             if (IsKeyPressed(KEY_TWO) && player.inventory.size() > 1) {
+                slotNum = 1;
                 if (player.inventory[1] == "Note") note.isUsing = !note.isUsing;
                 if (player.inventory[1] == "Torch") torch.isUsing = !torch.isUsing;
             }
             if (IsKeyPressed(KEY_THREE) && player.inventory.size() > 2) {
+                slotNum = 2;
                 if (player.inventory[2] == "Note") note.isUsing = !note.isUsing;
                 if (player.inventory[2] == "Torch") torch.isUsing = !torch.isUsing;
             }
@@ -325,7 +336,7 @@ int main() {
 
             DrawFPS(5, 5);
             drawHearts(hearts, player.currentHealth);
-            DrawInventoryHUD(&player);
+            DrawInventoryHUD(&player, slotNum);
             DrawText(positionText, 900, 10, 32, YELLOW);
             
 // --- End Misc HUD ---

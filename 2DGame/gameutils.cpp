@@ -78,29 +78,57 @@ void drawLight(Texture2D light)
     DrawTexture(light, 0, 0, WHITE);
 }
 
-void DrawInventoryHUD(const Player *player)
-{
-    DrawText("Inventory:", 10, 60, 20, WHITE);
-    DrawText("Press the number to use the item", 10, 80, 20, WHITE);
+// --- Inventory HUD ---
+// Draws the inventory HUD at the bottom of the screen
+//Extern to use textures loaded in main.cpp
+extern Texture2D torchStillSprite;
+extern Texture2D noteSprite;
+extern Texture2D keySprite;
 
-    bool hasTorch = false;
-    bool hasNote = false;
-    bool hasKey = false;
-    for (size_t i = 0; i < player->inventory.size(); i++)
-    {
-        std::string itemText = std::to_string(i + 1) + " - " + player->inventory[i];
-        DrawText(itemText.c_str(), 10, 110 + (int)i * 20, 18, YELLOW);
-        if (player->inventory[i] == "Torch")
-        {
-            hasTorch = true;
-        }
-        if (player->inventory[i] == "Note")
-        {
-            hasNote = true;
-        }
-        if (player->inventory[i] == "Key")
-        {
-            hasKey = true;
+void DrawInventoryHUD(const Player *player, int selectedSlot)
+{
+    const int slotSize = 60;
+    const int spacing = 10;
+    const int screenWidth = GetScreenWidth();
+    const int screenHeight = GetScreenHeight();
+    const int numSlots = 4;
+    const int barWidth = numSlots * slotSize + (numSlots - 1) * spacing;
+    const int barX = (screenWidth - barWidth) / 2;
+    const int barY = screenHeight - slotSize - 20;
+
+    DrawText("Inventory:", 10, 60, 20, WHITE);
+    DrawText("Press 1-4 to use items", 10, 80, 20, WHITE);
+
+    for (int i = 0; i < numSlots; i++) {
+        int x = barX + i * (slotSize + spacing);
+        int y = barY;
+        Rectangle slot = { (float)x, (float)y, (float)slotSize, (float)slotSize };
+
+        DrawRectangleRec(slot, Fade(BLACK, 0.4f));
+        DrawRectangleLinesEx(slot, 2, RAYWHITE);
+
+        // Draw key label (1, 2, 3, 4)
+        DrawText(TextFormat("%d", i + 1), x + 5, y + 5, 10, WHITE);
+
+        if (i < player->inventory.size()) {
+            const std::string &item = player->inventory[i];
+
+            Texture2D itemTexture;
+            if (item == "Torch")      itemTexture = torchStillSprite;
+            else if (item == "Note")  itemTexture = noteSprite;
+            else if (item == "Key")   itemTexture = keySprite;
+            else continue;
+
+            // Draw item icon
+            DrawTexturePro(
+                itemTexture,
+                Rectangle{ 0, 0, (float)itemTexture.width, (float)itemTexture.height },
+                Rectangle{ (float)x + 10, (float)y + 10, (float)slotSize - 20, (float)slotSize - 20 },
+                Vector2{ 0, 0 },
+                0.0f,
+                WHITE
+            );
         }
     }
 }
+// --- End Inventory HUD ---

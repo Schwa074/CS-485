@@ -9,6 +9,6 @@ bool isTileCollisions(TmxMap *map, Player *player);
 void cameraFollow(Camera2D *camera, const Player *player);
 void drawHearts(Texture2D heartsheet, int currentHealth);
 void drawLight(Texture2D light);
-void DrawInventoryHUD(const Player *player);
+void DrawInventoryHUD(const Player *player, int selectedSlot);
 
 #endif // GAMEUTILS_H
