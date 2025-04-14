@@ -9,11 +9,15 @@ Texture2D keySprite;
 // --- End Global Sprites Variables ---
 
 int main() {
+    inStartScreen = true;
     isPaused = false;
     SetTraceLogLevel(LOG_DEBUG);
     TraceLog(LOG_DEBUG, "Opening window");
     InitWindow(W, H, "Crypt Escape");
     InitAudioDevice();
+
+
+    // Start Screen if statement
 
     Font noteFont = LoadFont("resources/alagard.png");
     const char* noteMsg = "I'm lost in this\ncrypt, passing by a\nlocked door\nrepeatedly.I found\na booby-trapped\nkey but got\ninjured.\n\nI managed to lift\nthe curse but\nghostly noises are\nmaking me\nparanoid.\n\nGet the key\nand GET OUT\nIMMEDIATELY!\n\n-Howard Carter";

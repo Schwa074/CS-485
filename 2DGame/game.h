@@ -19,5 +19,6 @@
 #include "screens.h"
 
 extern bool isPaused;
+extern bool inStartScreen;
 
 #endif // GAME_H
