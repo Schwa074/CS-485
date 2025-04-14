@@ -33,6 +33,8 @@ int main() {
 
     Sound playerGruntSound = LoadSound("assets/Player_Grunt.mp3");
     Sound playerGroanSound = LoadSound("assets/Player_Groan.mp3");
+    // Add sword sound
+    // Ambience sound / Background sounds
     Texture2D hero = LoadTexture("assets/charactersheet.png");
     Texture2D ghostSprite = LoadTexture("assets/ghostsheet.png");
     Texture2D trapSprite = LoadTexture("assets/trapsheet.png");
