@@ -160,6 +160,7 @@ int main() {
     Camera2D camera = (Camera2D){.offset = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .target = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .rotation = 0.0f, .zoom = 1.0f};
 
     while (!WindowShouldClose()) {
+        // if !isPaused
         float previous_x = player.rect.x;
         float previous_y = player.rect.y;
         int prev_health = player.currentHealth;
@@ -376,6 +377,7 @@ int main() {
         }
         EndDrawing();
     }
+    // else for pause screen goes here
 
 // --- Unload Assets ---
 
