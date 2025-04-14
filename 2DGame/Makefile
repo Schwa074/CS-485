@@ -17,11 +17,19 @@ clean:
 	rm -f $(OBJECTS) main.exe
 
 # Mac version
-#RAYLIB_DIR?=/opt/homebrew/Cellar/raylib/5.5/include/
-#RAYLIB_LIB?= -L "/opt/homebrew/Cellar/raylib/5.5/lib" -lraylib
+# RAYLIB_DIR?=/opt/homebrew/Cellar/raylib/5.5/include/
+# RAYLIB_LIB?= -L "/opt/homebrew/Cellar/raylib/5.5/lib" -lraylib
+# SOURCES=main.cpp player.cpp enemy.cpp item.cpp door.cpp gameutils.cpp leveldoor.cpp traps.cpp levelmanager.cpp screens.cpp
+# OBJECTS=$(SOURCES:.cpp=.o)
 
-#.PHONY: all
-#all: main.exe
+# .PHONY: all clean
+# all: main.exe
 
-#%.exe: %.cpp
-#	g++ --std=c++20 -I$(RAYLIB_DIR) $^ -o $@ $(RAYLIB_LIB) 
+# main.exe: $(OBJECTS)
+# 	g++ --std=c++20 -I$(RAYLIB_DIR) $^ -o $@ $(RAYLIB_LIB)
+
+# %.o: %.cpp
+# 	g++ --std=c++20 -I$(RAYLIB_DIR) -c $< -o $@
+
+# clean:
+# 	rm -f $(OBJECTS) main.exe

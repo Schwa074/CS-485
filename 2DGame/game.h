@@ -16,5 +16,8 @@
 #include "traps.h"
 #include "leveldoor.h"
 #include "levelmanager.h"
+#include "screens.h"
+
+extern bool isPaused;
 
 #endif // GAME_H
