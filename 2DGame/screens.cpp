@@ -1,6 +1,6 @@
 #include "screens.h"
 
-void drawPauseScreen()
+void drawPauseScreen(Rectangle resumeBtn)
 {
 
 }
@@ -15,4 +15,9 @@ void drawRespawnScreen(Rectangle respawnBtn)
     DrawRectangleRounded(respawnBtn, 1.0f, 1, (Color){70, 70, 80, 255});
     DrawTextEx(deathFont, "Respawn", (Vector2){W / 2 - 40, H / 2 + 75}, 36.0f, 2, WHITE);
     UnloadFont(deathFont);
+}
+
+void drawStartScreen(Rectangle startButton, Rectangle quitButton)
+{
+    
 }

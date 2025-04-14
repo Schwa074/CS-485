@@ -3,9 +3,10 @@
 
 #include "game.h"
 
-void drawPauseScreen();
+void drawPauseScreen(Rectangle resumeBtn);
 
 void drawRespawnScreen(Rectangle respawnBtn);
 
+void drawStartScreen(Rectangle respawnBtn, Rectangle quitButton);
 
 #endif
