@@ -6,6 +6,7 @@
 Texture2D torchStillSprite;
 Texture2D noteSprite;
 Texture2D keySprite;
+Texture2D swordStillSprite;
 // --- End Global Sprites Variables ---
 
 int main() {
@@ -36,13 +37,17 @@ int main() {
     // Add sword sound
     // Ambience sound / Background sounds
     Texture2D hero = LoadTexture("assets/charactersheet.png");
-    Texture2D ghostSprite = LoadTexture("assets/ghostsheet.png");
+    Texture2D whiteGhostSprite = LoadTexture("assets/whiteghostsheet.png");
+    Texture2D redGhostSprite = LoadTexture("assets/redghostsheet.png");
+    Texture2D blueGhostSprite = LoadTexture("assets/blueghostsheet.png");
     Texture2D trapSprite = LoadTexture("assets/trapsheet.png");
     Texture2D lowLight = LoadTexture("assets/lowLight.png");
     Texture2D highLight = LoadTexture("assets/highLight.png");
     Texture2D torchSprite = LoadTexture("assets/Torch Animated.png");
+    Texture2D swordSprite = LoadTexture("assets/ghostsword animated.png");
     Texture2D hearts = LoadTexture("assets/heartsheet.png");
     torchStillSprite = LoadTexture("assets/Torch.png");
+    swordStillSprite = LoadTexture("assets/ghostsword.png");
     noteSprite = LoadTexture("assets/noteTiny.png");
     keySprite = LoadTexture("assets/key.png");
     Texture2D noteItemSprite = LoadTexture("assets/noteBig.png");
@@ -203,7 +208,7 @@ int main() {
 
         cameraFollow(&camera, &player);
 
-        handleGhostSpawn(&ghost, ghostSprite);
+        handleGhostSpawn(&ghost, whiteGhostSprite);
 
         BeginDrawing();
         {
@@ -372,7 +377,7 @@ int main() {
                     player.currentHealth = 6;
                     player.rect.x = startPosx;
                     player.rect.y = startPosy;
-                    spawnGhost(&ghost, ghostSprite, {2650, 500});
+                    spawnGhost(&ghost, whiteGhostSprite, {2650, 500});
                 }
             }
 
@@ -392,7 +397,7 @@ int main() {
     UnloadTexture(hearts);
     UnloadTexture(lowLight);
     UnloadTexture(highLight);
-    UnloadTexture(ghostSprite);
+    UnloadTexture(whiteGhostSprite);
     UnloadTexture(torchSprite);
     UnloadTexture(keySprite);
     UnloadTexture(noteSprite);
