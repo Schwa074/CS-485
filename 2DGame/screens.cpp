@@ -2,8 +2,7 @@
 
 void drawPauseScreen(Rectangle resumeBtn)
 {
-    std::cout << "In draw pause screen method\n";
-    Font textFont = LoadFontEx("resources/KAISG.ttf", 64, 0, 0);
+    Font textFont = LoadFontEx("resources/alagard.png", 64, 0, 0);
     const char* pauseMessage = "Game is currently Paused.\nClick resume or press \nP to continue playing.";
     DrawRectangleGradientV(W / 6, H / 6, W / 1.5, H / 1.5, (Color){185, 185, 185, 255}, (Color){100, 100, 100, 100});
     DrawTextEx(textFont, pauseMessage, {W / 2 - 300, H / 2 - 165}, 32.0f, 8, BLACK);
@@ -14,8 +13,7 @@ void drawPauseScreen(Rectangle resumeBtn)
 
 void drawRespawnScreen(Rectangle respawnBtn)
 {
-    std::cout << "In draw respawn screen method\n";
-    Font deathFont = LoadFontEx("resources/KAISG.ttf", 64, 0, 0);
+    Font deathFont = LoadFontEx("resources/alagard.png", 64, 0, 0);
     const char* deathMessage = "You have died!\n\n Try again?";
     DrawRectangleGradientV(W / 6, H / 6, W / 1.5, H / 1.5, (Color){120, 6, 6, 255}, BLACK);
     DrawTextEx(deathFont, deathMessage, {W / 2 - 125, H / 2 - 165}, 32.0f, 8, BLACK);

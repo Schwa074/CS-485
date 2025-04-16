@@ -176,20 +176,12 @@ int main() {
     Camera2D camera = (Camera2D){.offset = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .target = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .rotation = 0.0f, .zoom = 1.0f};
 
     while (!WindowShouldClose()) {
-        // --- Check for pause key ---
+// --- Check for pause key ---
         if (IsKeyPressed(KEY_P))
         {
-            std::cout << "P pressed\n";
-            if (isPaused)
-            {
-                isPaused = false;
-            }
-            else
-            {
-                isPaused = true;
-            }
+            isPaused = !isPaused;
         }
-        // --- End of check for pause key ---
+// --- End of check for pause key ---
 
         // When not paused update game
         if (!isPaused)
@@ -281,7 +273,7 @@ int main() {
                     }
                 }
     
-    // --- Level Transitions ---
+// --- Level Transitions ---
     
                 // Level 1 → Level 2
                 if (player.currentLevel == 1 && checkLevelDoorCollision(&level1_exit, &player)) {
@@ -322,11 +314,11 @@ int main() {
                     player.rect.y = returnPos.y;
                 }
     
-    // --- End Level Transitions ---
+// --- End Level Transitions ---
     
                 EndMode2D();
     
-    // --- Inventory Management ---
+// --- Inventory Management ---
                 int slotNum = 0;
     
                 if (torch.pickedUp && torch.isUsing) {
@@ -362,9 +354,9 @@ int main() {
                     DrawTextEx(noteFont, msg, {W / 2 - 100, H / 2 - 165}, 16.0f, 8, BLACK);
                 }
     
-    // --- End Inventory Management ---
+// --- End Inventory Management ---
     
-    // --- Misc HUD ---
+// --- Misc HUD ---
     
                 // TODO (Remove) Show player pos for debugging - whatever reason, std:: methods were not working for me
                 char positionText[50]; 
@@ -375,9 +367,9 @@ int main() {
                 DrawInventoryHUD(&player, slotNum);
                 DrawText(positionText, 900, 10, 32, YELLOW);
                 
-    // --- End Misc HUD ---
+// --- End Misc HUD ---
     
-    /// --- Respawn Screen ---
+// --- Respawn Screen ---
     
                 int finalHealth = player.currentHealth;
                 if (prev_health != 0 && finalHealth == 0) {
@@ -386,7 +378,6 @@ int main() {
                 
                 if (finalHealth == 0) {
                     Rectangle respawnBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
-                    std::cout << "In respawn screen if statement\n";
                     drawRespawnScreen(respawnBtn);
                     player.inventory.clear();
                     torch.pickedUp = false;
@@ -405,27 +396,26 @@ int main() {
                     }
                 }
     
-    /// --- End Respawn Screen ---
+// --- End Respawn Screen ---
     
             }
             EndDrawing();
         }
-        // --- Pause Screen ---
+// --- Pause Screen ---
         else
         {
-            std::cout << "In Pause else statement\n";
             BeginDrawing();
-            Rectangle respawnBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
-            drawPauseScreen(respawnBtn);
+            Rectangle resumeBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
+            drawPauseScreen(resumeBtn);
             Vector2 mousePos = GetMousePosition();
-            bool isMouseOver = CheckCollisionPointRec(mousePos, respawnBtn);
+            bool isMouseOver = CheckCollisionPointRec(mousePos, resumeBtn);
             if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
             {
                 isPaused = false;
             }
             EndDrawing();
         }
-        // --- End of Pause Screen
+// --- End of Pause Screen
 
     } // End of while loop
     // else for pause screen goes here
