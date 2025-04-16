@@ -10,7 +10,6 @@ Texture2D swordStillSprite;
 // --- End Global Sprites Variables ---
 
 // --- Global Bool Variables ---
-bool isPaused;
 bool inStartScreen;
 // --- End Global Bool Variables ---
 
@@ -21,6 +20,9 @@ int main() {
     TraceLog(LOG_DEBUG, "Opening window");
     InitWindow(W, H, "Crypt Escape");
     InitAudioDevice();
+
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+    CreateHiddenCollisions();
 
 
     // Start Screen if statement
@@ -207,6 +209,11 @@ int main() {
     
             checkDoorCollision(&door, &player);
     
+            if(player.currentLevel == 2) {
+                ghost.active = false;
+                CheckHiddenCollsions(&player);
+            }
+
             // player.currentHealth != 0) prevents bug when player is hurt while dead
             if(player.currentLevel == 1 && player.currentHealth != 0) {
                 for (int i = 0; i < numTraps; i++) {
