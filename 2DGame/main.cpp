@@ -243,6 +243,17 @@ int main() {
     
                 drawPlayer(&player);
     
+                // --- Test Win Screen ---
+                // Rectangle quitBtn = {W / 2, H / 2, W / 4, H / 8};
+                // drawWinScreen(quitBtn, textFont);
+                // Vector2 mousePos = GetMousePosition();
+                // bool isMouseOver = CheckCollisionPointRec(mousePos, quitBtn);
+                // if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
+                // {
+                //     break;
+                // }
+                // --- End Test Win Screen ---
+
                 if(player.currentLevel == 1) {
                     drawDoor(&door);
                     drawWhiteGhost(&whiteGhost);
