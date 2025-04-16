@@ -17,5 +17,6 @@
 #include "leveldoor.h"
 #include "levelmanager.h"
 #include "screens.h"
+#include "level2manager.h"
 
 #endif // GAME_H

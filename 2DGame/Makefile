@@ -1,7 +1,7 @@
 RAYLIB_DIR?=external/raylib/src
 RAYLIB_LIB?=$(RAYLIB_DIR)/libraylib.a
 
-SOURCES=main.cpp player.cpp enemy.cpp item.cpp door.cpp gameutils.cpp leveldoor.cpp traps.cpp levelmanager.cpp screens.cpp
+SOURCES=main.cpp player.cpp enemy.cpp item.cpp door.cpp gameutils.cpp leveldoor.cpp traps.cpp levelmanager.cpp screens.cpp level2manager.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 
 .PHONY: all clean
@@ -19,7 +19,7 @@ clean:
 # Mac version
 # RAYLIB_DIR?=/opt/homebrew/Cellar/raylib/5.5/include/
 # RAYLIB_LIB?= -L "/opt/homebrew/Cellar/raylib/5.5/lib" -lraylib
-# SOURCES=main.cpp player.cpp enemy.cpp item.cpp door.cpp gameutils.cpp leveldoor.cpp traps.cpp levelmanager.cpp screens.cpp
+# SOURCES=main.cpp player.cpp enemy.cpp item.cpp door.cpp gameutils.cpp leveldoor.cpp traps.cpp levelmanager.cpp screens.cpp level2manager.cpp
 # OBJECTS=$(SOURCES:.cpp=.o)
 
 # .PHONY: all clean
