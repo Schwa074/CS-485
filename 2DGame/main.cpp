@@ -59,9 +59,9 @@ int main() {
     keySprite = LoadTexture("assets/key.png");
     Texture2D noteItemSprite = LoadTexture("assets/noteBig.png");
     Texture2D doorSprite = LoadTexture("assets/DungeonDoor.png");
-    Enemy ghost;
+    Enemy whiteGhost;
 
-    deactivateGhost(&ghost);
+    deactivateWhiteGhost(&whiteGhost);
     Door door;
     createDoor(&door, doorSprite, {2751, 710});
     Enemy traps[numTraps];
@@ -210,7 +210,7 @@ int main() {
             checkDoorCollision(&door, &player);
     
             if(player.currentLevel == 2) {
-                ghost.active = false;
+                whiteGhost.active = false;
                 CheckHiddenCollsions(&player);
             }
 
@@ -231,7 +231,7 @@ int main() {
     
             cameraFollow(&camera, &player);
     
-            handleGhostSpawn(&ghost, whiteGhostSprite);
+            handleWhiteGhostSpawn(&whiteGhost, whiteGhostSprite);
     
             BeginDrawing();
             {
@@ -244,10 +244,10 @@ int main() {
     
                 if(player.currentLevel == 1) {
                     drawDoor(&door);
-                    drawGhost(&ghost);
+                    drawWhiteGhost(&whiteGhost);
         
-                    moveGhost(&ghost, &player);
-                    checkGhostCollision(&ghost, &player);
+                    moveWhiteGhost(&whiteGhost, &player);
+                    checkWhiteGhostCollision(&whiteGhost, &player);
     
                     for (int i = 0; i < numTraps; i++) {
                         drawTrap(&traps[i]);
@@ -399,7 +399,7 @@ int main() {
                         player.currentHealth = 6;
                         player.rect.x = startPosx;
                         player.rect.y = startPosy;
-                        spawnGhost(&ghost, whiteGhostSprite, {2650, 500});
+                        spawnWhiteGhost(&whiteGhost, whiteGhostSprite, {2650, 500});
                     }
                 }
     
@@ -437,7 +437,10 @@ int main() {
     UnloadTexture(lowLight);
     UnloadTexture(highLight);
     UnloadTexture(whiteGhostSprite);
+    UnloadTexture(redGhostSprite);
+    UnloadTexture(blueGhostSprite);
     UnloadTexture(torchSprite);
+    UnloadTexture(swordSprite);
     UnloadTexture(keySprite);
     UnloadTexture(noteSprite);
     UnloadTexture(noteItemSprite);

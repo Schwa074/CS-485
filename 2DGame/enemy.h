@@ -15,12 +15,12 @@ struct Enemy {
     float resetTime;
 };
 
-void spawnGhost(Enemy *ghost, Texture2D ghostSprite, Vector2 spawnPos);
-void moveGhost(Enemy *ghost, const Player *player);
-void drawGhost(const Enemy *ghost);
-void checkGhostCollision(Enemy *ghost, Player *player);
-void deactivateGhost(Enemy *ghost);
-void handleGhostSpawn(Enemy *ghost, Texture2D ghostSprite);
+void spawnWhiteGhost(Enemy *whiteGhost, Texture2D whiteGhostSprite, Vector2 spawnPos);
+void moveWhiteGhost(Enemy *whiteGhost, const Player *player);
+void drawWhiteGhost(const Enemy *whiteGhost);
+void checkWhiteGhostCollision(Enemy *whiteGhost, Player *player);
+void deactivateWhiteGhost(Enemy *whiteGhost);
+void handleWhiteGhostSpawn(Enemy *whiteGhost, Texture2D whiteGhostSprite);
 void createTrap(Enemy *trap, Texture2D trapSprite, Vector2 spawnPos);
 void drawTrap(Enemy *trap);
 void updateTrapState(Enemy* trap);
