@@ -3,11 +3,11 @@
 
 #include "game.h"
 
-void drawPauseScreen(Rectangle resumeBtn);
+void drawPauseScreen(Rectangle resumeBtn, Font textFont);
 
-void drawRespawnScreen(Rectangle respawnBtn);
+void drawRespawnScreen(Rectangle respawnBtn, Font textFont);
 
-void drawStartScreen(Rectangle respawnBtn, Rectangle quitButton);
+void drawStartScreen(Rectangle respawnBtn, Rectangle quitButton, Font textFont);
 
 extern bool isPaused;
 

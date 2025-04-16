@@ -15,7 +15,7 @@ bool inStartScreen;
 
 int main() {
     inStartScreen = true;
-    isPaused = false;
+    //isPaused = false;
     SetTraceLogLevel(LOG_DEBUG);
     TraceLog(LOG_DEBUG, "Opening window");
     InitWindow(W, H, "Crypt Escape");
@@ -43,6 +43,7 @@ int main() {
     Sound playerGroanSound = LoadSound("assets/Player_Groan.mp3");
     // Add sword sound
     // Ambience sound / Background sounds
+    Font textFont = LoadFontEx("resources/alagard.png", 64, 0, 0);
     Texture2D hero = LoadTexture("assets/charactersheet.png");
     Texture2D whiteGhostSprite = LoadTexture("assets/whiteghostsheet.png");
     Texture2D redGhostSprite = LoadTexture("assets/redghostsheet.png");
@@ -385,7 +386,7 @@ int main() {
                 
                 if (finalHealth == 0) {
                     Rectangle respawnBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
-                    drawRespawnScreen(respawnBtn);
+                    drawRespawnScreen(respawnBtn, textFont);
                     player.inventory.clear();
                     torch.pickedUp = false;
                     torch.isUsing = false;
@@ -413,7 +414,7 @@ int main() {
         {
             BeginDrawing();
             Rectangle resumeBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
-            drawPauseScreen(resumeBtn);
+            drawPauseScreen(resumeBtn, textFont);
             Vector2 mousePos = GetMousePosition();
             bool isMouseOver = CheckCollisionPointRec(mousePos, resumeBtn);
             if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
@@ -429,6 +430,7 @@ int main() {
 
 // --- Unload Assets ---
 
+    UnloadFont(textFont);
     UnloadTMX(map);
     UnloadSound(playerGruntSound);
     UnloadSound(playerGroanSound);
