@@ -9,6 +9,11 @@ Texture2D keySprite;
 Texture2D swordStillSprite;
 // --- End Global Sprites Variables ---
 
+// --- Global Bool Variables ---
+bool isPaused;
+bool inStartScreen;
+// --- End Global Bool Variables ---
+
 int main() {
     inStartScreen = true;
     isPaused = false;
@@ -171,221 +176,258 @@ int main() {
     Camera2D camera = (Camera2D){.offset = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .target = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .rotation = 0.0f, .zoom = 1.0f};
 
     while (!WindowShouldClose()) {
-        // if !isPaused
-        float previous_x = player.rect.x;
-        float previous_y = player.rect.y;
-        int prev_health = player.currentHealth;
-
-        AnimateTMX(map);
-        movePlayer(&player);
-
-        // Replace with pause screen 
-        if(player.currentHealth != 0) {
-            moveRectByVel(&(player.rect), &(player.vel));
-        }
-
-        if (isTileCollisions(map, &player)) {
-            player.rect.x = previous_x;
-            player.rect.y = previous_y;
-        }
-
-        checkDoorCollision(&door, &player);
-
-        // player.currentHealth != 0) prevents bug when player is hurt while dead
-        if(player.currentLevel == 1 && player.currentHealth != 0) {
-            for (int i = 0; i < numTraps; i++) {
-                if (checkTrapCollision(&player, &traps[i]) && traps[i].active) {
-                    player.currentHealth -= 1;
-                    traps[i].active = false;
-                    traps[i].deactivationTime = GetTime();
-                    PlaySound(playerGruntSound);
-                }
-                updateTrapState(&traps[i]);
-            }
-        }
-
-        update_animation(&(player.animations[player.state]));
-
-        cameraFollow(&camera, &player);
-
-        handleGhostSpawn(&ghost, whiteGhostSprite);
-
-        BeginDrawing();
+        // --- Check for pause key ---
+        if (IsKeyPressed(KEY_P))
         {
-            ClearBackground(BLACK);
-            BeginMode2D(camera);
-            DrawTMX(map, &camera, 0, 0, WHITE);
-
-
-            drawPlayer(&player);
-
-            if(player.currentLevel == 1) {
-                drawDoor(&door);
-                drawGhost(&ghost);
-    
-                moveGhost(&ghost, &player);
-                checkGhostCollision(&ghost, &player);
-
-                for (int i = 0; i < numTraps; i++) {
-                    drawTrap(&traps[i]);
-                }
-
-                if (!torch.pickedUp) {
-                    drawTorch(&torch);
-                }
-                if (checkItemCollision(&torch, &player) && torch.pickedUp == false) {
-                    player.inventory.push_back("Torch");
-                    torch.pickedUp = true;
-                    torch.isUsing = true;
-                }
-    
-                if (!note.pickedUp) {
-                    drawItem(&note);
-                }
-                if (checkItemCollision(&note, &player) && note.pickedUp == false) {
-                    player.inventory.push_back("Note");
-                    note.pickedUp = true;
-                    note.isUsing = true;
-                }
-    
-                if (!key.pickedUp) {
-                    drawItem(&key);
-                }
-                if (checkItemCollision(&key, &player) && key.pickedUp == false) {
-                    player.inventory.push_back("Key");
-                    key.pickedUp = true;
-                }
+            std::cout << "P pressed\n";
+            if (isPaused)
+            {
+                isPaused = false;
             }
-
-// --- Level Transitions ---
-
-            // Level 1 → Level 2
-            if (player.currentLevel == 1 && checkLevelDoorCollision(&level1_exit, &player)) {
-                HandleLevelTransition(1, 2, 0, map, player); // Only one path from 1 → 2
+            else
+            {
+                isPaused = true;
             }
-
-            // Level 2 → Level 1
-            if (player.currentLevel == 2 && checkLevelDoorCollision(&level2_entrance, &player)) {
-                HandleLevelTransition(2, 1, 0, map, player); // Only one path from 2 → 1
-            }
-
-            // Level 2 → Level 3 (multiple exits)
-            if (player.currentLevel == 2) {
-                if (checkLevelDoorCollision(&level2_1_exit, &player)) {
-                    HandleLevelTransition(2, 3, 0, map, player); // First way into level 3
-                } else if (checkLevelDoorCollision(&level2_2_exit, &player)) {
-                    HandleLevelTransition(2, 3, 1, map, player);
-                } else if (checkLevelDoorCollision(&level2_3_exit, &player)) {
-                    HandleLevelTransition(2, 3, 2, map, player);
-                }
-            }
-
-            // Level 3 -> CORRECT level 2 door
-            if (player.currentLevel == 3 && checkLevelDoorCollision(&level3_entrance, &player)) {
-                UnloadTMX(map);
-                player.currentLevel = 2;
-                const char* tmx = mapName[player.currentLevel - 1];
-                map = LoadTMX(tmx);
-            
-                if (map == nullptr) {
-                    TraceLog(LOG_ERROR, "Failed to load map on return from Level 3");
-                    return EXIT_FAILURE;
-                }
-            
-                // Send player back to the correct return spot based on the last exit used
-                Vector2 returnPos = returnToLevel2From3[lastLevel2ExitUsed];
-                player.rect.x = returnPos.x;
-                player.rect.y = returnPos.y;
-            }
-
-// --- End Level Transitions ---
-
-            EndMode2D();
-
-// --- Inventory Management ---
-            int slotNum = 0;
-
-            if (torch.pickedUp && torch.isUsing) {
-                drawLight(highLight);
-            } else {
-                drawLight(lowLight);
-            }
-
-            if (IsKeyPressed(KEY_ONE) && player.inventory.size() > 0) {
-                slotNum = 0;
-                if (player.inventory[0] == "Note") note.isUsing = !note.isUsing;
-                if (player.inventory[0] == "Torch") torch.isUsing = !torch.isUsing;
-            }
-            if (IsKeyPressed(KEY_TWO) && player.inventory.size() > 1) {
-                slotNum = 1;
-                if (player.inventory[1] == "Note") note.isUsing = !note.isUsing;
-                if (player.inventory[1] == "Torch") torch.isUsing = !torch.isUsing;
-            }
-            if (IsKeyPressed(KEY_THREE) && player.inventory.size() > 2) {
-                slotNum = 2;
-                if (player.inventory[2] == "Note") note.isUsing = !note.isUsing;
-                if (player.inventory[2] == "Torch") torch.isUsing = !torch.isUsing;
-            }
-
-            if (note.isUsing) {
-                const char* msg;
-                if (std::find(player.inventory.begin(), player.inventory.end(), "Torch") != player.inventory.end() && torch.isUsing) {
-                    msg = noteMsg;
-                } else {
-                    msg = noteGibberishMsg;
-                }
-                DrawTexture(noteItemSprite, W / 2 - 160, H / 2 - 234, WHITE);
-                DrawTextEx(noteFont, msg, {W / 2 - 100, H / 2 - 165}, 16.0f, 8, BLACK);
-            }
-
-// --- End Inventory Management ---
-
-// --- Misc HUD ---
-
-            // TODO (Remove) Show player pos for debugging - whatever reason, std:: methods were not working for me
-            char positionText[50]; 
-            sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
-
-            DrawFPS(5, 5);
-            drawHearts(hearts, player.currentHealth);
-            DrawInventoryHUD(&player, slotNum);
-            DrawText(positionText, 900, 10, 32, YELLOW);
-            
-// --- End Misc HUD ---
-
-/// --- Respawn Screen ---
-
-            int finalHealth = player.currentHealth;
-            if (prev_health != 0 && finalHealth == 0) {
-                PlaySound(playerGroanSound);
-            }
-            
-            if (finalHealth == 0) {
-                Rectangle respawnBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
-                std::cout << "In respawn screen if statement\n";
-                drawRespawnScreen(respawnBtn);
-                player.inventory.clear();
-                torch.pickedUp = false;
-                torch.isUsing = false;
-                note.pickedUp = false;
-                note.isUsing = false;
-                key.pickedUp = false;
-                key.isUsing = false;
-                Vector2 mousePos = GetMousePosition();
-                bool isMouseOver = CheckCollisionPointRec(mousePos, respawnBtn);
-                if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                    player.currentHealth = 6;
-                    player.rect.x = startPosx;
-                    player.rect.y = startPosy;
-                    spawnGhost(&ghost, whiteGhostSprite, {2650, 500});
-                }
-            }
-
-/// --- End Respawn Screen ---
-
         }
-        EndDrawing();
-    }
+        // --- End of check for pause key ---
+
+        // When not paused update game
+        if (!isPaused)
+        {
+            // --- Update game ---
+        
+            float previous_x = player.rect.x;
+            float previous_y = player.rect.y;
+            int prev_health = player.currentHealth;
+    
+            AnimateTMX(map);
+            movePlayer(&player);
+    
+            // Replace with pause screen 
+            if(player.currentHealth != 0) {
+                moveRectByVel(&(player.rect), &(player.vel));
+            }
+    
+            if (isTileCollisions(map, &player)) {
+                player.rect.x = previous_x;
+                player.rect.y = previous_y;
+            }
+    
+            checkDoorCollision(&door, &player);
+    
+            // player.currentHealth != 0) prevents bug when player is hurt while dead
+            if(player.currentLevel == 1 && player.currentHealth != 0) {
+                for (int i = 0; i < numTraps; i++) {
+                    if (checkTrapCollision(&player, &traps[i]) && traps[i].active) {
+                        player.currentHealth -= 1;
+                        traps[i].active = false;
+                        traps[i].deactivationTime = GetTime();
+                        PlaySound(playerGruntSound);
+                    }
+                    updateTrapState(&traps[i]);
+                }
+            }
+    
+            update_animation(&(player.animations[player.state]));
+    
+            cameraFollow(&camera, &player);
+    
+            handleGhostSpawn(&ghost, whiteGhostSprite);
+    
+            BeginDrawing();
+            {
+                ClearBackground(BLACK);
+                BeginMode2D(camera);
+                DrawTMX(map, &camera, 0, 0, WHITE);
+    
+    
+                drawPlayer(&player);
+    
+                if(player.currentLevel == 1) {
+                    drawDoor(&door);
+                    drawGhost(&ghost);
+        
+                    moveGhost(&ghost, &player);
+                    checkGhostCollision(&ghost, &player);
+    
+                    for (int i = 0; i < numTraps; i++) {
+                        drawTrap(&traps[i]);
+                    }
+    
+                    if (!torch.pickedUp) {
+                        drawTorch(&torch);
+                    }
+                    if (checkItemCollision(&torch, &player) && torch.pickedUp == false) {
+                        player.inventory.push_back("Torch");
+                        torch.pickedUp = true;
+                        torch.isUsing = true;
+                    }
+        
+                    if (!note.pickedUp) {
+                        drawItem(&note);
+                    }
+                    if (checkItemCollision(&note, &player) && note.pickedUp == false) {
+                        player.inventory.push_back("Note");
+                        note.pickedUp = true;
+                        note.isUsing = true;
+                    }
+        
+                    if (!key.pickedUp) {
+                        drawItem(&key);
+                    }
+                    if (checkItemCollision(&key, &player) && key.pickedUp == false) {
+                        player.inventory.push_back("Key");
+                        key.pickedUp = true;
+                    }
+                }
+    
+    // --- Level Transitions ---
+    
+                // Level 1 → Level 2
+                if (player.currentLevel == 1 && checkLevelDoorCollision(&level1_exit, &player)) {
+                    HandleLevelTransition(1, 2, 0, map, player); // Only one path from 1 → 2
+                }
+    
+                // Level 2 → Level 1
+                if (player.currentLevel == 2 && checkLevelDoorCollision(&level2_entrance, &player)) {
+                    HandleLevelTransition(2, 1, 0, map, player); // Only one path from 2 → 1
+                }
+    
+                // Level 2 → Level 3 (multiple exits)
+                if (player.currentLevel == 2) {
+                    if (checkLevelDoorCollision(&level2_1_exit, &player)) {
+                        HandleLevelTransition(2, 3, 0, map, player); // First way into level 3
+                    } else if (checkLevelDoorCollision(&level2_2_exit, &player)) {
+                        HandleLevelTransition(2, 3, 1, map, player);
+                    } else if (checkLevelDoorCollision(&level2_3_exit, &player)) {
+                        HandleLevelTransition(2, 3, 2, map, player);
+                    }
+                }
+    
+                // Level 3 -> CORRECT level 2 door
+                if (player.currentLevel == 3 && checkLevelDoorCollision(&level3_entrance, &player)) {
+                    UnloadTMX(map);
+                    player.currentLevel = 2;
+                    const char* tmx = mapName[player.currentLevel - 1];
+                    map = LoadTMX(tmx);
+                
+                    if (map == nullptr) {
+                        TraceLog(LOG_ERROR, "Failed to load map on return from Level 3");
+                        return EXIT_FAILURE;
+                    }
+                
+                    // Send player back to the correct return spot based on the last exit used
+                    Vector2 returnPos = returnToLevel2From3[lastLevel2ExitUsed];
+                    player.rect.x = returnPos.x;
+                    player.rect.y = returnPos.y;
+                }
+    
+    // --- End Level Transitions ---
+    
+                EndMode2D();
+    
+    // --- Inventory Management ---
+                int slotNum = 0;
+    
+                if (torch.pickedUp && torch.isUsing) {
+                    drawLight(highLight);
+                } else {
+                    drawLight(lowLight);
+                }
+    
+                if (IsKeyPressed(KEY_ONE) && player.inventory.size() > 0) {
+                    slotNum = 0;
+                    if (player.inventory[0] == "Note") note.isUsing = !note.isUsing;
+                    if (player.inventory[0] == "Torch") torch.isUsing = !torch.isUsing;
+                }
+                if (IsKeyPressed(KEY_TWO) && player.inventory.size() > 1) {
+                    slotNum = 1;
+                    if (player.inventory[1] == "Note") note.isUsing = !note.isUsing;
+                    if (player.inventory[1] == "Torch") torch.isUsing = !torch.isUsing;
+                }
+                if (IsKeyPressed(KEY_THREE) && player.inventory.size() > 2) {
+                    slotNum = 2;
+                    if (player.inventory[2] == "Note") note.isUsing = !note.isUsing;
+                    if (player.inventory[2] == "Torch") torch.isUsing = !torch.isUsing;
+                }
+    
+                if (note.isUsing) {
+                    const char* msg;
+                    if (std::find(player.inventory.begin(), player.inventory.end(), "Torch") != player.inventory.end() && torch.isUsing) {
+                        msg = noteMsg;
+                    } else {
+                        msg = noteGibberishMsg;
+                    }
+                    DrawTexture(noteItemSprite, W / 2 - 160, H / 2 - 234, WHITE);
+                    DrawTextEx(noteFont, msg, {W / 2 - 100, H / 2 - 165}, 16.0f, 8, BLACK);
+                }
+    
+    // --- End Inventory Management ---
+    
+    // --- Misc HUD ---
+    
+                // TODO (Remove) Show player pos for debugging - whatever reason, std:: methods were not working for me
+                char positionText[50]; 
+                sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
+    
+                DrawFPS(5, 5);
+                drawHearts(hearts, player.currentHealth);
+                DrawInventoryHUD(&player, slotNum);
+                DrawText(positionText, 900, 10, 32, YELLOW);
+                
+    // --- End Misc HUD ---
+    
+    /// --- Respawn Screen ---
+    
+                int finalHealth = player.currentHealth;
+                if (prev_health != 0 && finalHealth == 0) {
+                    PlaySound(playerGroanSound);
+                }
+                
+                if (finalHealth == 0) {
+                    Rectangle respawnBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
+                    std::cout << "In respawn screen if statement\n";
+                    drawRespawnScreen(respawnBtn);
+                    player.inventory.clear();
+                    torch.pickedUp = false;
+                    torch.isUsing = false;
+                    note.pickedUp = false;
+                    note.isUsing = false;
+                    key.pickedUp = false;
+                    key.isUsing = false;
+                    Vector2 mousePos = GetMousePosition();
+                    bool isMouseOver = CheckCollisionPointRec(mousePos, respawnBtn);
+                    if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                        player.currentHealth = 6;
+                        player.rect.x = startPosx;
+                        player.rect.y = startPosy;
+                        spawnGhost(&ghost, whiteGhostSprite, {2650, 500});
+                    }
+                }
+    
+    /// --- End Respawn Screen ---
+    
+            }
+            EndDrawing();
+        }
+        // --- Pause Screen ---
+        else
+        {
+            std::cout << "In Pause else statement\n";
+            BeginDrawing();
+            Rectangle respawnBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
+            drawPauseScreen(respawnBtn);
+            Vector2 mousePos = GetMousePosition();
+            bool isMouseOver = CheckCollisionPointRec(mousePos, respawnBtn);
+            if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
+            {
+                isPaused = false;
+            }
+            EndDrawing();
+        }
+        // --- End of Pause Screen
+
+    } // End of while loop
     // else for pause screen goes here
 
 // --- Unload Assets ---
