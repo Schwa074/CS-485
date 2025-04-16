@@ -9,4 +9,6 @@ void drawRespawnScreen(Rectangle respawnBtn);
 
 void drawStartScreen(Rectangle respawnBtn, Rectangle quitButton);
 
+extern bool isPaused;
+
 #endif

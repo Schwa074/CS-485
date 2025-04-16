@@ -1,5 +1,7 @@
 #include "screens.h"
 
+bool isPaused = false;
+
 void drawPauseScreen(Rectangle resumeBtn)
 {
     Font textFont = LoadFontEx("resources/alagard.png", 64, 0, 0);
