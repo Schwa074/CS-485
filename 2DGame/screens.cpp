@@ -22,7 +22,13 @@ void drawRespawnScreen(Rectangle respawnBtn, Font deathFont)
 
 void drawStartScreen(Rectangle startButton, Rectangle quitButton, Font textFont)
 {
-    
+    const char* StartTitleMessage = "          Crypt Escape\n  Press Start to Begin Game\n    Press Quit to Exit Game";
+    DrawRectangleGradientV(0,0, W, H, (Color){185, 185, 185, 255}, (Color){185, 185, 185, 255});
+    DrawTextEx(textFont, StartTitleMessage, {W / 2 - 300, H / 2 - 165}, 32.0f, 8, BLACK);
+    DrawRectangleRounded(startButton, 1.0f, 1, (Color){70, 70, 80, 255});
+    DrawRectangleRounded(quitButton, 1.0f, 1, (Color){70, 70, 80, 255});
+    DrawTextEx(textFont, "Start", (Vector2){W / 2 - 23, H / 2 - 20}, 36.0f, 2, WHITE);
+    DrawTextEx(textFont, "Quit", (Vector2){W / 2 - 7, H / 2 + 85}, 36.0f, 2, WHITE);
 }
 
 void drawWinScreen(Rectangle backToStartButton, Font textFont)

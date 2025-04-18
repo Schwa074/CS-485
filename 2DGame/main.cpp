@@ -1,6 +1,7 @@
 #define RAYTMX_IMPLEMENTATION
 #include "raytmx.h"
 #include "game.h"
+#include "screens.h"
 
 // --- Global Sprites Variables ---
 Texture2D torchStillSprite;
@@ -179,6 +180,8 @@ int main() {
     Camera2D camera = (Camera2D){.offset = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .target = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .rotation = 0.0f, .zoom = 1.0f};
 
     while (!WindowShouldClose()) {
+
+  
 // --- Check for pause key ---
         if (IsKeyPressed(KEY_P))
         {
@@ -187,7 +190,7 @@ int main() {
 // --- End of check for pause key ---
 
         // When not paused update game
-        if (!isPaused)
+        if (!isPaused && !inStartScreen)
         {
             // --- Update game ---
         
@@ -421,7 +424,7 @@ int main() {
             EndDrawing();
         }
 // --- Pause Screen ---
-        else
+        else if(isPaused && !inStartScreen)
         {
             BeginDrawing();
             Rectangle resumeBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
@@ -433,6 +436,33 @@ int main() {
                 isPaused = false;
             }
             EndDrawing();
+        }
+        else if(!isPaused && inStartScreen) 
+        {
+            BeginDrawing();
+            ClearBackground(BLACK);
+    
+            // Create start and quit buttons
+            Rectangle startBtn = {W / 2 - 125, H / 2 - 50, W / 4, H / 8};
+            Rectangle quitBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
+    
+            drawStartScreen(startBtn, quitBtn, textFont);
+    
+            Vector2 mousePos = GetMousePosition();
+            bool isStartOver = CheckCollisionPointRec(mousePos, startBtn);
+            bool isQuitOver = CheckCollisionPointRec(mousePos, quitBtn);
+    
+            if (isStartOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                inStartScreen = false; // Start the game
+            }
+    
+            if (isQuitOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                break; // Quit the game
+            }
+    
+            EndDrawing();
+            
+        // Do nothing, wait for user to click start or quit
         }
 // --- End of Pause Screen
 
@@ -466,3 +496,4 @@ int main() {
 
     return 0;
 }
+// --- End of main.cpp ---
