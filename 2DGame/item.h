@@ -17,6 +17,8 @@ struct Item {
 void createItem(Item *item, Texture2D itemSprite, Rectangle pos, std::string itemName);
 void drawItem(Item* item);
 void drawTorch(Item* torch);
+void drawSword(Item* sword);
+void swingSword(Item* sword, Player* player, std::vector<Enemy>& ghosts, Texture2D swordSwingSprite);
 bool checkItemCollision(Item* item, Player* player);
 
 #endif // ITEM_H

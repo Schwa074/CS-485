@@ -187,7 +187,7 @@ void handleWhiteGhostSpawn(Enemy *whiteGhost, Texture2D whiteGhostSprite) {
 }
 
 void createTrap(Enemy *trap, Texture2D trapSprite, Vector2 spawnPos) {
-    trap->rect = {spawnPos.x, spawnPos.y, 32, 32};
+    trap->rect = {spawnPos.x, spawnPos.y, 28, 28};
     trap->sprite = trapSprite;
     trap->speed = 0.0f;
     trap->active = true;
