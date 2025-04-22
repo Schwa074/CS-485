@@ -1,6 +1,7 @@
 #include "screens.h"
 
 bool isPaused = false;
+bool inStartScreen = true;
 
 void drawPauseScreen(Rectangle resumeBtn, Font textFont)
 {

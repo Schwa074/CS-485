@@ -20,7 +20,8 @@ Vector2 returnToLevel2From3[] = {
 const char* mapName[] = {
     "resources/level1.tmx",
     "resources/level2.tmx",
-    "resources/level3.tmx"
+    "resources/level3.tmx",
+    "resources/level4.tmx"
 };
 
 int lastLevel2ExitUsed = -1; // defaulted value
@@ -34,6 +35,9 @@ LevelTransition levelTransitions[] = {
 
     // Level 2 -> Level 1
     {2, 1, "resources/level1.tmx", {2658.0f, 400.0f}},
+
+    // Level 3 -> Level 4
+    {3, 4, "resources/level4.tmx", {576.0f, 512.0f}},
 };
 
 bool HandleLevelTransition(int fromLevel, int toLevel, int transitionIndex, TmxMap*& map, Player& player) {
@@ -48,6 +52,7 @@ bool HandleLevelTransition(int fromLevel, int toLevel, int transitionIndex, TmxM
                 TraceLog(LOG_ERROR, "Failed to load map: %s", levelTransitions[i].mapPath);
                 return false;
             }
+            TraceLog(LOG_DEBUG, "LOADED MAP: %s", levelTransitions[i].mapPath);
             player.currentLevel = toLevel;
             player.rect.x = levelTransitions[i].spawnPosition.x;
             player.rect.y = levelTransitions[i].spawnPosition.y;

@@ -1,7 +1,6 @@
 #define RAYTMX_IMPLEMENTATION
 #include "raytmx.h"
 #include "game.h"
-#include "screens.h"
 
 // --- Global Sprites Variables ---
 Texture2D torchStillSprite;
@@ -10,13 +9,7 @@ Texture2D keySprite;
 Texture2D swordStillSprite;
 // --- End Global Sprites Variables ---
 
-// --- Global Bool Variables ---
-bool inStartScreen;
-// --- End Global Bool Variables ---
-
 int main() {
-    inStartScreen = true;
-    //isPaused = false;
     std::vector<Enemy> ghosts; // Dynamic list of all ghosts
     SetTraceLogLevel(LOG_DEBUG);
     TraceLog(LOG_DEBUG, "Opening window");
@@ -122,6 +115,11 @@ int main() {
     level3_entrance.toLevel = 2;
     Rectangle level3_entrancePos = {288, 160, 64, 32};
     createLevelDoor(&level3_entrance, level3_entrancePos);
+
+    LevelDoor level3_exit;
+    level3_exit.toLevel = 4;
+    Rectangle level3_exitPos = {2144, 1376, 64, 32};
+    createLevelDoor(&level3_exit, level3_exitPos);
 
     Player player = Player{.rect = (Rectangle){.x = startPosx,
                                                 .y = startPosy,
@@ -347,6 +345,11 @@ int main() {
                     Vector2 returnPos = returnToLevel2From3[lastLevel2ExitUsed];
                     player.rect.x = returnPos.x;
                     player.rect.y = returnPos.y;
+                }
+
+                // Level 3 -> 4
+                if(player.currentLevel == 3 && checkLevelDoorCollision(&level3_exit, &player)) {
+                    HandleLevelTransition(3, 4, 0, map, player);
                 }
     
 // --- End Level Transitions ---

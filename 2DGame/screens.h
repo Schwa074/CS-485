@@ -12,5 +12,6 @@ void drawStartScreen(Rectangle respawnBtn, Rectangle quitButton, Font textFont);
 void drawWinScreen(Rectangle backToStartButton, Font textFont);
 
 extern bool isPaused;
+extern bool inStartScreen;
 
 #endif
