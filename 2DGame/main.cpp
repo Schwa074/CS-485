@@ -184,7 +184,13 @@ int main() {
     Camera2D camera = (Camera2D){.offset = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .target = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .rotation = 0.0f, .zoom = 1.0f};
 
     while (!WindowShouldClose()) {
-
+// --- Check if quit was pressed
+        if (pressedQuit)
+        {
+            std::cout << "Quit was pressed\n";
+            break;
+        }
+// --- End of quit check
   
 // --- Check for pause key ---
         if (IsKeyPressed(KEY_P))
@@ -249,17 +255,6 @@ int main() {
     
     
                 drawPlayer(&player);
-    
-                // --- Test Win Screen ---
-                // Rectangle quitBtn = {W / 2, H / 2, W / 4, H / 8};
-                // drawWinScreen(quitBtn, textFont);
-                // Vector2 mousePos = GetMousePosition();
-                // bool isMouseOver = CheckCollisionPointRec(mousePos, quitBtn);
-                // if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
-                // {
-                //     break;
-                // }
-                // --- End Test Win Screen ---
 
                 if(player.currentLevel == 1) {
                     drawDoor(&door);
@@ -350,6 +345,15 @@ int main() {
                 // Level 3 -> 4
                 if(player.currentLevel == 3 && checkLevelDoorCollision(&level3_exit, &player)) {
                     HandleLevelTransition(3, 4, 0, map, player);
+                    inWinScreen = true;
+                }
+
+                // Level 4 -> 1
+                if (player.currentLevel == 4 && pressedPlayAgain)
+                {
+                    pressedPlayAgain = false;
+                    inWinScreen = false;
+                    HandleLevelTransition(4, 1, 0, map, player);
                 }
     
 // --- End Level Transitions ---
@@ -360,9 +364,15 @@ int main() {
                 int slotNum = 0;
     
                 if (torch.pickedUp && torch.isUsing) {
-                    drawLight(highLight);
+                    if (!inWinScreen)
+                    {
+                        drawLight(highLight);
+                    }
                 } else {
-                    drawLight(lowLight);
+                    if (!inWinScreen)
+                    {
+                        drawLight(lowLight);
+                    }
                 }
     
                 if (IsKeyPressed(KEY_ONE) && player.inventory.size() > 0) {
@@ -408,15 +418,54 @@ int main() {
 // --- Misc HUD ---
     
                 // TODO (Remove) Show player pos for debugging - whatever reason, std:: methods were not working for me
-                char positionText[50]; 
-                sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
-    
-                DrawFPS(5, 5);
-                drawHearts(hearts, player.currentHealth);
-                DrawInventoryHUD(&player, slotNum);
-                DrawText(positionText, 900, 10, 32, YELLOW);
+                if (!inWinScreen)
+                {
+                    char positionText[50]; 
+                    sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
+                
+                    DrawFPS(5, 5);
+                    drawHearts(hearts, player.currentHealth);
+                    DrawInventoryHUD(&player, slotNum);
+                    DrawText(positionText, 900, 10, 32, YELLOW);
+                }
+                
                 
 // --- End Misc HUD ---
+
+// --- Win Screen ---
+                if (inWinScreen)
+                {
+                    Rectangle playAgainBtn = {W / 2 - 150, H / 2 + 100, W / 4, H / 8};
+                    Rectangle quitBtn = {W / 2 - 150, H / 2 + 200, W / 4, H / 8};
+                    drawWinScreen(playAgainBtn, quitBtn, textFont);
+                    Vector2 mousePos = GetMousePosition();
+                    bool isMouseOverPlayAgain = CheckCollisionPointRec(mousePos, playAgainBtn);
+                    bool isMouseOverQuit = CheckCollisionPointRec(mousePos, quitBtn);
+                    std::cout << "isMouseOver = " << isMouseOverQuit << std::endl;
+                    if (isMouseOverPlayAgain && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+                    {
+                        player.inventory.clear();
+                        torch.pickedUp = false;
+                        torch.isUsing = false;
+                        note.pickedUp = false;
+                        note.isUsing = false;
+                        key.pickedUp = false;
+                        key.isUsing = false;
+                        sword.pickedUp = false;
+                        sword.isUsing = false;
+                        Vector2 mousePos = GetMousePosition();
+                        player.currentHealth = 6;
+                        player.rect.x = startPosx;
+                        player.rect.y = startPosy;
+                        spawnWhiteGhost(&whiteGhost, whiteGhostSprite, {2650, 500});
+                        pressedPlayAgain = true;
+                    }
+                    if (isMouseOverQuit && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
+                    {
+                        pressedQuit = true;
+                    }
+                }
+// --- End of Win Screen
     
 // --- Respawn Screen ---
     
@@ -448,7 +497,6 @@ int main() {
                 }
     
 // --- End Respawn Screen ---
-    
             }
             EndDrawing();
         }
@@ -466,6 +514,8 @@ int main() {
             }
             EndDrawing();
         }
+// --- End of Pause Screen ---
+// --- Start Screen ---
         else if(!isPaused && inStartScreen) 
         {
             BeginDrawing();
@@ -493,7 +543,24 @@ int main() {
             
         // Do nothing, wait for user to click start or quit
         }
-// --- End of Pause Screen
+// --- End of Start Screen ---
+// --- Win Screen --- Freezes the program
+//         if (inWinScreen)
+//         {
+//             BeginDrawing();
+//             DrawTMX(map, &camera, 0, 0, WHITE);
+//             drawPlayer(&player);
+//             Rectangle quitBtn = {W / 2, H / 2, W / 4, H / 8};
+//             drawWinScreen(quitBtn, textFont);
+//             Vector2 mousePos = GetMousePosition();
+//             bool isMouseOver = CheckCollisionPointRec(mousePos, quitBtn);
+//             if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
+//             {
+//                 std::cout << "Pressed quit\n";
+//                 break;
+//             }
+// }
+// --- End of Win Screen
 
     } // End of while loop
     // else for pause screen goes here

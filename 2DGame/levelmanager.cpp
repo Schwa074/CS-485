@@ -37,7 +37,10 @@ LevelTransition levelTransitions[] = {
     {2, 1, "resources/level1.tmx", {2658.0f, 400.0f}},
 
     // Level 3 -> Level 4
-    {3, 4, "resources/level4.tmx", {576.0f, 512.0f}},
+    {3, 4, "resources/level4.tmx", {1120.0f, 1088.0f}},
+
+    // Level 4 -> Level 1
+    {4, 1, "resources/level1.tmx", {startPosx, startPosy}}
 };
 
 bool HandleLevelTransition(int fromLevel, int toLevel, int transitionIndex, TmxMap*& map, Player& player) {
