@@ -11,6 +11,7 @@ Texture2D swordStillSprite;
 
 int main() {
     std::vector<Enemy> ghosts; // Dynamic list of all ghosts
+    bool isSwingingSword = false; // Tracks whether the sword swing animation is active
     SetTraceLogLevel(LOG_DEBUG);
     TraceLog(LOG_DEBUG, "Opening window");
     InitWindow(W, H, "Crypt Escape");
@@ -80,7 +81,7 @@ int main() {
     createItem(&key, keySprite, keyPos, "Key");
 
     Item sword;
-    Rectangle swordPos = {1276, 635, 32, 32};
+    Rectangle swordPos = {1276, 635, 48, 48};
     createItem(&sword, swordSprite, swordPos, "Sword");
 
     LevelDoor level1_exit;
@@ -299,6 +300,14 @@ int main() {
                         player.inventory.push_back("Sword");
                         sword.pickedUp = true;
                     }
+                    if (isSwingingSword) {
+                        swingSword(&sword, &player, ghosts, swordSwingSprite);
+                    
+                        // Check if the animation has completed
+                        if (sword.currentFrame == 0 && sword.frameCounter == 0.0f) {
+                            isSwingingSword = false; // Animation has finished
+                        }
+                    }
                 }
     
 // --- Level Transitions ---
@@ -379,25 +388,25 @@ int main() {
                     slotNum = 0;
                     if (player.inventory[0] == "Note") note.isUsing = !note.isUsing;
                     if (player.inventory[0] == "Torch") torch.isUsing = !torch.isUsing;
-                    if (player.inventory[0] == "Sword") sword.isUsing = !sword.isUsing;
+                    if (player.inventory[0] == "Sword") isSwingingSword = true;
                 }
                 if (IsKeyPressed(KEY_TWO) && player.inventory.size() > 1) {
                     slotNum = 1;
                     if (player.inventory[1] == "Note") note.isUsing = !note.isUsing;
                     if (player.inventory[1] == "Torch") torch.isUsing = !torch.isUsing;
-                    if (player.inventory[1] == "Sword") sword.isUsing = !sword.isUsing;
+                    if (player.inventory[1] == "Sword") isSwingingSword = true; 
                 }
                 if (IsKeyPressed(KEY_THREE) && player.inventory.size() > 2) {
                     slotNum = 2;
                     if (player.inventory[2] == "Note") note.isUsing = !note.isUsing;
                     if (player.inventory[2] == "Torch") torch.isUsing = !torch.isUsing;
-                    if (player.inventory[2] == "Sword") sword.isUsing = !sword.isUsing;
+                    if (player.inventory[2] == "Sword") isSwingingSword = true; 
                 }
-                if (IsKeyPressed(KEY_FOUR) && player.inventory.size() > 2) {
+                if (IsKeyPressed(KEY_FOUR) && player.inventory.size() > 3) {
                     slotNum = 3;
                     if (player.inventory[3] == "Note") note.isUsing = !note.isUsing;
                     if (player.inventory[3] == "Torch") torch.isUsing = !torch.isUsing;
-                    if (player.inventory[3] == "Sword") sword.isUsing = !sword.isUsing;
+                    if (player.inventory[3] == "Sword") isSwingingSword = true; 
                 }
                 if (note.isUsing) {
                     const char* msg;
@@ -409,9 +418,7 @@ int main() {
                     DrawTexture(noteItemSprite, W / 2 - 160, H / 2 - 234, WHITE);
                     DrawTextEx(noteFont, msg, {W / 2 - 100, H / 2 - 165}, 16.0f, 8, BLACK);
                 }
-                if (sword.isUsing) {
-                    swingSword(&sword, &player, ghosts, swordSwingSprite); // Pass all ghosts and their count and swing sprite
-                }
+                
     
 // --- End Inventory Management ---
     

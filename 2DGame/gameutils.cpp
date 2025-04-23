@@ -84,6 +84,7 @@ void drawLight(Texture2D light)
 extern Texture2D torchStillSprite;
 extern Texture2D noteSprite;
 extern Texture2D keySprite;
+extern Texture2D swordStillSprite;
 
 void DrawInventoryHUD(const Player *player, int selectedSlot)
 {
@@ -117,6 +118,7 @@ void DrawInventoryHUD(const Player *player, int selectedSlot)
             if (item == "Torch")      itemTexture = torchStillSprite;
             else if (item == "Note")  itemTexture = noteSprite;
             else if (item == "Key")   itemTexture = keySprite;
+            else if (item == "Sword")   itemTexture = swordStillSprite;
             else continue;
 
             // Draw item icon

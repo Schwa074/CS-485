@@ -5,7 +5,7 @@ void createItem(Item *item, Texture2D itemSprite, Rectangle pos, std::string ite
     item->rect = pos;
     item->sprite = itemSprite;
     item->currentFrame = 0;
-    item->frameTime = 0.0f;
+    item->frameTime = 0.1f;
     item->frameCounter = 0.0f;
     item->pickedUp = false;
     item->isUsing = false;
@@ -71,25 +71,37 @@ void drawSword(Item* sword) {
 }
 
 void swingSword(Item* sword, Player* player, std::vector<Enemy>& ghosts, Texture2D swordSwingSprite) {
-  // Update sword animation
+  // Update animation frame
   sword->frameCounter += GetFrameTime();
   if (sword->frameCounter >= sword->frameTime) {
       sword->frameCounter = 0.0f;
       sword->currentFrame++;
+      TraceLog(LOG_DEBUG, std::to_string(sword->currentFrame).c_str());
       if (sword->currentFrame > 8) { // 9 frames (0 to 8)
-          sword->currentFrame = 0;
-          sword->isUsing = false; // Stop swinging after animation ends
+          sword->currentFrame = 0; // Reset animation
       }
   }
 
-  // Sword swing source and destination rectangles
+  // Calculate source and destination rectangles
   Rectangle source = {(float)(sword->currentFrame * 96), 0.0f, 96.0f, 96.0f}; // Each frame is 96x96 pixels
-  Rectangle dest = {player->rect.x - 16, player->rect.y - 16, 96.0f, 96.0f};   // Sword swing follows player position
+
+  // Scalable sword size
+  float scale = 2.0f; // Scale factor (2.0x larger)
+  float scaledWidth = 96.0f * scale;
+  float scaledHeight = 96.0f * scale;
+
+  // Adjust the position to center the sprite on the player
+  Rectangle dest = {
+      player->rect.x + (player->rect.width / 2) - (scaledWidth / 2),  // Center X
+      player->rect.y + (player->rect.height / 2) - (scaledHeight / 2), // Center Y
+      scaledWidth,  // Width scaled by the factor
+      scaledHeight  // Height scaled by the factor
+  };
   Vector2 origin = {0, 0};
   float rotation = 0.0f;
   Color tint = WHITE;
 
-  // Draw the sword swing animation using swordSwingSprite
+  // Draw the sword swing animation
   DrawTexturePro(swordSwingSprite, source, dest, origin, rotation, tint);
 
   // Sword hitbox (same as the destination rectangle)
