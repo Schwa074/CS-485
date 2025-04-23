@@ -300,16 +300,15 @@ int main() {
                         player.inventory.push_back("Sword");
                         sword.pickedUp = true;
                     }
-                    if (isSwingingSword) {
-                        swingSword(&sword, &player, ghosts, swordSwingSprite);
+                }
+                if (isSwingingSword) {
+                    swingSword(&sword, &player, ghosts, swordSwingSprite);
                     
-                        // Check if the animation has completed
-                        if (sword.currentFrame == 0 && sword.frameCounter == 0.0f) {
-                            isSwingingSword = false; // Animation has finished
-                        }
+                    // Check if the animation has completed
+                    if (sword.currentFrame == 0 && sword.frameCounter == 0.0f) {
+                        isSwingingSword = false; // Animation has finished
                     }
                 }
-    
 // --- Level Transitions ---
     
                 // Level 1 → Level 2
