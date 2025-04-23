@@ -449,7 +449,7 @@ int main() {
                 // TODO (Remove) Show player pos for debugging - whatever reason, std:: methods were not working for me
                 if (!inWinScreen)
                 {
-                    std::cout << "Time: " << elapsedTime << std::endl;
+                    //std::cout << "Time: " << elapsedTime << std::endl;
                     char positionText[50]; 
                     char timeText[50];
                     sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
@@ -473,7 +473,6 @@ int main() {
                     Vector2 mousePos = GetMousePosition();
                     bool isMouseOverPlayAgain = CheckCollisionPointRec(mousePos, playAgainBtn);
                     bool isMouseOverQuit = CheckCollisionPointRec(mousePos, quitBtn);
-                    std::cout << "isMouseOver = " << isMouseOverQuit << std::endl;
                     if (isMouseOverPlayAgain && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
                     {
                         startTime = time(0); // reset start time
