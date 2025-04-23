@@ -4,6 +4,7 @@
 #include <raylib.h>
 // #define RAYTMX_IMPLEMENTATION
 // #include "raytmx.h"
+#include <time.h>
 #include <vector>
 #include <format>
 #include <iostream>

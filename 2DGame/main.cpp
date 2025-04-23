@@ -10,6 +10,10 @@ Texture2D swordStillSprite;
 // --- End Global Sprites Variables ---
 
 int main() {
+    bool firstGame = true;
+    double bestTime = 0.0;
+    time_t startTime = time(0);
+    double elapsedTime;
     std::vector<Enemy> ghosts; // Dynamic list of all ghosts
     bool isSwingingSword = false; // Tracks whether the sword swing animation is active
     SetTraceLogLevel(LOG_DEBUG);
@@ -185,6 +189,15 @@ int main() {
     Camera2D camera = (Camera2D){.offset = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .target = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .rotation = 0.0f, .zoom = 1.0f};
 
     while (!WindowShouldClose()) {
+// --- Update elapsed time ---
+        if (!inStartScreen)
+        {
+            elapsedTime = difftime(time(0), startTime);
+            //std::cout << "Time: " << elapsedTime << std::endl;
+        }
+        
+// --- End update elapsed time ---
+
 // --- Check if quit was pressed
         if (pressedQuit)
         {
@@ -359,6 +372,14 @@ int main() {
                 // Level 4 -> 1
                 if (player.currentLevel == 4 && pressedPlayAgain)
                 {
+                    if (firstGame) // if they beat the game the first time
+                    {
+                        bestTime = elapsedTime;
+                    }
+                    else if (elapsedTime < bestTime) // if they beat their best time
+                    {
+                        bestTime = elapsedTime;
+                    }
                     pressedPlayAgain = false;
                     inWinScreen = false;
                     HandleLevelTransition(4, 1, 0, map, player);
@@ -428,13 +449,16 @@ int main() {
                 // TODO (Remove) Show player pos for debugging - whatever reason, std:: methods were not working for me
                 if (!inWinScreen)
                 {
+                    std::cout << "Time: " << elapsedTime << std::endl;
                     char positionText[50]; 
+                    char timeText[50];
                     sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
-                
+                    sprintf(timeText, "Time: %.0f", elapsedTime);
                     DrawFPS(5, 5);
                     drawHearts(hearts, player.currentHealth);
                     DrawInventoryHUD(&player, slotNum);
-                    DrawText(positionText, 900, 10, 32, YELLOW);
+                    DrawText(timeText, 900, 10, 32, RAYWHITE);
+                    DrawText(positionText, 900, 42, 32, YELLOW);
                 }
                 
                 
@@ -445,13 +469,14 @@ int main() {
                 {
                     Rectangle playAgainBtn = {W / 2 - 150, H / 2 + 100, W / 4, H / 8};
                     Rectangle quitBtn = {W / 2 - 150, H / 2 + 200, W / 4, H / 8};
-                    drawWinScreen(playAgainBtn, quitBtn, textFont);
+                    drawWinScreen(playAgainBtn, quitBtn, textFont, bestTime);
                     Vector2 mousePos = GetMousePosition();
                     bool isMouseOverPlayAgain = CheckCollisionPointRec(mousePos, playAgainBtn);
                     bool isMouseOverQuit = CheckCollisionPointRec(mousePos, quitBtn);
                     std::cout << "isMouseOver = " << isMouseOverQuit << std::endl;
                     if (isMouseOverPlayAgain && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
                     {
+                        startTime = time(0); // reset start time
                         player.inventory.clear();
                         torch.pickedUp = false;
                         torch.isUsing = false;
