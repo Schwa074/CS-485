@@ -19,7 +19,7 @@ int main() {
 
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     CreateHiddenCollisions();
-
+    // CreateInvisibleZones(); // Ghost spawning zones for level 3
 
     // Start Screen if statement
 
@@ -365,7 +365,9 @@ int main() {
                 }
     
 // --- End Level Transitions ---
-    
+                if (player.currentLevel == 3) {
+                CheckInvisibleZones(&player, ghosts, redGhostSprite, blueGhostSprite);
+                }
                 EndMode2D();
     
 // --- Inventory Management ---

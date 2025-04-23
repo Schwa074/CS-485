@@ -18,5 +18,6 @@
 #include "levelmanager.h"
 #include "screens.h"
 #include "level2manager.h"
+#include "level3manager.h"
 
 #endif // GAME_H
