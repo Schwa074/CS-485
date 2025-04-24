@@ -367,19 +367,20 @@ int main() {
                 if(player.currentLevel == 3 && checkLevelDoorCollision(&level3_exit, &player)) {
                     HandleLevelTransition(3, 4, 0, map, player);
                     inWinScreen = true;
-                }
-
-                // Level 4 -> 1
-                if (player.currentLevel == 4 && pressedPlayAgain)
-                {
                     if (firstGame) // if they beat the game the first time
                     {
                         bestTime = elapsedTime;
+                        firstGame = false;
                     }
                     else if (elapsedTime < bestTime) // if they beat their best time
                     {
                         bestTime = elapsedTime;
                     }
+                }
+
+                // Level 4 -> 1
+                if (player.currentLevel == 4 && pressedPlayAgain)
+                {
                     pressedPlayAgain = false;
                     inWinScreen = false;
                     HandleLevelTransition(4, 1, 0, map, player);
