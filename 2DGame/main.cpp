@@ -39,10 +39,16 @@ int main() {
         return EXIT_FAILURE;
     }
 
+    //Load Music Section for Background Music
+    Music musicStartScreen = LoadMusicStream("assets/Start_Screen.mp3");
+    Music musicBackground = LoadMusicStream("assets/Background_Music.mp3");
+    Music musicVictory = LoadMusicStream("assets/ffvii_victory_music.mp3");
+
+    //Sound FX Section
     Sound playerGruntSound = LoadSound("assets/Player_Grunt.mp3");
     Sound playerGroanSound = LoadSound("assets/Player_Groan.mp3");
     // Add sword sound
-    // Ambience sound / Background sounds
+
     Font textFont = LoadFontEx("resources/alagard.png", 64, 0, 0);
     Texture2D hero = LoadTexture("assets/charactersheet.png");
     Texture2D whiteGhostSprite = LoadTexture("assets/whiteghostsheet.png");
@@ -188,7 +194,22 @@ int main() {
 
     Camera2D camera = (Camera2D){.offset = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .target = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .rotation = 0.0f, .zoom = 1.0f};
 
+    //--- Boolean and Int values for Switching Background Music ---
+    bool hasStartedGame = false;
+    bool hasStartedMenuMusic = false;
+    bool hasStartedGameMusic = false;
+    bool hasStartedVictoryMusic = false;
+    //int previousLevel = player.currentLevel;
+    SetMusicVolume(musicBackground, 1.0f);
+    SetMusicVolume(musicStartScreen, 1.0f);
+    SetMusicVolume(musicVictory, 1.0f);
+
     while (!WindowShouldClose()) {
+        //Keep Music Stream Active
+        UpdateMusicStream(musicStartScreen);
+        UpdateMusicStream(musicBackground);
+        UpdateMusicStream(musicVictory);
+
 // --- Update elapsed time ---
         if (!inStartScreen)
         {
@@ -197,6 +218,7 @@ int main() {
         }
         
 // --- End update elapsed time ---
+        
 
 // --- Check if quit was pressed
         if (pressedQuit)
@@ -217,6 +239,12 @@ int main() {
         if (!isPaused && !inStartScreen)
         {
             // --- Update game ---
+            if (!hasStartedGameMusic) {
+                StopMusicStream(musicStartScreen);        // Stop menu music
+                hasStartedMenuMusic = false;              // Reset menu music flag
+                PlayMusicStream(musicBackground);         // Start background music
+                hasStartedGameMusic = true;
+            }
         
             float previous_x = player.rect.x;
             float previous_y = player.rect.y;
@@ -468,6 +496,12 @@ int main() {
 // --- Win Screen ---
                 if (inWinScreen)
                 {
+                    // --- Update Music to Victory Music ---
+                    if (!hasStartedVictoryMusic) {
+                        StopMusicStream(musicBackground);        // Stop ingame background music
+                        PlayMusicStream(musicVictory);         // Start victory music
+                        hasStartedVictoryMusic = true;
+                    }
                     Rectangle playAgainBtn = {W / 2 - 150, H / 2 + 100, W / 4, H / 8};
                     Rectangle quitBtn = {W / 2 - 150, H / 2 + 200, W / 4, H / 8};
                     drawWinScreen(playAgainBtn, quitBtn, textFont, bestTime);
@@ -476,6 +510,9 @@ int main() {
                     bool isMouseOverQuit = CheckCollisionPointRec(mousePos, quitBtn);
                     if (isMouseOverPlayAgain && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
                     {
+                        StopMusicStream(musicVictory); // Stop victory music
+                        hasStartedGameMusic = false; // Reset game music flag
+                        hasStartedVictoryMusic = false; // Reset victory music flag
                         startTime = time(0); // reset start time
                         player.inventory.clear();
                         torch.pickedUp = false;
@@ -559,6 +596,12 @@ int main() {
             Rectangle quitBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
     
             drawStartScreen(startBtn, quitBtn, textFont);
+
+            static bool hasStartedMenuMusic = false;
+            if (!hasStartedMenuMusic) {
+                PlayMusicStream(musicStartScreen);
+                hasStartedMenuMusic = true;
+            }
     
             Vector2 mousePos = GetMousePosition();
             bool isStartOver = CheckCollisionPointRec(mousePos, startBtn);
@@ -566,6 +609,8 @@ int main() {
     
             if (isStartOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 inStartScreen = false; // Start the game
+                hasStartedGame = true;
+                StopMusicStream(musicStartScreen);
             }
     
             if (isQuitOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
@@ -602,6 +647,9 @@ int main() {
 
     UnloadFont(textFont);
     UnloadTMX(map);
+    UnloadMusicStream(musicStartScreen);
+    UnloadMusicStream(musicBackground);
+    UnloadMusicStream(musicVictory);
     UnloadSound(playerGruntSound);
     UnloadSound(playerGroanSound);
     UnloadTexture(hero);
