@@ -4,8 +4,8 @@
 #include "game.h"
 
 // Constants for invisible collision zones
-const int INVISIBLE_ZONE_WIDTH = 400;
-const int INVISIBLE_ZONE_HEIGHT = 400;
+const int INVISIBLE_ZONE_WIDTH = 500;
+const int INVISIBLE_ZONE_HEIGHT = 500;
 
 // Predefined spawn locations for the collision zones
 const Vector2 INVISIBLE_ZONE_SPAWN_LOCATIONS[] = {

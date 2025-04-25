@@ -16,6 +16,7 @@ int main() {
     double elapsedTime;
     std::vector<Enemy> ghosts; // Dynamic list of all ghosts
     bool isSwingingSword = false; // Tracks whether the sword swing animation is active
+    bool invisibleZonesCreated = false; // Tracks if invisible zones have been created
     SetTraceLogLevel(LOG_DEBUG);
     TraceLog(LOG_DEBUG, "Opening window");
     InitWindow(W, H, "Crypt Escape");
@@ -23,7 +24,6 @@ int main() {
 
     std::srand(static_cast<unsigned int>(std::time(nullptr)));
     CreateHiddenCollisions();
-    // CreateInvisibleZones(); // Ghost spawning zones for level 3
 
     // Start Screen if statement
 
@@ -68,6 +68,8 @@ int main() {
     Texture2D doorSprite = LoadTexture("assets/DungeonDoor.png");
     Texture2D swordSwingSprite = LoadTexture("assets/swordswingsheet.png");
     Enemy whiteGhost;
+    Enemy blueGhost;
+    Enemy redGhost;
 
     deactivateWhiteGhost(&whiteGhost);
     Door door;
@@ -91,7 +93,7 @@ int main() {
     createItem(&key, keySprite, keyPos, "Key");
 
     Item sword;
-    Rectangle swordPos = {1276, 635, 48, 48};
+    Rectangle swordPos = {2432, 466, 48, 48};
     createItem(&sword, swordSprite, swordPos, "Sword");
 
     LevelDoor level1_exit;
@@ -270,6 +272,38 @@ int main() {
                 CheckHiddenCollsions(&player);
             }
 
+            if (player.currentLevel == 3) {
+                whiteGhost.active = false;
+            
+                // Check invisible zones and spawn ghosts
+                CheckInvisibleZones(&player, ghosts, redGhostSprite, blueGhostSprite);
+            
+                // Update all ghosts in the ghosts vector
+                for (auto& ghost : ghosts) {
+                    if (ghost.active) {
+                        // Move the ghost
+                        moveGhost(&ghost, &player);
+            
+                        // Check for collisions with the player
+                        if (CheckCollisionRecs(ghost.rect, player.rect)) {
+                            player.currentHealth -= 1; // Example: Reduce player health on collision
+                            ghost.active = false;     // Deactivate the ghost after collision
+                        }
+                    }
+                }
+            
+                for (const auto& ghost : ghosts) {
+                    if (ghost.active) {
+                        DrawTexturePro(ghost.sprite, 
+                                       {ghost.currentFrame * 32.0f, 0.0f, 32.0f, 32.0f}, // Source rectangle
+                                       ghost.rect, // Destination rectangle
+                                       {0, 0},     // Origin
+                                       0.0f,       // Rotation
+                                       WHITE);     // Tint
+                    }
+                }
+            }
+
             // player.currentHealth != 0) prevents bug when player is hurt while dead
             if(player.currentLevel == 1 && player.currentHealth != 0) {
                 for (int i = 0; i < numTraps; i++) {
@@ -302,9 +336,15 @@ int main() {
                     drawDoor(&door);
                     drawWhiteGhost(&whiteGhost);
         
-                    moveWhiteGhost(&whiteGhost, &player);
+                    moveGhost(&whiteGhost, &player);
                     checkWhiteGhostCollision(&whiteGhost, &player);
-    
+
+                    for (const auto& ghost : ghosts) {
+                        if (ghost.active) {
+                            DrawTexture(ghost.sprite, ghost.rect.x, ghost.rect.y, WHITE);
+                        }
+                    }
+
                     for (int i = 0; i < numTraps; i++) {
                         drawTrap(&traps[i]);
                     }
@@ -366,10 +406,25 @@ int main() {
                 if (player.currentLevel == 2) {
                     if (checkLevelDoorCollision(&level2_1_exit, &player)) {
                         HandleLevelTransition(2, 3, 0, map, player); // First way into level 3
+                        CreateInvisibleZones(); // Ghost spawning zones for level 3
+                        if (!invisibleZonesCreated) {
+                            CreateInvisibleZones();
+                            invisibleZonesCreated = true;
+                        }
                     } else if (checkLevelDoorCollision(&level2_2_exit, &player)) {
                         HandleLevelTransition(2, 3, 1, map, player);
+                        CreateInvisibleZones(); // Ghost spawning zones for level 3
+                        if (!invisibleZonesCreated) {
+                            CreateInvisibleZones();
+                            invisibleZonesCreated = true;
+                        }
                     } else if (checkLevelDoorCollision(&level2_3_exit, &player)) {
                         HandleLevelTransition(2, 3, 2, map, player);
+                        CreateInvisibleZones(); // Ghost spawning zones for level 3
+                        if (!invisibleZonesCreated) {
+                            CreateInvisibleZones();
+                            invisibleZonesCreated = true;
+                        }
                     }
                 }
     
@@ -384,7 +439,9 @@ int main() {
                         TraceLog(LOG_ERROR, "Failed to load map on return from Level 3");
                         return EXIT_FAILURE;
                     }
-                
+                    
+                    // Reset the invisible zones flag
+                    invisibleZonesCreated = false;
                     // Send player back to the correct return spot based on the last exit used
                     Vector2 returnPos = returnToLevel2From3[lastLevel2ExitUsed];
                     player.rect.x = returnPos.x;
@@ -415,9 +472,7 @@ int main() {
                 }
     
 // --- End Level Transitions ---
-                if (player.currentLevel == 3) {
-                CheckInvisibleZones(&player, ghosts, redGhostSprite, blueGhostSprite);
-                }
+
                 EndMode2D();
     
 // --- Inventory Management ---

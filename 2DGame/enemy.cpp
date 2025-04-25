@@ -39,62 +39,28 @@ void spawnRedGhost(Enemy *redGhost, Texture2D redGhostSprite, Vector2 spawnPos) 
     redGhost->frameCounter = 0.0f;
 }
 
-void moveWhiteGhost(Enemy *whiteGhost, const Player *player) {
-    if (!whiteGhost->active) return;
-    Vector2 dir = {player->rect.x - whiteGhost->rect.x, player->rect.y - whiteGhost->rect.y};
-    float length = sqrtf(dir.x * dir.x + dir.y * dir.y);
-    if (length > 0) { 
-        dir.x /= length;
-        dir.y /= length; 
-        whiteGhost->rect.x += dir.x * whiteGhost->speed * GetFrameTime();
-        whiteGhost->rect.y += dir.y * whiteGhost->speed * GetFrameTime();
-    }
-    whiteGhost->frameCounter += GetFrameTime(); 
-    if (whiteGhost->frameCounter >= whiteGhost->frameTime) {
-        whiteGhost->frameCounter = 0.0f;
-        whiteGhost->currentFrame++; 
-        if (whiteGhost->currentFrame > 3) {
-            whiteGhost->currentFrame = 0;
-        }
-    }
-}
+void moveGhost(Enemy* ghost, const Player* player) {
+    if (!ghost->active) return;
 
-void moveBlueGhost(Enemy *blueGhost, const Player *player) {
-    if (!blueGhost->active) return;
-    Vector2 dir = {player->rect.x - blueGhost->rect.x, player->rect.y - blueGhost->rect.y};
+    // Calculate direction vector from ghost to player
+    Vector2 dir = {player->rect.x - ghost->rect.x, player->rect.y - ghost->rect.y};
     float length = sqrtf(dir.x * dir.x + dir.y * dir.y);
-    if (length > 0) { 
-        dir.x /= length;
-        dir.y /= length; 
-        blueGhost->rect.x += dir.x * blueGhost->speed * GetFrameTime();
-        blueGhost->rect.y += dir.y * blueGhost->speed * GetFrameTime();
-    }
-    blueGhost->frameCounter += GetFrameTime(); 
-    if (blueGhost->frameCounter >= blueGhost->frameTime) {
-        blueGhost->frameCounter = 0.0f;
-        blueGhost->currentFrame++; 
-        if (blueGhost->currentFrame > 3) {
-            blueGhost->currentFrame = 0;
-        }
-    }
-}
 
-void moveRedGhost(Enemy *redGhost, const Player *player) {
-    if (!redGhost->active) return;
-    Vector2 dir = {player->rect.x - redGhost->rect.x, player->rect.y - redGhost->rect.y};
-    float length = sqrtf(dir.x * dir.x + dir.y * dir.y);
+    // Normalize the direction vector and move the ghost
     if (length > 0) { 
         dir.x /= length;
         dir.y /= length; 
-        redGhost->rect.x += dir.x * redGhost->speed * GetFrameTime();
-        redGhost->rect.y += dir.y * redGhost->speed * GetFrameTime();
+        ghost->rect.x += dir.x * ghost->speed * GetFrameTime();
+        ghost->rect.y += dir.y * ghost->speed * GetFrameTime();
     }
-    redGhost->frameCounter += GetFrameTime(); 
-    if (redGhost->frameCounter >= redGhost->frameTime) {
-        redGhost->frameCounter = 0.0f;
-        redGhost->currentFrame++; 
-        if (redGhost->currentFrame > 3) {
-            redGhost->currentFrame = 0;
+
+    // Update animation frame
+    ghost->frameCounter += GetFrameTime(); 
+    if (ghost->frameCounter >= ghost->frameTime) {
+        ghost->frameCounter = 0.0f;
+        ghost->currentFrame++; 
+        if (ghost->currentFrame > 3) {
+            ghost->currentFrame = 0;
         }
     }
 }
