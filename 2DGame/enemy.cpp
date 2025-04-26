@@ -37,6 +37,7 @@ void spawnRedGhost(Enemy *redGhost, Texture2D redGhostSprite, Vector2 spawnPos) 
     redGhost->currentFrame = 0;
     redGhost->frameTime = 0.1f;
     redGhost->frameCounter = 0.0f;
+    redGhost->lastCollisionTime = 0.0;
 }
 
 void moveGhost(Enemy* ghost, const Player* player) {

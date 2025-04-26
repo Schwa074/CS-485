@@ -201,8 +201,8 @@ int main() {
     bool hasStartedGameMusic = false;
     bool hasStartedVictoryMusic = false;
     //int previousLevel = player.currentLevel;
-    SetMusicVolume(musicBackground, 0.1f);
-    SetMusicVolume(musicStartScreen, 0.1f);
+    SetMusicVolume(musicBackground, 0.05f);
+    SetMusicVolume(musicStartScreen, 0.05f);
     SetMusicVolume(musicVictory, 0.1f);
 
     while (!WindowShouldClose()) {
