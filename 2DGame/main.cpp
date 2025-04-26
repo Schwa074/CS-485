@@ -50,6 +50,8 @@ int main() {
     Sound unpauseSound = LoadSound("assets/Unpause.wav");
     Sound hoverSound = LoadSound("assets/Hover.wav");
     Sound confirmSound = LoadSound("assets/Confirm.wav");
+    Music walkingSound = LoadMusicStream("assets/Walking_Sound.wav");
+    SetMusicVolume(walkingSound, 0.4f);
 
     // Add sword sound
 
@@ -211,6 +213,8 @@ int main() {
     bool hoveredPlayAgain = false;
     bool hoveredVictoryQuit = false;
     bool inVictoryScreen = false;
+    bool isWalkingSoundPlaying = false;
+
 
     //int previousLevel = player.currentLevel;
     SetMusicVolume(musicBackground, 0.05f);
@@ -218,10 +222,14 @@ int main() {
     SetMusicVolume(musicVictory, 0.1f);
 
     while (!WindowShouldClose()) {
+
+
         //Keep Music Stream Active
         UpdateMusicStream(musicStartScreen);
         UpdateMusicStream(musicBackground);
         UpdateMusicStream(musicVictory);
+        UpdateMusicStream(walkingSound);
+
 
 // --- Update elapsed time ---
         if (!inStartScreen)
@@ -281,6 +289,18 @@ int main() {
     
             AnimateTMX(map);
             movePlayer(&player);
+
+            if (player.vel.x != 0 || player.vel.y != 0) {
+                if (!isWalkingSoundPlaying) {
+                    PlayMusicStream(walkingSound);
+                    isWalkingSoundPlaying = true;
+                }
+            } else {
+                if (isWalkingSoundPlaying) {
+                    StopMusicStream(walkingSound);
+                    isWalkingSoundPlaying = false;
+                }
+            }
     
             // Replace with pause screen 
             if(player.currentHealth != 0) {
@@ -637,7 +657,7 @@ int main() {
                         inWinScreen = false;
                         hasStartedGame = true;
                     }
-                    
+
                     if (confirmPressed && !IsSoundPlaying(confirmSound)) {
                         inWinScreen = false; // now switch to main game after sound finishes
                         hasStartedGame = true;
@@ -800,6 +820,7 @@ int main() {
     UnloadMusicStream(musicStartScreen);
     UnloadMusicStream(musicBackground);
     UnloadMusicStream(musicVictory);
+    UnloadMusicStream(walkingSound);
     UnloadSound(playerGruntSound);
     UnloadSound(playerGroanSound);
     UnloadSound(pauseSound);
