@@ -48,6 +48,8 @@ int main() {
     Sound playerGroanSound = LoadSound("assets/Player_Groan.mp3");
     Sound pauseSound = LoadSound("assets/Pause.wav");
     Sound unpauseSound = LoadSound("assets/Unpause.wav");
+    Sound hoverSound = LoadSound("assets/Hover.wav");
+    Sound confirmSound = LoadSound("assets/Confirm.wav");
 
     // Add sword sound
 
@@ -198,11 +200,18 @@ int main() {
 
     Camera2D camera = (Camera2D){.offset = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .target = (Vector2){.x = W / 2.0f, .y = H / 2.0f}, .rotation = 0.0f, .zoom = 1.0f};
 
-    //--- Boolean and Int values for Switching Background Music ---
+    //--- Boolean and Int values for Switching Music On and Off---
     bool hasStartedGame = false;
     bool hasStartedMenuMusic = false;
     bool hasStartedGameMusic = false;
     bool hasStartedVictoryMusic = false;
+    bool hoveredStart = false;
+    bool hoveredQuit = false;
+    bool hoveredResume = false;
+    bool hoveredPlayAgain = false;
+    bool hoveredVictoryQuit = false;
+    bool inVictoryScreen = false;
+
     //int previousLevel = player.currentLevel;
     SetMusicVolume(musicBackground, 0.05f);
     SetMusicVolume(musicStartScreen, 0.05f);
@@ -577,12 +586,39 @@ int main() {
                     Vector2 mousePos = GetMousePosition();
                     bool isMouseOverPlayAgain = CheckCollisionPointRec(mousePos, playAgainBtn);
                     bool isMouseOverQuit = CheckCollisionPointRec(mousePos, quitBtn);
-                    if (isMouseOverPlayAgain && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-                    {
-                        StopMusicStream(musicVictory); // Stop victory music
-                        hasStartedGameMusic = false; // Reset game music flag
-                        hasStartedVictoryMusic = false; // Reset victory music flag
-                        startTime = time(0); // reset start time
+
+
+                    // --- Hover sound block ---
+                    if (isMouseOverPlayAgain && !hoveredPlayAgain) {
+                        PlaySound(hoverSound);
+                        hoveredPlayAgain = true;
+                    }
+                    if (!isMouseOverPlayAgain) {
+                        hoveredPlayAgain = false;
+                    }
+
+                    if (isMouseOverQuit && !hoveredVictoryQuit) {
+                        PlaySound(hoverSound);
+                        hoveredVictoryQuit = true;
+                    }
+                    if (!isMouseOverQuit) {
+                        hoveredVictoryQuit = false;
+                    }
+                    // ---------------------------
+
+                    static bool confirmPressed = false;
+
+                    if (isMouseOverPlayAgain && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !confirmPressed) {
+                        PlaySound(confirmSound);
+                        confirmPressed = true;
+                        StopMusicStream(musicVictory);
+                    }
+
+                    // After confirm sound finishes, now reset everything
+                    if (confirmPressed && !IsSoundPlaying(confirmSound)) {
+                        hasStartedGameMusic = false;
+                        hasStartedVictoryMusic = false;
+                        startTime = time(0);
                         player.inventory.clear();
                         torch.pickedUp = false;
                         torch.isUsing = false;
@@ -598,7 +634,15 @@ int main() {
                         player.rect.y = startPosy;
                         spawnWhiteGhost(&whiteGhost, whiteGhostSprite, {2650, 500});
                         pressedPlayAgain = true;
+                        inWinScreen = false;
+                        hasStartedGame = true;
                     }
+                    
+                    if (confirmPressed && !IsSoundPlaying(confirmSound)) {
+                        inWinScreen = false; // now switch to main game after sound finishes
+                        hasStartedGame = true;
+                    }
+
                     if (isMouseOverQuit && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
                     {
                         pressedQuit = true;
@@ -647,6 +691,16 @@ int main() {
             drawPauseScreen(resumeBtn, textFont);
             Vector2 mousePos = GetMousePosition();
             bool isMouseOver = CheckCollisionPointRec(mousePos, resumeBtn);
+            
+            //Playing Hover Sound
+            if (isMouseOver && !hoveredResume) {
+                PlaySound(hoverSound);
+                hoveredResume = true;
+            }
+            if (!isMouseOver) {
+                hoveredResume = false;
+            }
+
             if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
             {
                 isPaused = false;
@@ -675,12 +729,39 @@ int main() {
             Vector2 mousePos = GetMousePosition();
             bool isStartOver = CheckCollisionPointRec(mousePos, startBtn);
             bool isQuitOver = CheckCollisionPointRec(mousePos, quitBtn);
-    
-            if (isStartOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
-                inStartScreen = false; // Start the game
-                hasStartedGame = true;
-                StopMusicStream(musicStartScreen);
+
+        
+            // Playing Hover Sound Section
+            if (isStartOver && !hoveredStart) {
+                PlaySound(hoverSound);
+                hoveredStart = true;
             }
+            if (!isStartOver) {
+                hoveredStart = false;
+            }
+            
+            if (isQuitOver && !hoveredQuit) {
+                PlaySound(hoverSound);
+                hoveredQuit = true;
+            }
+            if (!isQuitOver) {
+                hoveredQuit = false;
+            }
+            //End Hover Sound Section
+
+            static bool confirmPressed = false;
+
+            if (isStartOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && !confirmPressed) {
+                PlaySound(confirmSound);    // Play confirm sound
+                confirmPressed = true;      // Mark that player clicked start
+                StopMusicStream(musicStartScreen); // Stop menu music
+            }
+
+            if (confirmPressed && !IsSoundPlaying(confirmSound)) {
+                inStartScreen = false; // now switch to main game after sound finishes
+                hasStartedGame = true;
+            }
+
     
             if (isQuitOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 break; // Quit the game
@@ -723,6 +804,8 @@ int main() {
     UnloadSound(playerGroanSound);
     UnloadSound(pauseSound);
     UnloadSound(unpauseSound);
+    UnloadSound(hoverSound);
+    UnloadSound(confirmSound);
     UnloadTexture(hero);
     UnloadTexture(hearts);
     UnloadTexture(lowLight);
