@@ -14,7 +14,6 @@ int main() {
     double bestTime = 0.0;
     time_t startTime = time(0);
     double elapsedTime;
-    std::vector<Enemy> ghosts; // Dynamic list of all ghosts
     bool isSwingingSword = false; // Tracks whether the sword swing animation is active
     bool invisibleZonesCreated = false; // Tracks if invisible zones have been created
     SetTraceLogLevel(LOG_DEBUG);
@@ -202,9 +201,9 @@ int main() {
     bool hasStartedGameMusic = false;
     bool hasStartedVictoryMusic = false;
     //int previousLevel = player.currentLevel;
-    SetMusicVolume(musicBackground, 1.0f);
-    SetMusicVolume(musicStartScreen, 1.0f);
-    SetMusicVolume(musicVictory, 1.0f);
+    SetMusicVolume(musicBackground, 0.1f);
+    SetMusicVolume(musicStartScreen, 0.1f);
+    SetMusicVolume(musicVictory, 0.1f);
 
     while (!WindowShouldClose()) {
         //Keep Music Stream Active
@@ -261,8 +260,8 @@ int main() {
             }
     
             if (isTileCollisions(map, &player)) {
-                player.rect.x = previous_x;
-                player.rect.y = previous_y;
+                // player.rect.x = previous_x;
+                // player.rect.y = previous_y;
             }
     
             checkDoorCollision(&door, &player);
@@ -270,38 +269,6 @@ int main() {
             if(player.currentLevel == 2) {
                 whiteGhost.active = false;
                 CheckHiddenCollsions(&player);
-            }
-
-            if (player.currentLevel == 3) {
-                whiteGhost.active = false;
-            
-                // Check invisible zones and spawn ghosts
-                CheckInvisibleZones(&player, ghosts, redGhostSprite, blueGhostSprite);
-            
-                // Update all ghosts in the ghosts vector
-                for (auto& ghost : ghosts) {
-                    if (ghost.active) {
-                        // Move the ghost
-                        moveGhost(&ghost, &player);
-            
-                        // Check for collisions with the player
-                        if (CheckCollisionRecs(ghost.rect, player.rect)) {
-                            player.currentHealth -= 1; // Example: Reduce player health on collision
-                            ghost.active = false;     // Deactivate the ghost after collision
-                        }
-                    }
-                }
-            
-                for (const auto& ghost : ghosts) {
-                    if (ghost.active) {
-                        DrawTexturePro(ghost.sprite, 
-                                       {ghost.currentFrame * 32.0f, 0.0f, 32.0f, 32.0f}, // Source rectangle
-                                       ghost.rect, // Destination rectangle
-                                       {0, 0},     // Origin
-                                       0.0f,       // Rotation
-                                       WHITE);     // Tint
-                    }
-                }
             }
 
             // player.currentHealth != 0) prevents bug when player is hurt while dead
@@ -472,6 +439,34 @@ int main() {
                 }
     
 // --- End Level Transitions ---
+
+                if (player.currentLevel == 3) {
+                    whiteGhost.active = false;
+
+                    // Check invisible zones and spawn ghosts
+                    CheckInvisibleZones(&player, ghosts, redGhostSprite, blueGhostSprite);
+
+                    // Update all ghosts in the ghosts vector
+                    for (auto& ghost : ghosts) {
+                        if (ghost.active) {
+                            // Move the ghost
+                            moveGhost(&ghost, &player);
+
+                            DrawTexturePro(ghost.sprite, 
+                                {ghost.currentFrame * 32.0f, 0.0f, 32.0f, 32.0f}, // Source rectangle
+                                ghost.rect, // Destination rectangle
+                                {0, 0},     // Origin
+                                0.0f,       // Rotation
+                                WHITE);     // Tint
+
+                            // Check for collisions with the player
+                            if (CheckCollisionRecs(ghost.rect, player.rect)) {
+                                player.currentHealth -= 1; // Example: Reduce player health on collision
+                                ghost.active = false;     // Deactivate the ghost after collision
+                            }
+                        }
+                    }
+                }
 
                 EndMode2D();
     
