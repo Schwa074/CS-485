@@ -41,7 +41,7 @@ int main() {
 
     //Load Music Section for Background Music
     Music musicStartScreen = LoadMusicStream("assets/Start_Screen.mp3");
-    Music musicBackground = LoadMusicStream("assets/Background_Music.mp3");
+    Music musicBackground = LoadMusicStream("assets/Background_Music.ogg");
     Music musicVictory = LoadMusicStream("assets/ffvii_victory_music.mp3");
 
     //Sound FX Section
