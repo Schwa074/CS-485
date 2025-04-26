@@ -260,8 +260,8 @@ int main() {
             }
     
             if (isTileCollisions(map, &player)) {
-                // player.rect.x = previous_x;
-                // player.rect.y = previous_y;
+                player.rect.x = previous_x;
+                player.rect.y = previous_y;
             }
     
             checkDoorCollision(&door, &player);
