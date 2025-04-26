@@ -46,6 +46,9 @@ int main() {
     //Sound FX Section
     Sound playerGruntSound = LoadSound("assets/Player_Grunt.mp3");
     Sound playerGroanSound = LoadSound("assets/Player_Groan.mp3");
+    Sound pauseSound = LoadSound("assets/Pause.wav");
+    Sound unpauseSound = LoadSound("assets/Unpause.wav");
+
     // Add sword sound
 
     Font textFont = LoadFontEx("resources/alagard.png", 64, 0, 0);
@@ -233,6 +236,22 @@ int main() {
         if (IsKeyPressed(KEY_P))
         {
             isPaused = !isPaused;
+
+            // Play sound when paused or unpaused
+            if(isPaused) {
+                PlaySound(pauseSound); // Play pause sound
+            } else {
+                PlaySound(unpauseSound); // Play unpause sound
+            }
+            
+            // Pause the music stream
+            if (isPaused) {
+                // Pause the game music
+                PauseMusicStream(musicBackground);
+            } else {
+                // Resume the game music
+                ResumeMusicStream(musicBackground);
+            }
         }
 // --- End of check for pause key ---
 
@@ -702,6 +721,8 @@ int main() {
     UnloadMusicStream(musicVictory);
     UnloadSound(playerGruntSound);
     UnloadSound(playerGroanSound);
+    UnloadSound(pauseSound);
+    UnloadSound(unpauseSound);
     UnloadTexture(hero);
     UnloadTexture(hearts);
     UnloadTexture(lowLight);
