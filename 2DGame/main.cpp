@@ -594,7 +594,7 @@ int main() {
                     PlaySound(playerGroanSound);
                 }
                 
-                if (finalHealth == 0) {
+                if (finalHealth <= 0) {
                     Rectangle respawnBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
                     drawRespawnScreen(respawnBtn, textFont);
                     player.inventory.clear();
