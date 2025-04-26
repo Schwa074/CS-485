@@ -3,6 +3,7 @@
 
 // Array to hold the invisible collision zones
 InvisibleCollisionZone invisibleZones[6];
+std::vector<Enemy> ghosts;
 
 // Function to create the invisible collision zones
 void CreateInvisibleZones() {

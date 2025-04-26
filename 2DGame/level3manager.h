@@ -23,6 +23,8 @@ struct InvisibleCollisionZone {
     bool triggered; // To ensure the zone only triggers once
 };
 
+extern std::vector<Enemy> ghosts;
+
 // Function declarations
 void CreateInvisibleZones();
 void CheckInvisibleZones(Player* player, std::vector<Enemy>& ghosts, Texture2D redGhostSprite, Texture2D blueGhostSprite);
