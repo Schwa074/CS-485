@@ -12,7 +12,7 @@ Texture2D swordStillSprite;
 int main() {
     bool firstGame = true;
     double bestTime = 0.0;
-    time_t startTime = time(0);
+    time_t startTime;
     double elapsedTime;
     bool isSwingingSword = false; // Tracks whether the sword swing animation is active
     bool invisibleZonesCreated = false; // Tracks if invisible zones have been created
@@ -775,6 +775,7 @@ int main() {
                 PlaySound(confirmSound);    // Play confirm sound
                 confirmPressed = true;      // Mark that player clicked start
                 StopMusicStream(musicStartScreen); // Stop menu music
+                startTime = time(0);
             }
 
             if (confirmPressed && !IsSoundPlaying(confirmSound)) {
