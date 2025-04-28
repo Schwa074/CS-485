@@ -692,6 +692,7 @@ int main() {
                     Vector2 mousePos = GetMousePosition();
                     bool isMouseOver = CheckCollisionPointRec(mousePos, respawnBtn);
                     if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                        startTime = time(0);
                         player.currentHealth = 6;
                         player.rect.x = startPosx;
                         player.rect.y = startPosy;
