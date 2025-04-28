@@ -97,8 +97,7 @@ void DrawInventoryHUD(const Player *player, int selectedSlot)
     const int barX = (screenWidth - barWidth) / 2;
     const int barY = screenHeight - slotSize - 20;
 
-    DrawText("Inventory:", 10, 60, 20, WHITE);
-    DrawText("Press 1-4 to use items", 10, 80, 20, WHITE);
+    
 
     for (int i = 0; i < numSlots; i++) {
         int x = barX + i * (slotSize + spacing);
