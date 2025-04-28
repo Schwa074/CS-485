@@ -13,6 +13,9 @@ int main() {
     bool firstGame = true;
     double bestTime = 0.0;
     time_t startTime;
+    time_t pauseStartTime;
+    double pausedTime = 0.0;
+    double pauseElapsedTime;
     double elapsedTime;
     bool isSwingingSword = false; // Tracks whether the sword swing animation is active
     bool invisibleZonesCreated = false; // Tracks if invisible zones have been created
@@ -235,6 +238,7 @@ int main() {
         if (!inStartScreen)
         {
             elapsedTime = difftime(time(0), startTime);
+            elapsedTime -= pausedTime;
             //std::cout << "Time: " << elapsedTime << std::endl;
         }
         
@@ -257,8 +261,10 @@ int main() {
             // Play sound when paused or unpaused
             if(isPaused) {
                 PlaySound(pauseSound); // Play pause sound
+                pauseStartTime = time(0);
             } else {
                 PlaySound(unpauseSound); // Play unpause sound
+                pausedTime += pauseElapsedTime;
             }
             
             // Pause the music stream
@@ -707,6 +713,7 @@ int main() {
 // --- Pause Screen ---
         else if(isPaused && !inStartScreen)
         {
+            pauseElapsedTime = difftime(time(0), pauseStartTime);
             BeginDrawing();
             Rectangle resumeBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
             drawPauseScreen(resumeBtn, textFont);
@@ -724,6 +731,7 @@ int main() {
 
             if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
             {
+                pausedTime += pauseElapsedTime;
                 isPaused = false;
             }
             EndDrawing();
