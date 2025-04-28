@@ -642,6 +642,7 @@ int main() {
 
                     // After confirm sound finishes, now reset everything
                     if (confirmPressed && !IsSoundPlaying(confirmSound)) {
+                        pausedTime = 0.0;
                         hasStartedGameMusic = false;
                         hasStartedVictoryMusic = false;
                         startTime = time(0);
@@ -699,6 +700,7 @@ int main() {
                     bool isMouseOver = CheckCollisionPointRec(mousePos, respawnBtn);
                     if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                         startTime = time(0);
+                        pausedTime = 0.0;
                         player.currentHealth = 6;
                         player.rect.x = startPosx;
                         player.rect.y = startPosy;
