@@ -39,6 +39,9 @@ LevelTransition levelTransitions[] = {
     // Level 3 -> Level 4
     {3, 4, "resources/level4.tmx", {1120.0f, 1088.0f}},
 
+    // Level 3 -> Level 1
+    {3, 1, "resources/level1.tmx", {startPosx, startPosy}},
+
     // Level 4 -> Level 1
     {4, 1, "resources/level1.tmx", {startPosx, startPosy}}
 };
