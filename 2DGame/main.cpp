@@ -709,6 +709,7 @@ int main() {
                     Vector2 mousePos = GetMousePosition();
                     bool isMouseOver = CheckCollisionPointRec(mousePos, respawnBtn);
                     if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                        HandleLevelTransition(player.currentLevel, 1, 0, map, player);
                         startTime = time(0);
                         pausedTime = 0.0;
                         player.currentHealth = 6;
@@ -813,27 +814,9 @@ int main() {
             
         // Do nothing, wait for user to click start or quit
         }
-// --- End of Start Screen ---
-// --- Win Screen --- Freezes the program
-//         if (inWinScreen)
-//         {
-//             BeginDrawing();
-//             DrawTMX(map, &camera, 0, 0, WHITE);
-//             drawPlayer(&player);
-//             Rectangle quitBtn = {W / 2, H / 2, W / 4, H / 8};
-//             drawWinScreen(quitBtn, textFont);
-//             Vector2 mousePos = GetMousePosition();
-//             bool isMouseOver = CheckCollisionPointRec(mousePos, quitBtn);
-//             if (isMouseOver && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) 
-//             {
-//                 std::cout << "Pressed quit\n";
-//                 break;
-//             }
-// }
-// --- End of Win Screen
 
     } // End of while loop
-    // else for pause screen goes here
+    
 
 // --- Unload Assets ---
 
