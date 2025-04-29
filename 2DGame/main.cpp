@@ -53,8 +53,9 @@ int main() {
     Sound unpauseSound = LoadSound("assets/Unpause.wav");
     Sound hoverSound = LoadSound("assets/Hover.wav");
     Sound confirmSound = LoadSound("assets/Confirm.wav");
+    Sound ghostDeathSound = LoadSound("assets/NPC_Hit_54.wav");
     Music walkingSound = LoadMusicStream("assets/Walking_Sound.wav");
-    SetMusicVolume(walkingSound, 0.4f);
+    
 
     // Add sword sound
 
@@ -220,9 +221,18 @@ int main() {
 
 
     //int previousLevel = player.currentLevel;
-    SetMusicVolume(musicBackground, 0.05f);
+    SetMusicVolume(musicBackground, 0.55f);
     SetMusicVolume(musicStartScreen, 0.05f);
-    SetMusicVolume(musicVictory, 0.1f);
+    SetMusicVolume(musicVictory, 0.20f);
+    SetSoundVolume(playerGroanSound, 0.45f);
+    SetSoundVolume(playerGruntSound, 0.45f);
+    SetSoundVolume(ghostDeathSound, 0.4f);
+    SetSoundVolume(hoverSound, 0.25f);
+    SetSoundVolume(confirmSound, 0.5f);
+    SetSoundVolume(pauseSound, 0.5f);
+    SetSoundVolume(unpauseSound, 0.5f);
+
+    SetMusicVolume(walkingSound, 0.5f);
 
     while (!WindowShouldClose()) {
 
@@ -404,8 +414,7 @@ int main() {
                     }
                 }
                 if (isSwingingSword) {
-                    swingSword(&sword, &player, ghosts, swordSwingSprite);
-                    
+                    swingSword(&sword, &player, ghosts, swordSwingSprite, ghostDeathSound);
                     // Check if the animation has completed
                     if (sword.currentFrame == 0 && sword.frameCounter == 0.0f) {
                         isSwingingSword = false; // Animation has finished
@@ -517,6 +526,7 @@ int main() {
                             if (CheckCollisionRecs(ghost.rect, player.rect)) {
                                 player.currentHealth -= 1; // Example: Reduce player health on collision
                                 ghost.active = false;     // Deactivate the ghost after collision
+                                PlaySound(ghostDeathSound);
                             }
                         }
                     }
@@ -839,6 +849,7 @@ int main() {
     UnloadSound(unpauseSound);
     UnloadSound(hoverSound);
     UnloadSound(confirmSound);
+    UnloadSound(ghostDeathSound);
     UnloadTexture(hero);
     UnloadTexture(hearts);
     UnloadTexture(lowLight);

@@ -70,7 +70,7 @@ void drawSword(Item* sword) {
   DrawTexturePro(sword->sprite, source, dest, origin, rotation, tint);
 }
 
-void swingSword(Item* sword, Player* player, std::vector<Enemy>& ghosts, Texture2D swordSwingSprite) {
+void swingSword(Item* sword, Player* player, std::vector<Enemy>& ghosts, Texture2D swordSwingSprite, Sound ghostDeathSound) {
   // Update animation frame
   sword->frameCounter += GetFrameTime();
   if (sword->frameCounter >= sword->frameTime) {
@@ -112,7 +112,8 @@ void swingSword(Item* sword, Player* player, std::vector<Enemy>& ghosts, Texture
       if (ghost.active && CheckCollisionRecs(swordHitbox, ghost.rect)) {
           ghost.currentHealth -= 3; // Reduce health by 3
           if (ghost.currentHealth <= 0) {
-              ghost.active = false; // Deactivate ghost if health is 0 or less
+            PlaySound(ghostDeathSound);
+            ghost.active = false; // Deactivate ghost if health is 0 or less
           }
       }
   }
