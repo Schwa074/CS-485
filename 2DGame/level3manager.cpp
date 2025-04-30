@@ -24,10 +24,13 @@ void CreateInvisibleZones() {
 void CheckInvisibleZones(Player* player, std::vector<Enemy>& ghosts, Texture2D redGhostSprite, Texture2D blueGhostSprite, Sound spawnSound) {
     for (int i = 0; i < 6; i++) {
         if (!invisibleZones[i].triggered && CheckCollisionRecs(player->rect, invisibleZones[i].rect)) {
+            SetSoundVolume(spawnSound, 1.0f);
             TraceLog(LOG_DEBUG, "Player collided with invisible zone %d at x=%f, y=%f", i, invisibleZones[i].rect.x, invisibleZones[i].rect.y);
             invisibleZones[i].triggered = true; // Mark the zone as triggered
-            PlaySound(spawnSound);
             SpawnRandomGhosts(ghosts, redGhostSprite, blueGhostSprite, invisibleZones[i].rect);
+            PlaySound(spawnSound);
+            std::cout << "Sound Valid: " << IsSoundValid(spawnSound) << "\n";
+            std::cout << "Sound Playing: " << IsSoundPlaying(spawnSound) << "\n";
         }
     }
 }
@@ -54,11 +57,9 @@ void SpawnRandomGhosts(std::vector<Enemy>& ghosts, Texture2D redGhostSprite, Tex
         Enemy newGhost;
         if (std::rand() % 2 == 0) {
             spawnRedGhost(&newGhost, redGhostSprite, spawnPos); // Spawn a red ghost
-            //PlaySound(spawnSound);
             TraceLog(LOG_DEBUG, "Spawned a red ghost at x=%f, y=%f", spawnPos.x, spawnPos.y);
         } else {
             spawnBlueGhost(&newGhost, blueGhostSprite, spawnPos); // Spawn a blue ghost
-            //PlaySound(spawnSound);
             TraceLog(LOG_DEBUG, "Spawned a blue ghost at x=%f, y=%f", spawnPos.x, spawnPos.y);
         }
 
