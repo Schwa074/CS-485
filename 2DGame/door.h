@@ -11,6 +11,6 @@ struct Door {
 
 void createDoor(Door *door, Texture2D doorSprite, Vector2 spawnPos);
 void drawDoor(const Door *door);
-void checkDoorCollision(Door *door, Player *player);
+void checkDoorCollision(Door *door, Player *player, Sound doorSound);
 
 #endif // DOOR_H

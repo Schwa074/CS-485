@@ -47,6 +47,7 @@ int main() {
     Music musicVictory = LoadMusicStream("assets/ffvii_victory_music.mp3");
 
     //Sound FX Section
+    Sound doorSound = LoadSound("assets/sound-effect-creaking-door-01-271987.mp3");
     Sound playerGruntSound = LoadSound("assets/Player_Grunt.mp3");
     Sound playerGroanSound = LoadSound("assets/Player_Groan.mp3");
     Sound pauseSound = LoadSound("assets/Pause.wav");
@@ -233,6 +234,7 @@ int main() {
     SetSoundVolume(pauseSound, 0.5f);
     SetSoundVolume(unpauseSound, 0.5f);
     SetSoundVolume(ghostSpawnSound, 0.5f);
+    SetSoundVolume(doorSound, 0.15f);
 
     SetMusicVolume(walkingSound, 0.5f);
 
@@ -330,7 +332,7 @@ int main() {
                 player.rect.y = previous_y;
             }
     
-            checkDoorCollision(&door, &player);
+            checkDoorCollision(&door, &player, doorSound);
     
             if(player.currentLevel == 2) {
                 whiteGhost.active = false;
@@ -836,6 +838,7 @@ int main() {
     UnloadSound(confirmSound);
     UnloadSound(ghostDeathSound);
     UnloadSound(ghostSpawnSound);
+    UnloadSound(doorSound);
     UnloadTexture(hero);
     UnloadTexture(hearts);
     UnloadTexture(lowLight);
