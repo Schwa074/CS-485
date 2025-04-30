@@ -54,6 +54,7 @@ int main() {
     Sound hoverSound = LoadSound("assets/Hover.wav");
     Sound confirmSound = LoadSound("assets/Confirm.wav");
     Sound ghostDeathSound = LoadSound("assets/NPC_Hit_54.wav");
+    Sound ghostSpawnSound = LoadSound("assets/classic-ghost-sound-95773.mp3");
     Music walkingSound = LoadMusicStream("assets/Walking_Sound.wav");
     
 
@@ -231,6 +232,7 @@ int main() {
     SetSoundVolume(confirmSound, 0.5f);
     SetSoundVolume(pauseSound, 0.5f);
     SetSoundVolume(unpauseSound, 0.5f);
+    SetSoundVolume(ghostSpawnSound, 0.5f);
 
     SetMusicVolume(walkingSound, 0.5f);
 
@@ -352,7 +354,7 @@ int main() {
     
             cameraFollow(&camera, &player);
     
-            handleWhiteGhostSpawn(&whiteGhost, whiteGhostSprite);
+            handleWhiteGhostSpawn(&whiteGhost, whiteGhostSprite, ghostSpawnSound);
     
             BeginDrawing();
             {
@@ -507,7 +509,7 @@ int main() {
                     whiteGhost.active = false;
 
                     // Check invisible zones and spawn ghosts
-                    CheckInvisibleZones(&player, ghosts, redGhostSprite, blueGhostSprite);
+                    CheckInvisibleZones(&player, ghosts, redGhostSprite, blueGhostSprite, ghostSpawnSound);
 
                     // Update all ghosts in the ghosts vector
                     for (auto& ghost : ghosts) {
@@ -669,7 +671,7 @@ int main() {
                         player.currentHealth = 6;
                         player.rect.x = startPosx;
                         player.rect.y = startPosy;
-                        spawnWhiteGhost(&whiteGhost, whiteGhostSprite, {2650, 500});
+                        spawnWhiteGhost(&whiteGhost, whiteGhostSprite, {2650, 500}, ghostSpawnSound);
                         pressedPlayAgain = true;
                         inWinScreen = false;
                         hasStartedGame = true;
@@ -715,7 +717,7 @@ int main() {
                         player.currentHealth = 6;
                         player.rect.x = startPosx;
                         player.rect.y = startPosy;
-                        spawnWhiteGhost(&whiteGhost, whiteGhostSprite, {2650, 500});
+                        spawnWhiteGhost(&whiteGhost, whiteGhostSprite, {2650, 500}, ghostSpawnSound);
                     }
                 }
     
@@ -833,6 +835,7 @@ int main() {
     UnloadSound(hoverSound);
     UnloadSound(confirmSound);
     UnloadSound(ghostDeathSound);
+    UnloadSound(ghostSpawnSound);
     UnloadTexture(hero);
     UnloadTexture(hearts);
     UnloadTexture(lowLight);

@@ -1,7 +1,7 @@
 #include "game.h"
 #include <math.h>
 
-void spawnWhiteGhost(Enemy *whiteGhost, Texture2D whiteGhostSprite, Vector2 spawnPos) {
+void spawnWhiteGhost(Enemy *whiteGhost, Texture2D whiteGhostSprite, Vector2 spawnPos, Sound spawnSound) {
     whiteGhost->rect = {spawnPos.x, spawnPos.y, 64, 64}; // Adjust the size as needed
     whiteGhost->sprite = whiteGhostSprite;
     whiteGhost->speed = 30.0f; // Variable to edit speed
@@ -12,6 +12,7 @@ void spawnWhiteGhost(Enemy *whiteGhost, Texture2D whiteGhostSprite, Vector2 spaw
     whiteGhost->frameTime = 0.1f;
     whiteGhost->frameCounter = 0.0f;
     whiteGhost->lastCollisionTime = 0.0;
+    PlaySound(spawnSound);
 }
 
 void spawnBlueGhost(Enemy *blueGhost, Texture2D blueGhostSprite, Vector2 spawnPos) {
@@ -146,10 +147,10 @@ void deactivateRedGhost(Enemy *redGhost) {
     redGhost->active = false;
 }
 
-void handleWhiteGhostSpawn(Enemy *whiteGhost, Texture2D whiteGhostSprite) {
+void handleWhiteGhostSpawn(Enemy *whiteGhost, Texture2D whiteGhostSprite, Sound& spawnSound) {
     double currentTime = GetTime();
     if (currentTime > 15 && !whiteGhost->active) {
-        spawnWhiteGhost(whiteGhost, whiteGhostSprite, {2650, 500});
+        spawnWhiteGhost(whiteGhost, whiteGhostSprite, {2650, 500}, spawnSound);
     }
 }
 

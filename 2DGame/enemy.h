@@ -18,12 +18,12 @@ struct Enemy {
     double lastCollisionTime; // For mimicking i-frames on collision
 };
 
-void spawnWhiteGhost(Enemy *whiteGhost, Texture2D whiteGhostSprite, Vector2 spawnPos);
+void spawnWhiteGhost(Enemy *whiteGhost, Texture2D whiteGhostSprite, Vector2 spawnPos, Sound spawnSound);
 void moveGhost(Enemy *ghost, const Player *player);
 void drawWhiteGhost(const Enemy *whiteGhost);
 void checkWhiteGhostCollision(Enemy *whiteGhost, Player *player);
 void deactivateWhiteGhost(Enemy *whiteGhost);
-void handleWhiteGhostSpawn(Enemy *whiteGhost, Texture2D whiteGhostSprite);
+void handleWhiteGhostSpawn(Enemy *whiteGhost, Texture2D whiteGhostSprite, Sound& spawnSound);
 void spawnRedGhost(Enemy *redGhost, Texture2D redGhostSprite, Vector2 spawnPos);
 void drawRedGhost(const Enemy *redGhost);
 void checkRedGhostCollision(Enemy *redGhost, Player *player);

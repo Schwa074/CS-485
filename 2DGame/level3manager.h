@@ -27,7 +27,7 @@ extern std::vector<Enemy> ghosts;
 
 // Function declarations
 void CreateInvisibleZones();
-void CheckInvisibleZones(Player* player, std::vector<Enemy>& ghosts, Texture2D redGhostSprite, Texture2D blueGhostSprite);
+void CheckInvisibleZones(Player* player, std::vector<Enemy>& ghosts, Texture2D redGhostSprite, Texture2D blueGhostSprite, Sound spawnSound);
 void SpawnRandomGhosts(std::vector<Enemy>& ghosts, Texture2D redGhostSprite, Texture2D blueGhostSprite, Rectangle zone);
 
 #endif // LEVEL3MANAGER_H
