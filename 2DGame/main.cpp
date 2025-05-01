@@ -350,13 +350,13 @@ int main() {
                     }
                     updateTrapState(&traps[i]);
                 }
+
+                handleWhiteGhostSpawn(&whiteGhost, whiteGhostSprite, ghostSpawnSound);
             }
     
             update_animation(&(player.animations[player.state]));
     
             cameraFollow(&camera, &player);
-    
-            handleWhiteGhostSpawn(&whiteGhost, whiteGhostSprite, ghostSpawnSound);
     
             BeginDrawing();
             {
@@ -676,11 +676,6 @@ int main() {
                         spawnWhiteGhost(&whiteGhost, whiteGhostSprite, {2650, 500}, ghostSpawnSound);
                         pressedPlayAgain = true;
                         inWinScreen = false;
-                        hasStartedGame = true;
-                    }
-
-                    if (confirmPressed && !IsSoundPlaying(confirmSound)) {
-                        inWinScreen = false; // now switch to main game after sound finishes
                         hasStartedGame = true;
                     }
 
