@@ -29,8 +29,6 @@ void CheckInvisibleZones(Player* player, std::vector<Enemy>& ghosts, Texture2D r
             invisibleZones[i].triggered = true; // Mark the zone as triggered
             SpawnRandomGhosts(ghosts, redGhostSprite, blueGhostSprite, invisibleZones[i].rect);
             PlaySound(spawnSound);
-            std::cout << "Sound Valid: " << IsSoundValid(spawnSound) << "\n";
-            std::cout << "Sound Playing: " << IsSoundPlaying(spawnSound) << "\n";
         }
     }
 }

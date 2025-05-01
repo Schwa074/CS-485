@@ -22,8 +22,6 @@ void checkDoorCollision(Door *door, Player *player, Sound doorSound) {
         auto it = std::find(player->inventory.begin(), player->inventory.end(), "Key");
         if (it != player->inventory.end()) {
             door->isOpen = true;
-            std::cout << "Sound Valid: " << IsSoundValid(doorSound) << "\n";
-            std::cout << "Sound Playing: " << IsSoundPlaying(doorSound) << "\n";
             PlaySound(doorSound);
         } else {
             player->rect.x -= player->vel.x * GetFrameTime();
