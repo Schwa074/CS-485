@@ -223,18 +223,18 @@ int main() {
 
 
     //int previousLevel = player.currentLevel;
-    SetMusicVolume(musicBackground, 0.55f);
+    SetMusicVolume(musicBackground, 0.45f);
     SetMusicVolume(musicStartScreen, 0.05f);
-    SetMusicVolume(musicVictory, 0.20f);
-    SetSoundVolume(playerGroanSound, 0.45f);
-    SetSoundVolume(playerGruntSound, 0.45f);
+    SetMusicVolume(musicVictory, 0.15f);
+    SetSoundVolume(playerGroanSound, 0.40f);
+    SetSoundVolume(playerGruntSound, 0.40f);
     SetSoundVolume(ghostDeathSound, 0.4f);
     SetSoundVolume(hoverSound, 0.25f);
-    SetSoundVolume(confirmSound, 0.5f);
-    SetSoundVolume(pauseSound, 0.5f);
-    SetSoundVolume(unpauseSound, 0.5f);
-    SetSoundVolume(ghostSpawnSound, 0.5f);
-    SetSoundVolume(doorSound, 0.15f);
+    SetSoundVolume(confirmSound, 0.4f);
+    SetSoundVolume(pauseSound, 0.35f);
+    SetSoundVolume(unpauseSound, 0.35f);
+    SetSoundVolume(ghostSpawnSound, 0.4f);
+    SetSoundVolume(doorSound, 0.12f);
 
     SetMusicVolume(walkingSound, 0.5f);
 

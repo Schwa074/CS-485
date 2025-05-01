@@ -24,7 +24,6 @@ void CreateInvisibleZones() {
 void CheckInvisibleZones(Player* player, std::vector<Enemy>& ghosts, Texture2D redGhostSprite, Texture2D blueGhostSprite, Sound spawnSound) {
     for (int i = 0; i < 6; i++) {
         if (!invisibleZones[i].triggered && CheckCollisionRecs(player->rect, invisibleZones[i].rect)) {
-            SetSoundVolume(spawnSound, 1.0f);
             TraceLog(LOG_DEBUG, "Player collided with invisible zone %d at x=%f, y=%f", i, invisibleZones[i].rect.x, invisibleZones[i].rect.y);
             invisibleZones[i].triggered = true; // Mark the zone as triggered
             SpawnRandomGhosts(ghosts, redGhostSprite, blueGhostSprite, invisibleZones[i].rect);
