@@ -7,7 +7,7 @@ void drawPauseScreen(Rectangle resumeBtn, Font textFont);
 
 void drawRespawnScreen(Rectangle respawnBtn, Font textFont);
 
-void drawStartScreen(Font textFont);
+void drawStartScreen(Rectangle startButton, Rectangle quitButton, Font textFont);
 
 void drawWinScreen(Rectangle playAgainButton, Rectangle backToStartButton, Font textFont, double bestTime);
 

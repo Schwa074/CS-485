@@ -42,6 +42,9 @@ struct Player {
     int currentHealth;
     std::vector<std::string> inventory;
     int currentLevel;
+    // Add these for footstep sound control
+    float footstepTimer = 0.0f;
+    float footstepCooldown = 0.25f;
 };
 
 void movePlayer(Player *player);

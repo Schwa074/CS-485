@@ -24,15 +24,11 @@ void drawRespawnScreen(Rectangle respawnBtn, Font deathFont)
     DrawTextEx(deathFont, "Respawn", (Vector2){W / 2 - 40, H / 2 + 75}, 36.0f, 2, WHITE);
 }
 
-void drawStartScreen(Font textFont)
+void drawStartScreen(Rectangle startButton, Rectangle quitButton, Font textFont)
 {
     DrawTexture(startScreenBackground, 0, 0, WHITE);
 
-    float shiftX = -320;  // shift left
-    float shiftY = 50;    // shift down
-
-    Rectangle startButton = { W / 2 - 100 + shiftX, H / 2 - 40 + shiftY, 200, 50 };
-    Rectangle quitButton  = { W / 2 - 100 + shiftX, H / 2 + 65 + shiftY, 200, 50 };
+    
 
     DrawRectangleRounded(startButton, 1.0f, 1, (Color){70, 70, 80, 255});
     DrawRectangleRounded(quitButton,  1.0f, 1, (Color){70, 70, 80, 255});

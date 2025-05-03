@@ -8,6 +8,7 @@ Texture2D noteSprite;
 Texture2D keySprite;
 Texture2D swordStillSprite;
 Texture2D startScreenBackground;
+Sound walkingSound;
 // --- End Global Sprites Variables ---
 
 int main() {
@@ -57,7 +58,7 @@ int main() {
     Sound confirmSound = LoadSound("assets/Confirm.wav");
     Sound ghostDeathSound = LoadSound("assets/NPC_Hit_54.wav");
     Sound ghostSpawnSound = LoadSound("assets/classic-ghost-sound-95773.mp3");
-    Music walkingSound = LoadMusicStream("assets/Walking_Sound.wav");
+    walkingSound = LoadSound("assets/Walking_Sound.wav");
     
 
     // Add sword sound
@@ -237,8 +238,10 @@ int main() {
     SetSoundVolume(unpauseSound, 0.35f);
     SetSoundVolume(ghostSpawnSound, 0.4f);
     SetSoundVolume(doorSound, 0.12f);
+    SetSoundVolume(walkingSound, 0.5f);
 
-    SetMusicVolume(walkingSound, 0.5f);
+    float footstepTimer = 0.0f;
+    const float footstepCooldown = 0.3f;
 
     while (!WindowShouldClose()) {
 
@@ -247,7 +250,6 @@ int main() {
         UpdateMusicStream(musicStartScreen);
         UpdateMusicStream(musicBackground);
         UpdateMusicStream(musicVictory);
-        UpdateMusicStream(walkingSound);
 
 
 // --- Update elapsed time ---
@@ -313,15 +315,14 @@ int main() {
             movePlayer(&player);
 
             if (player.vel.x != 0 || player.vel.y != 0) {
-                if (!isWalkingSoundPlaying) {
-                    PlayMusicStream(walkingSound);
-                    isWalkingSoundPlaying = true;
+                footstepTimer += GetFrameTime();
+            
+                if (footstepTimer >= footstepCooldown) {
+                    PlaySound(walkingSound);
+                    footstepTimer = 0.0f;
                 }
             } else {
-                if (isWalkingSoundPlaying) {
-                    StopMusicStream(walkingSound);
-                    isWalkingSoundPlaying = false;
-                }
+                footstepTimer = footstepCooldown;  // prevent immediate step on resume
             }
     
             // Replace with pause screen 
@@ -758,10 +759,13 @@ int main() {
             ClearBackground(BLACK);
     
             // Create start and quit buttons
-            Rectangle startBtn = {W / 2 - 125, H / 2 - 50, W / 4, H / 8};
-            Rectangle quitBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
+            float shiftX = -320;  // shift left
+            float shiftY = 50;    // shift down
+
+            Rectangle startBtn = { W / 2 - 100 + shiftX, H / 2 - 40 + shiftY, 200, 50 };
+            Rectangle quitBtn  = { W / 2 - 100 + shiftX, H / 2 + 65 + shiftY, 200, 50 };
     
-            drawStartScreen(textFont);
+            drawStartScreen(startBtn, quitBtn, textFont);
 
             static bool hasStartedMenuMusic = false;
             if (!hasStartedMenuMusic) {
@@ -826,7 +830,7 @@ int main() {
     UnloadMusicStream(musicStartScreen);
     UnloadMusicStream(musicBackground);
     UnloadMusicStream(musicVictory);
-    UnloadMusicStream(walkingSound);
+    UnloadSound(walkingSound);
     UnloadSound(playerGruntSound);
     UnloadSound(playerGroanSound);
     UnloadSound(pauseSound);
