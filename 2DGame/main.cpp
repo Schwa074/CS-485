@@ -7,6 +7,7 @@ Texture2D torchStillSprite;
 Texture2D noteSprite;
 Texture2D keySprite;
 Texture2D swordStillSprite;
+Texture2D startScreenBackground;
 // --- End Global Sprites Variables ---
 
 int main() {
@@ -60,7 +61,8 @@ int main() {
     
 
     // Add sword sound
-
+    //Sprite and Image Work
+    startScreenBackground = LoadTexture("assets/Crypt_Escape720.png");
     Font textFont = LoadFontEx("resources/alagard.png", 64, 0, 0);
     Texture2D hero = LoadTexture("assets/charactersheet.png");
     Texture2D whiteGhostSprite = LoadTexture("assets/whiteghostsheet.png");
@@ -759,7 +761,7 @@ int main() {
             Rectangle startBtn = {W / 2 - 125, H / 2 - 50, W / 4, H / 8};
             Rectangle quitBtn = {W / 2 - 125, H / 2 + 50, W / 4, H / 8};
     
-            drawStartScreen(startBtn, quitBtn, textFont);
+            drawStartScreen(textFont);
 
             static bool hasStartedMenuMusic = false;
             if (!hasStartedMenuMusic) {

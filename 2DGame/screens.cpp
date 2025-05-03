@@ -24,16 +24,33 @@ void drawRespawnScreen(Rectangle respawnBtn, Font deathFont)
     DrawTextEx(deathFont, "Respawn", (Vector2){W / 2 - 40, H / 2 + 75}, 36.0f, 2, WHITE);
 }
 
-void drawStartScreen(Rectangle startButton, Rectangle quitButton, Font textFont)
+void drawStartScreen(Font textFont)
 {
-    const char* StartTitleMessage = "          Crypt Escape\n  Press Start to Begin Game\n    Press Quit to Exit Game";
-    DrawRectangleGradientV(0,0, W, H, (Color){185, 185, 185, 255}, (Color){185, 185, 185, 255});
-    DrawTextEx(textFont, StartTitleMessage, {W / 2 - 300, H / 2 - 165}, 32.0f, 8, BLACK);
+    DrawTexture(startScreenBackground, 0, 0, WHITE);
+
+    float shiftX = -320;  // shift left
+    float shiftY = 50;    // shift down
+
+    Rectangle startButton = { W / 2 - 100 + shiftX, H / 2 - 40 + shiftY, 200, 50 };
+    Rectangle quitButton  = { W / 2 - 100 + shiftX, H / 2 + 65 + shiftY, 200, 50 };
+
     DrawRectangleRounded(startButton, 1.0f, 1, (Color){70, 70, 80, 255});
-    DrawRectangleRounded(quitButton, 1.0f, 1, (Color){70, 70, 80, 255});
-    DrawTextEx(textFont, "Start", (Vector2){W / 2 - 23, H / 2 - 20}, 36.0f, 2, WHITE);
-    DrawTextEx(textFont, "Quit", (Vector2){W / 2 - 7, H / 2 + 85}, 36.0f, 2, WHITE);
+    DrawRectangleRounded(quitButton,  1.0f, 1, (Color){70, 70, 80, 255});
+
+    Vector2 startTextPos = {
+        startButton.x + (startButton.width / 2) - MeasureTextEx(textFont, "Start", 36.0f, 2).x / 2,
+        startButton.y + (startButton.height / 2) - 36.0f / 2
+    };
+
+    Vector2 quitTextPos = {
+        quitButton.x + (quitButton.width / 2) - MeasureTextEx(textFont, "Quit", 36.0f, 2).x / 2,
+        quitButton.y + (quitButton.height / 2) - 36.0f / 2
+    };
+
+    DrawTextEx(textFont, "Start", startTextPos, 36.0f, 2, WHITE);
+    DrawTextEx(textFont, "Quit", quitTextPos, 36.0f, 2, WHITE);
 }
+
 
 void drawWinScreen(Rectangle playAgainButton, Rectangle quitButton, Font textFont, double bestTime)
 {
