@@ -602,13 +602,13 @@ int main() {
                     //std::cout << "Time: " << elapsedTime << std::endl;
                     char positionText[50]; 
                     char timeText[50];
-                    sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
+                    // sprintf(positionText, "X: %.2f Y: %.2f", player.rect.x, player.rect.y);
                     sprintf(timeText, "Time: %.0f", elapsedTime);
                     DrawFPS(5, 5);
                     drawHearts(hearts, player.currentHealth);
                     DrawInventoryHUD(&player, slotNum);
                     DrawText(timeText, 900, 10, 32, RAYWHITE);
-                    DrawText(positionText, 900, 42, 32, YELLOW);
+                    // DrawText(positionText, 900, 42, 32, YELLOW);
                 }
                 
                 
